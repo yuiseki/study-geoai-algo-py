@@ -29,3 +29,12 @@ def test_taito_tiles(type_):
     assert outside == 0
     assert keylen == [16]
     assert tests >= 1
+
+
+@pytest.mark.network
+@pytest.mark.parametrize(("year", "quarter"), [(2026, 1), (2025, 4)])
+def test_earlier_quarters_are_mirrored(year, quarter):
+    con = connect()
+    area = aoi.load("taito", con)
+    n = ookla.tiles(con, area, "mobile", year, quarter).aggregate("count(*)").fetchone()[0]
+    assert 40 < n < 80
