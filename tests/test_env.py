@@ -113,3 +113,28 @@ def test_ortools_and_highspy_share_one_process():
         ("highspy", "ortools.linear_solver.pywraplp"),
     ]:
         subprocess.run([sys.executable, "-c", probe.format(first, second)], check=True)
+
+
+def test_verde_block_kfold_keeps_blocks_whole():
+    import verde as vd
+    from sklearn.model_selection import KFold
+
+    rng = np.random.default_rng(0)
+    coords = rng.uniform(0, 100, size=(1000, 2))
+    # verde lays its blocks over the data's bounding box, so pin it to exactly 0..100
+    # for a 4x4 grid of 25 x 25 blocks.
+    coords[0], coords[1] = [0, 0], [100, 100]
+    spacing = 25
+    cell = np.minimum(coords // spacing, 3)
+    block_id = cell[:, 0] * 4 + cell[:, 1]
+
+    def blocks_shared(splits):
+        return any(set(block_id[tr]) & set(block_id[te]) for tr, te in splits)
+
+    block_splits = list(
+        vd.BlockKFold(spacing=spacing, n_splits=4, shuffle=True, random_state=0).split(coords)
+    )
+    assert not blocks_shared(block_splits)
+    assert sorted(np.concatenate([te for _, te in block_splits])) == list(range(1000))
+    # A plain shuffled KFold splits blocks across train and test: the leak BlockKFold prevents.
+    assert blocks_shared(KFold(n_splits=4, shuffle=True, random_state=0).split(coords))

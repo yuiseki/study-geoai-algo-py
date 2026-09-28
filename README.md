@@ -10,6 +10,7 @@ Study environment for classical machine learning and mathematical optimisation, 
 | catboost | Gradient boosting |
 | statsmodels | Time series (ARIMA/ETS) and statistics |
 | shap | Model explanation |
+| verde | Spatial block cross-validation (BlockKFold) |
 | scipy (scipy.optimize) | Continuous optimisation |
 | networkx | Graphs and networks |
 | ortools | LP/MIP, CP-SAT, routing |
