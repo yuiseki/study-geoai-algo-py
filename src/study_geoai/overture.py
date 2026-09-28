@@ -13,7 +13,7 @@ import urllib.request
 
 import duckdb
 
-from study_geoai.aoi import Area, cache_path
+from study_geoai.aoi import Area, cache_path, writing
 
 RELEASE = "2026-09-23.1"
 STAC = "https://stac.overturemaps.org"
@@ -59,18 +59,17 @@ def read(
             raise ValueError(f"{theme}/{type_}: no file overlaps {area.name}")
         west, south, east, north = area.bbox
         sources = ", ".join(f"'{u}'" for u in urls)
-        tmp = path.with_suffix(".partial")
-        con.execute(
-            f"""
-            copy (
-                select {", ".join(columns)}, geometry
-                from read_parquet([{sources}])
-                where bbox.xmin < {east} and bbox.xmax > {west}
-                  and bbox.ymin < {north} and bbox.ymax > {south}
-                  and st_intersects(geometry, st_geomfromtext(?))
-            ) to '{tmp}' (format parquet)
-            """,
-            [area.wkt],
-        )
-        tmp.rename(path)
+        with writing(path) as tmp:
+            con.execute(
+                f"""
+                copy (
+                    select {", ".join(columns)}, geometry
+                    from read_parquet([{sources}])
+                    where bbox.xmin < {east} and bbox.xmax > {west}
+                      and bbox.ymin < {north} and bbox.ymax > {south}
+                      and st_intersects(geometry, st_geomfromtext(?))
+                ) to '{tmp}' (format parquet)
+                """,
+                [area.wkt],
+            )
     return con.read_parquet(str(path))

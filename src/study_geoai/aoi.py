@@ -7,6 +7,7 @@ temp directory; later runs read that instead.
 """
 
 import tempfile
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -46,26 +47,44 @@ def cache_path(dataset: str, revision: str, part: str) -> Path:
     return CACHE_DIR / f"{dataset}-{revision[:12]}-{part}.parquet"
 
 
+@contextmanager
+def writing(path: Path):
+    """Yield a partial path to write to; rename it into place only if the write succeeds."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".partial")
+    try:
+        yield tmp
+        tmp.rename(path)
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
 def _wards(con: duckdb.DuckDBPyConnection) -> Path:
     path = cache_path("jp-admin", JP_ADMIN_REVISION, "tokyo23")
     if not path.exists():
-        path.parent.mkdir(parents=True, exist_ok=True)
         codes = ", ".join(f"'{c}'" for c in TOKYO23)
-        tmp = path.with_suffix(".partial")
-        con.sql(f"""
-            copy (
-                select code5, name, population, st_geomfromwkb(geometry) as geometry
-                from read_parquet('{JP_ADMIN_MUNICIPALITIES}')
-                where code5 in ({codes})
-            ) to '{tmp}' (format parquet)
-        """)
-        tmp.rename(path)
+        with writing(path) as tmp:
+            con.sql(f"""
+                copy (
+                    select code5, name, population, st_geomfromwkb(geometry) as geometry
+                    from read_parquet('{JP_ADMIN_MUNICIPALITIES}')
+                    where code5 in ({codes})
+                ) to '{tmp}' (format parquet)
+            """)
     return path
 
 
 def load(name: str, con: duckdb.DuckDBPyConnection | None = None) -> Area:
-    codes = AREAS[name]
+    return _area(name, AREAS[name], con or connect())
+
+
+def wards(area: Area, con: duckdb.DuckDBPyConnection | None = None) -> list[Area]:
+    """The area split into one Area per ward, named by its code5."""
     con = con or connect()
+    return [_area(code, (code,), con) for code in area.codes]
+
+
+def _area(name: str, codes: tuple[str, ...], con: duckdb.DuckDBPyConnection) -> Area:
     path = _wards(con)
     placeholders = ", ".join("?" for _ in codes)
     population, found, xmin, ymin, xmax, ymax, wkt = con.execute(
