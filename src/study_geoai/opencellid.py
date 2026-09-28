@@ -47,7 +47,9 @@ def cells(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation
                     select radio, mcc, net, area as area_code, cell, range as range_m, samples,
                            created, updated,
                            st_x(st_centroid(geom)) as lon, st_y(st_centroid(geom)) as lat,
-                           st_centroid(geom) as geometry
+                           -- A plain point: st_read tags it EPSG:4326, which DuckDB refuses
+                           -- to compare with Ookla's OGC:CRS84 although both are lon/lat.
+                           st_point(st_x(st_centroid(geom)), st_y(st_centroid(geom))) as geometry
                     from (
                         select *, row_number() over (partition by radio, mcc, net, area, cell) as k
                         from st_read('{raw}')
