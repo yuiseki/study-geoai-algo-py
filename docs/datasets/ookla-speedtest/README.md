@@ -52,3 +52,14 @@ S3 は Range 要求に 206 を返すので、DuckDB でフッターだけ読め�
 - 4: quadkey の上位桁でまとめると、そのまま空間ブロック CV の groups になる。
 - 5: 速度と遅延でタイルをクラスタリングする。
 - 9: 速度の遅いタイルに基地局を置く配置問題の需要側として使う (供給側は [OpenCelliD](../opencellid/README.md))。
+
+## z.yuiseki.net のミラー
+
+元のバケットは 2026-09-28 に毎秒 39KB〜1MB しか出ず、元のファイルは行グループが 4 つ (1 つ約 100 万行) しかないので、台東区の件数を数えるだけでも 60 秒で終わらなかった。
+そこで 2026 年第 2 四半期の mobile と fixed を一度だけ取得し、Range 要求で読める形にして <https://z.yuiseki.net/static/ookla/> に置いた。
+
+- パスの階層は元と同じ (`parquet/performance/type=.../year=.../quarter=.../`)。
+- 元の列と値はすべてそのまま。`geometry` (GeoParquet) と `bbox` の列を足し、quadkey 順に 20,480 行ずつの行グループで書き直した。
+- 行数、quadkey の集合、整数列の合計、全列の行ハッシュの合計が元と一致することを確かめた。
+- 台東区付近を bbox の列で読むと、約 1MB を 0.5 秒で読める。区の形にかかるタイルは mobile も fixed も 62。
+- ライセンスと引用の書式は、ミラーの LICENSE と README.md に書いた。
