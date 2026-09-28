@@ -36,9 +36,24 @@ Study environment for classical machine learning and mathematical optimisation, 
 | 多目的意思決定 | weighted sum、Pareto frontier | 「最適」が一つではない問題 |
 | 評価設計 | K-fold、Group CV、TimeSeriesSplit、Spatial CV | データリークを防ぐ |
 
-Each method has its own directory under `src/`, named `NNN-X-method`:
-`NNN` is the row of the table above (001 to 016) and `X` is the method within that row (A, B, ...).
-For example, `src/003-C-lightgbm/` is the third method of the Boosting row.
+## Learning order
+
+1. 線形回帰 / ロジスティック回帰
+2. Decision Tree / Random Forest
+3. Gradient Boosting / XGBoost
+4. Cross Validationとデータリーク
+5. k-means / DBSCAN
+6. PCA
+7. Dijkstra / A*
+8. LP / MILP
+9. assignment / facility location
+10. CP-SAT / scheduling
+11. SHAP / calibration
+12. 多目的最適化
+
+Each topic has its own directory under `src/`, named `NNN-X-topic`:
+`NNN` is the step in the list above (001 to 012) and `X` is the topic within that step (A, B).
+For example, `src/009-B-facility-location/` is the second topic of step 9.
 
 ## Setup
 
