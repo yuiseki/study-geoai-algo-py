@@ -1,0 +1,35 @@
+[project]
+name = "study-geoai"
+version = "0.1.0"
+description = "Study environment for classical ML and optimisation in GeoAI."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    # Must match the HiGHS bundled in ortools (same soname libhighs.so.1).
+    # ortools 9.15 ships HiGHS 1.12.0; bump both together.
+    "highspy>=1.12,<1.13",
+    "lightgbm>=4.7.0",
+    "networkx>=3.7",
+    "numpy>=2.5.3",
+    "ortools>=9.15.6755,<9.16",
+    "scikit-learn>=1.9.1",
+    "scipy>=1.18.1",
+    "xgboost>=3.4.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.9",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
