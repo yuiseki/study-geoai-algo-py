@@ -27,16 +27,6 @@ FEEDS = {
     "arakawa": "gtfs-data.jp/arakawacity/sakura/f42df805-0434-4196-af64-c9641b284388/feed.zip",
     "katsushika": "gtfs-data.jp/katsushikacity/sakura/1f3a5571-ce79-492a-9751-5c2031d96cde/feed.zip",
 }
-TABLES = [
-    "agency",
-    "calendar",
-    "calendar_dates",
-    "feed_info",
-    "routes",
-    "stop_times",
-    "stops",
-    "trips",
-]
 
 
 def load(con: duckdb.DuckDBPyConnection, name: str) -> list[str]:
