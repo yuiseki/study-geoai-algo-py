@@ -5,11 +5,11 @@
 
 ## リポジトリ
 
-ファイル数の「20,000 以上」は、一覧の取得を 20,000 件で止めたもの。「(マニフェスト)」は、リポジトリ内のマニフェストを数えた値 (バケットの実物との一致は未確認)。
+ファイル数と合計の「以上」は、一覧を途中まで数えたところで止めたもの。「(マニフェスト)」は、リポジトリ内のマニフェストを数えた値 (バケットの実物との一致は未確認)。
 
 | リポジトリ | ファイル数 | 合計 | 主な形式 | 中身 | 詳細 |
 |---|---:|---:|---|---|---|
-| adopt-hokkaido-lidar | 3,541 | 199.69GB | laz | (調査中) | [adopt-hokkaido-lidar.md](adopt-hokkaido-lidar.md) |
+| adopt-hokkaido-lidar | 3,541 | 199.69GB | laz | 北海道庁の航空レーザを COPC 化 (LAS 1.4、平面直角 XII 系) | [adopt-hokkaido-lidar.md](adopt-hokkaido-lidar.md) |
 | amx-2024-04 | 1 | 16.23GB | pmtiles | 法務省地図 XML の筆ポリゴン (2024-04)、MVT、z14-16、約 1.09 億件 | [amx-2024-04.md](amx-2024-04.md) |
 | cogenerate | 158 | 427.71GB | tif | 国土地理院の災害時空中写真などの COG (RGBA, 3857, z18)。標高ではない | [cogenerate.md](cogenerate.md) |
 | dem10a | 1 | 0.70GB | pmtiles | 仙台周辺の標高 PMTiles。z3-17、WebP、Terrain-RGB | [dem10a.md](dem10a.md) |
@@ -22,13 +22,14 @@
 | mapterhorn-japan-bridge | 2 | 2.01GB | pmtiles | 北海道南西部の地形タイル。Terrarium WebP、z6-16 (暫定) | [mapterhorn-japan-bridge.md](mapterhorn-japan-bridge.md) |
 | mobility-gtfs-pmtiles | 2 | 0.69GB | pmtiles | Mobility Database の全 GTFS の停留所と路線、運行頻度つき (2024-04) | [mobility-gtfs-pmtiles.md](mobility-gtfs-pmtiles.md) |
 | next-ksj | 7 | 0.96GB | fgb, pmtiles | 国土数値情報のサンプル 3 種 (地価公示 2024、行政区域 2024、河川) | [next-ksj.md](next-ksj.md) |
-| ngs | 20,000 以上 | 2.72GB 以上 | pnts | (調査中) | [ngs.md](ngs.md) |
+| ngs | 81,030 以上 | 11.39GB 以上 | pnts | Open Nagasaki の LiDAR 全域を 1 つの点群 3D Tiles にしたもの (XYZ と RGB のみ) | [ngs.md](ngs.md) |
 | opencellid | 1 | 0.56GB | pmtiles | OpenCelliD の基地局 約 484 万点 (2024-06-14 時点) | [opencellid.md](opencellid.md) |
 | toshik | 2 | 0.16GB | pmtiles | 国交省の都市計画決定 GIS。用途地域など 21 レイヤー、全国分 | [toshik.md](toshik.md) |
 | uppsala-conflict | 1 | 0.14GB | pmtiles | UCDP GED 23.1 の紛争イベント 31.7 万点 (1989〜2022) | [uppsala-conflict.md](uppsala-conflict.md) |
-| xing | 20,000 以上 | 9.53GB 以上 | b3dm, json | (調査中) | [xing.md](xing.md) |
+| xing | 58,002 以上 | 14.09GB 以上 | b3dm, json, mvt | PLATEAU の 3D Tiles (b3dm) と MVT。6,419 データセット、建物の属性付き | [xing.md](xing.md) |
 
 ## 読むときの注意
 
 - ファイルの URL は `https://data.source.coop/smartmaps/<key>`。
 - 1 ファイルの調査は 60 秒で打ち切る。巨大ファイルは Range 要求で必要な部分だけ読む。
+- 一覧を数えるときは `continuation-token` だけでたどる。`start-after` は当てにならず、あるはずの件数が 0 件で返ったり、サブディレクトリを飛ばしたりした。
