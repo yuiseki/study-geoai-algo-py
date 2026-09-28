@@ -18,7 +18,7 @@ michiyomi scenes (share undergrounded, mean visible poles, mean green).
 
 import duckdb
 
-from study_geoai import census, michiyomi, ookla, opencellid, overture, worldpop
+from study_geoai import census, mesh, michiyomi, ookla, opencellid, overture, worldpop
 from study_geoai.aoi import Area, cache_path, writing
 
 AREA_KM2 = "st_area_spheroid(st_flipcoordinates({g})) / 1e6"
@@ -258,4 +258,90 @@ def small_area_profiles(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.Du
         for view in ("_sa", "_p", "_s"):
             con.sql(f"drop view {view}")
         con.sql("drop table _kind")
+    return con.read_parquet(str(path))
+
+
+def grid_profiles(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation:
+    """One row per 3rd mesh (about 1 km) whose centre lies in the area.
+
+    Everything is counted where its point falls: WorldPop 2025 100 m pixel centres
+    (population), Overture building centroids (n_buildings, coverage) and places
+    (place_density, share_<kind>), michiyomi scenes (undergrounded_share, mean_green,
+    mean_poles) and OpenCelliD cells (cell_density).
+    """
+    path = cache_path("features", f"{overture.RELEASE}-mesh3", f"grid-{area.name}")
+    if not path.exists():
+        worldpop.grid(con, area, 2025).create_view("_w")
+        overture.read(
+            con, area, "buildings", "building", ["id", "height", "num_floors"]
+        ).create_view("_b")
+        places = overture.read(con, area, "places", "place", ["id", "basic_category"])
+        cats = places.aggregate("basic_category").fetchall()
+        con.execute("create or replace temp table _kind (basic_category varchar, kind varchar)")
+        con.executemany("insert into _kind values (?, ?)", [(c, place_kind(c)) for (c,) in cats])
+        places.create_view("_p")
+        michiyomi.scenes(con, area).create_view("_s")
+        opencellid.cells(con, area).create_view("_c")
+        code = mesh.sql("lon", "lat")
+        shares = ", ".join(
+            f"avg((coalesce(k.kind, 'other') = '{k}')::int) as share_{k}" for k in KINDS
+        )
+        codes = con.sql(f"select distinct {code} as mesh from _w").fetchall()
+        con.execute("create or replace temp table _m (mesh bigint, geometry geometry)")
+        con.executemany(
+            "insert into _m values (?, st_makeenvelope(?, ?, ?, ?))",
+            [(c, *mesh.bounds(c)) for (c,) in codes],
+        )
+        with writing(path) as tmp:
+            con.execute(
+                f"""
+                copy (
+                    with m as (
+                        select mesh, geometry, {AREA_KM2.format(g="geometry")} as area_km2
+                        from _m where st_contains(st_geomfromtext(?), st_centroid(geometry))
+                    ),
+                    w as (select {code} as mesh, sum(population) as population from _w group by 1),
+                    b as (
+                        select {code} as mesh, count(*) as n_buildings,
+                               sum({AREA_KM2.format(g="geometry")}) as footprint_km2
+                        from (select *, st_x(st_centroid(geometry)) as lon,
+                                     st_y(st_centroid(geometry)) as lat from _b)
+                        group by 1
+                    ),
+                    p as (
+                        select {code} as mesh, count(*) as n_places, {shares}
+                        from (select _p.*, st_x(geometry) as lon, st_y(geometry) as lat from _p) _p
+                        left join _kind k on k.basic_category is not distinct from _p.basic_category
+                        group by 1
+                    ),
+                    s as (
+                        select {code} as mesh, count(*) as n_scenes,
+                               avg((undergrounded = '無電柱化済')::int)
+                                 filter (where undergrounded in ('無電柱化済', '架空線あり'))
+                                 as undergrounded_share,
+                               avg(green_ratio) as mean_green, avg(poles_visible) as mean_poles
+                        from _s where quarantined = 0 group by 1
+                    ),
+                    c as (select {code} as mesh, count(*) as n_cells from _c group by 1)
+                    select m.mesh, m.area_km2,
+                           coalesce(w.population, 0) as population,
+                           coalesce(w.population, 0) / m.area_km2 as density,
+                           coalesce(b.n_buildings, 0) as n_buildings,
+                           coalesce(b.footprint_km2, 0) / m.area_km2 as coverage,
+                           coalesce(p.n_places, 0) as n_places,
+                           coalesce(p.n_places, 0) / m.area_km2 as place_density,
+                           p.* exclude (mesh, n_places),
+                           coalesce(s.n_scenes, 0) as n_scenes, s.* exclude (mesh, n_scenes),
+                           coalesce(c.n_cells, 0) / m.area_km2 as cell_density,
+                           m.geometry
+                    from m left join w using (mesh) left join b using (mesh)
+                    left join p using (mesh) left join s using (mesh) left join c using (mesh)
+                    order by m.mesh
+                ) to '{tmp}' (format parquet)
+                """,
+                [area.wkt],
+            )
+        for view in ("_w", "_b", "_p", "_s", "_c"):
+            con.sql(f"drop view {view}")
+        con.sql("drop table _kind; drop table _m")
     return con.read_parquet(str(path))

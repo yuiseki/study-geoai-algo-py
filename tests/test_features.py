@@ -98,3 +98,20 @@ def test_taito_small_area_profiles():
     assert n == 108
     assert bad_shares == 0  # the five kinds add up to all places
     assert scenes > 0
+
+
+@pytest.mark.network
+def test_tokyo23_grid_profiles():
+    from study_geoai import worldpop
+
+    con = connect()
+    area = aoi.load("tokyo23", con)
+    features.grid_profiles(con, area).create_view("g")
+    n, codes, area_km2, pop = con.sql(
+        "select count(*), count(distinct mesh), avg(area_km2), sum(population) from g"
+    ).fetchone()
+    assert n == codes
+    assert 550 < n < 700  # about 627 km2 of 1.05 km2 squares
+    assert 1.0 < area_km2 < 1.1
+    total = worldpop.grid(con, area, 2025).aggregate("sum(population)").fetchone()[0]
+    assert 0.9 * total < pop < 1.1 * total  # edge squares count their centres only
