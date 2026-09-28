@@ -51,4 +51,6 @@ markers = ["network: reads remote data sources (deselect with -m 'not network')"
 filterwarnings = [
     # shap itself calls matplotlib's pending-deprecated Colormap.set_bad/over/under.
     "ignore::PendingDeprecationWarning:shap.plots.colors._colors",
+    # rasterio itself still multiplies Affine with *, which affine 3.0 deprecates.
+    "ignore::PendingDeprecationWarning:rasterio.windows",
 ]
