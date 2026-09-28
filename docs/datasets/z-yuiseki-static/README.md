@@ -8,6 +8,7 @@
 | ディレクトリ | 中身 | 詳細 |
 |---|---|---|
 | openstreetmap/ | OSM planet 3 版、地域抽出、Layercake GeoParquet、taginfo、Wiki ダンプ、OpenMapTiles の PMTiles | [openstreetmap.md](openstreetmap.md) |
+| worldpop/ | WorldPop の日本の総人口 2020 年と 2025 年 (100m と 1km) を COG にしたミラー (2026-09-28 に作成、CC BY 4.0) | [../stac/worldpop.md](../stac/worldpop.md) |
 | gtfs/ | 東京のバスの GTFS-JP 5 つ (都営バス、台東区、杉並区、荒川区、葛飾区) を版ごとにそのまま置いたもの (2026-09-28 に作成) | [../tokyo-gtfs/README.md](../tokyo-gtfs/README.md) |
 | ksj/ | 国土数値情報の東京都の P04 医療機関、P29 学校、A31a 洪水浸水想定、mesh500r6 将来推計人口を GeoParquet にしたミラー (2026-09-28 に作成、すべて CC BY 4.0) | [../stac/mlit-nlftp.md](../stac/mlit-nlftp.md) |
 | ookla/ | Ookla Speedtest の 2026 年第 2 四半期 (mobile、fixed) を Range 要求で読める GeoParquet にしたミラー (2026-09-28 に作成) | [../ookla-speedtest/README.md](../ookla-speedtest/README.md) |
