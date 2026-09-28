@@ -16,16 +16,16 @@
 | dem1a | 2 | 2.65GB | pmtiles | 国土地理院 1m DEM の PMTiles。東北太平洋側、z3-17、Terrain-RGB | [dem1a.md](dem1a.md) |
 | foil4gr1 | 7 | 25.05GB | pmtiles | 地形分類 22 区分・人口・H3 格子・タイの行政区画・ビエンチャンの土地利用などの寄せ集め | [foil4gr1.md](foil4gr1.md) |
 | gel | 2 | 195.96GB | pmtiles | 全世界の標高 terrain RGB (WebP)、NASADEM と地球地図、z2-12、CC0 | [gel.md](gel.md) |
-| h3ys-worldpop | 12 | 0.78GB | pmtiles | (調査中) | [h3ys-worldpop.md](h3ys-worldpop.md) |
+| h3ys-worldpop | 12 | 0.78GB | pmtiles | WorldPop 人口 2000〜2020 を H3 res5-9 で集計した国別ベクトル (9 か国) | [h3ys-worldpop.md](h3ys-worldpop.md) |
 | japan-geotiff-dem | 784,898 (マニフェスト) | 376.69GB (マニフェスト) | tif | 国土地理院 DEM 1/5/10m の GeoTIFF (EPSG:6668, Float32) | [japan-geotiff-dem.md](japan-geotiff-dem.md) |
 | japan-seamlessphoto | 4 | 1,192.53GB | pmtiles | 国土地理院シームレス空中写真 JPEG、z1-17 (512px) と z18 の 2 本 | [japan-seamlessphoto.md](japan-seamlessphoto.md) |
 | mapterhorn-japan-bridge | 2 | 2.01GB | pmtiles | 北海道南西部の地形タイル。Terrarium WebP、z6-16 (暫定) | [mapterhorn-japan-bridge.md](mapterhorn-japan-bridge.md) |
-| mobility-gtfs-pmtiles | 2 | 0.69GB | pmtiles | (調査中) | [mobility-gtfs-pmtiles.md](mobility-gtfs-pmtiles.md) |
-| next-ksj | 7 | 0.96GB | fgb, pmtiles | (調査中) | [next-ksj.md](next-ksj.md) |
+| mobility-gtfs-pmtiles | 2 | 0.69GB | pmtiles | Mobility Database の全 GTFS の停留所と路線、運行頻度つき (2024-04) | [mobility-gtfs-pmtiles.md](mobility-gtfs-pmtiles.md) |
+| next-ksj | 7 | 0.96GB | fgb, pmtiles | 国土数値情報のサンプル 3 種 (地価公示 2024、行政区域 2024、河川) | [next-ksj.md](next-ksj.md) |
 | ngs | 20,000 以上 | 2.72GB 以上 | pnts | (調査中) | [ngs.md](ngs.md) |
-| opencellid | 1 | 0.56GB | pmtiles | (調査中) | [opencellid.md](opencellid.md) |
-| toshik | 2 | 0.16GB | pmtiles | (調査中) | [toshik.md](toshik.md) |
-| uppsala-conflict | 1 | 0.14GB | pmtiles | (調査中) | [uppsala-conflict.md](uppsala-conflict.md) |
+| opencellid | 1 | 0.56GB | pmtiles | OpenCelliD の基地局 約 484 万点 (2024-06-14 時点) | [opencellid.md](opencellid.md) |
+| toshik | 2 | 0.16GB | pmtiles | 国交省の都市計画決定 GIS。用途地域など 21 レイヤー、全国分 | [toshik.md](toshik.md) |
+| uppsala-conflict | 1 | 0.14GB | pmtiles | UCDP GED 23.1 の紛争イベント 31.7 万点 (1989〜2022) | [uppsala-conflict.md](uppsala-conflict.md) |
 | xing | 20,000 以上 | 9.53GB 以上 | b3dm, json | (調査中) | [xing.md](xing.md) |
 
 ## 読むときの注意
