@@ -20,6 +20,7 @@ import urllib.request
 import duckdb
 
 from study_geoai.aoi import Area, cache_path, writing
+from study_geoai.geocode import locate
 
 BASE = "https://z.yuiseki.net/static/tokyo-ckan-files"
 DECODE = {"utf-8": "utf-8-sig", "cp932": "cp932", "utf-16": "utf-16"}
@@ -78,25 +79,34 @@ def _rows(record: dict) -> list[dict]:
     table = list(csv.reader(io.StringIO(text)))
     header, body = table[0], [row for row in table[1:] if any(c.strip() for c in row)]
     lat_col, lon_col, name_col = pick(header, "緯度"), pick(header, "経度"), pick(header, "名称")
+    addr_col = pick(header, "連結表記") or pick(header, "住所") or pick(header, "所在地")
     out = []
     for i, values in enumerate(body, start=1):
         attrs = dict(zip(header, values, strict=False))
         x, y, status = coord(attrs.get(lat_col), attrs.get(lon_col))
         out.append({
             **base, "row": i, "name": attrs.get(name_col), "lon": x, "lat": y,
-            "status": status, "attributes": json.dumps(attrs, ensure_ascii=False),
+            "status": status, "position": "published" if status == "ok" else None,
+            "address": attrs.get(addr_col), "attributes": json.dumps(attrs, ensure_ascii=False),
         })  # fmt: skip
     return out
 
 
-def facilities(con: duckdb.DuckDBPyConnection, area: Area, family: str) -> duckdb.DuckDBPyRelation:
+def facilities(
+    con: duckdb.DuckDBPyConnection, area: Area, family: str, geocode: bool = False
+) -> duckdb.DuckDBPyRelation:
     """Facilities of one family published by the wards of the area.
 
     Columns: code5, organization, item_id, item_title, row, name, lon, lat, status
-    (ok, no_coords, bad_coords, missing_file, unsupported_xlsx, ...), attributes (JSON
-    of the original row), geometry (point or NULL), inside (the point lies in the area).
+    (ok, no_coords, bad_coords, missing_file, unsupported_xlsx, ...), position (where lon
+    and lat came from: published, or with geocode=True name or town, else NULL),
+    address, attributes (JSON of the original row), geometry (point or NULL), inside.
+
+    status always describes the published coordinates; geocoding only fills lon, lat
+    and position for rows whose published coordinates were missing or unusable.
     """
-    path = cache_path("tokyo-ckan-files", "2026-09-28", f"{family}-{area.name}")
+    suffix = "-geocoded" if geocode else ""
+    path = cache_path("tokyo-ckan-files", "2026-09-28", f"{family}-{area.name}{suffix}")
     if not path.exists():
         records = [
             r
@@ -104,9 +114,16 @@ def facilities(con: duckdb.DuckDBPyConnection, area: Area, family: str) -> duckd
             if r["family"] == family and r["collection"][1:6] in area.codes
         ]
         rows = [row for r in sorted(records, key=lambda r: r["item_id"]) for row in _rows(r)]
+        if geocode:
+            for row in rows:
+                if row["status"] in ("no_coords", "bad_coords"):
+                    row["lon"], row["lat"], row["position"] = locate(
+                        con, area, row.get("name"), row.get("address")
+                    )
         cols = ["code5", "organization", "item_id", "item_title", "row", "name", "lon", "lat",
-                "status", "attributes"]  # fmt: skip
-        types = ["varchar"] * 4 + ["integer", "varchar", "double", "double", "varchar", "json"]
+                "status", "position", "address", "attributes"]  # fmt: skip
+        types = ["varchar"] * 4 + ["integer", "varchar", "double", "double"] + ["varchar"] * 3
+        types += ["json"]
         con.execute(
             "create or replace temp table _f ("
             + ", ".join(f"{c} {t}" for c, t in zip(cols, types, strict=True))
