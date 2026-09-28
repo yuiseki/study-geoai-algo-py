@@ -8,6 +8,7 @@
 | ディレクトリ | 中身 | 詳細 |
 |---|---|---|
 | openstreetmap/ | OSM planet 3 版、地域抽出、Layercake GeoParquet、taginfo、Wiki ダンプ、OpenMapTiles の PMTiles | [openstreetmap.md](openstreetmap.md) |
+| gtfs/ | 東京のバスの GTFS-JP 5 つ (都営バス、台東区、杉並区、荒川区、葛飾区) を版ごとにそのまま置いたもの (2026-09-28 に作成) | [../tokyo-gtfs/README.md](../tokyo-gtfs/README.md) |
 | ookla/ | Ookla Speedtest の 2026 年第 2 四半期 (mobile、fixed) を Range 要求で読める GeoParquet にしたミラー (2026-09-28 に作成) | [../ookla-speedtest/README.md](../ookla-speedtest/README.md) |
 | overture/ | Overture の建物・交通・水域の全世界 PMTiles (60GB、2024-11 ビルド)。もう 1 つは 0 バイト | [overture.md](overture.md) |
 | cesg/ | 東京周辺の POI 検索一式 (Overture Places 45 万件、DuckDB FTS) と Valhalla 経路タイル | [cesg.md](cesg.md) |

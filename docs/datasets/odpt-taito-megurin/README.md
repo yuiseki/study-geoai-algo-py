@@ -48,3 +48,5 @@ GTFS-JP の zip 1 つ (78,030 バイト)。版は `20250801_MEG001`、有効期�
 - 10 CP-SAT / scheduling: `block_id` が空なので、便の始発と終着の時刻と停留所から「最少の車両で全便を回す割当」(vehicle scheduling) を解く。休憩や乗務時間の制約を足すと乗務員の勤務表にもなる。
 - 7 Dijkstra / A*: 停留所と停車時刻から時刻付きのグラフを作り、乗り換えを含む最短時間の経路を探す。
 - 9 facility location: 停留所の徒歩圏 (300〜500m) で人口メッシュをどれだけ覆えているかを測り、停留所を足す場所を選ぶ。
+
+再現できるように、この zip を中身を変えずに <https://z.yuiseki.net/static/gtfs/odpt/TokyoTaitoCity/megurinCCBY40/20251028/megurinCCBY40.zip> に置いた。詳しくは [東京 23 区のバスの GTFS](../tokyo-gtfs/README.md)。
