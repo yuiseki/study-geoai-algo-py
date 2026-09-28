@@ -8,17 +8,38 @@ z.yuiseki.net/static/worldpop/ serves it with Range support.
 
 Items are chosen from the WorldPop STAC API by country, project, year and
 resolution. STAC datetime is the release date, not the data year, so the year
-filter uses properties.year. Files already placed with the same source size
-as recorded are skipped, so the command can be rerun with more years:
+filter uses properties.year. Every GeoTIFF asset of a chosen item is mirrored
+(the data asset of Population, both grids of Degree of Urbanisation, the 60
+age and sex rasters of Age and Sex Structures); thumbnails and zip files are
+not. Files already placed with the same source size as recorded are skipped,
+so the command can be rerun with more years:
 
     uv run python scripts/mirror_worldpop.py --year 2020 2025
-    uv run python scripts/mirror_worldpop.py --year 2015 2016 2017
+    uv run python scripts/mirror_worldpop.py --year 2015-2019 2021
     uv run python scripts/mirror_worldpop.py --year 2020 --resolution 1km --dry-run
+    uv run python scripts/mirror_worldpop.py --project dug --year 2015-2030
+    uv run python scripts/mirror_worldpop.py --project agesex --resolution 1km --year 2015-2030
+
+--project takes the STAC properties.project or a short name (pop, dug,
+agesex). --resolution takes 100m, 1km, none (items without one, such as
+Degree of Urbanisation) or any (the default).
+
+When an item has an archive asset (Age and Sex Structures) and several of its
+GeoTIFFs are to be fetched, the archive is fetched once over FTP instead and
+the GeoTIFFs are taken out of it: one file per GeoTIFF over FTP costs about a
+minute of connection setup each. Every member must have the size that
+data.worldpop.org gives for the GeoTIFF's own URL and the same first 256 KiB,
+and pass the zip CRC. The archive itself is not placed.
 
 manifest.json in the destination is the record of what is placed; README.md
 and LICENSE are rebuilt from it on every run. The GDAL command-line tools and
 the Python bindings (for the pixel comparison) come from --gdal-bin and
 --gdal-python, since the uv environment has neither.
+
+ftp.worldpop.org refuses connections beyond a limit per address (421 There
+are too many connections). On 2026-09-28 it refused some of the 12 that
+2 jobs x 6 connections opened; the exact limit was not measured. The default
+is 1 job x 4 connections to stay under it.
 """
 
 from __future__ import annotations
@@ -28,6 +49,7 @@ import contextlib
 import datetime as dt
 import hashlib
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -36,6 +58,7 @@ import tempfile
 import threading
 import time
 import urllib.request
+import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -99,28 +122,105 @@ def stac_items(country: str) -> list[dict]:
     return items
 
 
-def select(items: list[dict], project: str, years: list[int], resolutions: list[str]) -> list[dict]:
+PROJECTS = {
+    "pop": "Population",
+    "dug": "Degree of Urbanisation",
+    "agesex": "Age and Sex Structures",
+}
+
+
+def project_name(name: str) -> str:
+    return PROJECTS.get(name.lower(), name)
+
+
+def parse_years(values: list[str]) -> list[int]:
+    """Years given as 2020 or as an inclusive range 2015-2030."""
+    years: set[int] = set()
+    for v in values:
+        lo, sep, hi = v.partition("-")
+        if sep:
+            if int(hi) < int(lo):
+                raise argparse.ArgumentTypeError(f"empty year range {v}")
+            years.update(range(int(lo), int(hi) + 1))
+        else:
+            years.add(int(v))
+    return sorted(years)
+
+
+def resolution_key(item: dict) -> str:
+    return item["properties"].get("resolution") or "none"
+
+
+def select(
+    items: list[dict], projects: list[str], years: list[int], resolutions: list[str]
+) -> list[dict]:
+    """Items of the projects and years; resolutions may hold 'none' and 'any'."""
     chosen = []
     for f in items:
         p = f["properties"]
-        if p.get("project") != project or p.get("year") not in years:
+        if p.get("project") not in projects or p.get("year") not in years:
             continue
-        if p.get("resolution") not in resolutions:
+        if "any" not in resolutions and resolution_key(f) not in resolutions:
             continue
-        if "data" not in f.get("assets", {}):
-            raise RuntimeError(f"{f['id']} has no data asset")
+        if not geotiff_assets(f):
+            raise RuntimeError(f"{f['id']} has no GeoTIFF asset")
         chosen.append(f)
-    missing = {(y, r) for y in years for r in resolutions} - {
-        (f["properties"]["year"], f["properties"]["resolution"]) for f in chosen
-    }
+
+    def key(f: dict) -> tuple:
+        return (f["properties"]["project"], f["properties"]["year"], resolution_key(f))
+
+    found = {key(f) for f in chosen}
+    present = {(k[0], k[2]) for k in found}
+    missing = {(pr, y, r) for pr, r in present for y in years} - found
+    for pr in projects:
+        if not any(k[0] == pr for k in found):
+            log(f"WARNING: no STAC item for project {pr!r} with {resolutions}")
     if missing:
-        log(f"WARNING: no STAC item for (year, resolution) {sorted(missing)}")
-    dup = len(chosen) - len(
-        {(f["properties"]["year"], f["properties"]["resolution"]) for f in chosen}
-    )
+        log(f"WARNING: no STAC item for (project, year, resolution) {sorted(missing)}")
+    dup = len(chosen) - len(found)
     if dup:
-        log(f"WARNING: {dup} extra items share a (year, resolution); all are mirrored")
-    return sorted(chosen, key=lambda f: (f["properties"]["year"], f["properties"]["resolution"]))
+        log(f"WARNING: {dup} extra items share a (project, year, resolution); all are mirrored")
+    return sorted(chosen, key=lambda f: (*key(f), f["id"]))
+
+
+def is_geotiff(asset: dict) -> bool:
+    roles = asset.get("roles") or []
+    return (asset.get("type") or "").startswith("image/tiff") and "overview" not in roles
+
+
+def geotiff_assets(item: dict) -> list[tuple[str, dict]]:
+    """(key, asset) of every GeoTIFF asset, one per href, in the item's order."""
+    out, seen = [], set()
+    for k, a in item.get("assets", {}).items():
+        if is_geotiff(a) and a["href"] not in seen:
+            seen.add(a["href"])
+            out.append((k, a))
+    return out
+
+
+def archive_asset(item: dict) -> dict | None:
+    for a in item.get("assets", {}).values():
+        if "archive" in (a.get("roles") or []) and a["href"].endswith(".zip"):
+            return a
+    return None
+
+
+def source_assets(item: dict) -> list[dict]:
+    """The files on data.worldpop.org that STAC properties.size adds up.
+
+    Checked on JPN 2026-09-28: Population's size is its one GeoTIFF, Degree
+    of Urbanisation's is its 2 GeoTIFFs and 2 zips together, and Age and Sex
+    Structures' is its GeoTIFFs without the archive.
+    """
+    out, seen = [], set()
+    for a in item.get("assets", {}).values():
+        roles = a.get("roles") or []
+        if not a["href"].startswith(SOURCE_PREFIX) or "archive" in roles:
+            continue
+        if a["href"] not in seen:
+            seen.add(a["href"])
+            out.append(a)
+    return out
 
 
 def relpath(href: str) -> str:
@@ -324,12 +424,23 @@ def compare_pixels(gdal_python: Path, src: Path, cog: Path) -> list[dict]:
 
 # --- manifest, README, LICENSE -------------------------------------------------
 
+MANIFEST_VERSION = 2
+
 
 def load_manifest(dest: Path) -> dict:
+    """The record of what is placed, with version 1 records read as version 2.
+
+    Version 1 (until 2026-09-28) mirrored only the data asset of Population
+    items; its records have no asset key, and stac_size is the item's size,
+    which was that one file.
+    """
     path = dest / "manifest.json"
-    if path.exists():
-        return json.loads(path.read_text())
-    return {"files": {}}
+    manifest = json.loads(path.read_text()) if path.exists() else {"files": {}}
+    for r in manifest["files"].values():
+        r.setdefault("asset", "data")
+        r.setdefault("item_stac_size", r.get("stac_size"))
+    manifest["manifest_version"] = MANIFEST_VERSION
+    return manifest
 
 
 def write_atomic(path: Path, text: str) -> None:
@@ -347,13 +458,52 @@ def fmt_int(n: int) -> str:
     return f"{n:,}"
 
 
+# Items with more files than this are summarised per item in README.md and
+# per directory in LICENSE; the per-file details stay in manifest.json.
+PER_FILE_ROWS = 8
+
+PROJECT_JA = {
+    "Population": "総人口 (Population)",
+    "Degree of Urbanisation": "都市化度 (Degree of Urbanisation)",
+    "Age and Sex Structures": "年齢階級と性別ごとの人口 (Age and Sex Structures)",
+}
+
+
+def by_item(files: dict) -> dict[str, list[tuple[str, dict]]]:
+    items: dict[str, list[tuple[str, dict]]] = {}
+    for rel, r in files.items():
+        items.setdefault(r["stac_id"], []).append((rel, r))
+    return items
+
+
+def via_label(r: dict) -> str:
+    via = r.get("fetched_via", "")
+    if r.get("archive_url"):
+        return "FTP (zip)"
+    return "FTP" if via.startswith("ftp:") else "HTTPS"
+
+
+def sums_by_sex(fs: list[tuple[str, dict]]) -> str:
+    """Sums per agesex:sex (f, m, and t for both); t already holds f and m."""
+    groups: dict[str, list[float]] = {}
+    for _, r in fs:
+        sex = (r.get("asset_properties") or {}).get("agesex:sex", "all")
+        groups.setdefault(sex, []).append(r["sum"])
+    return ", ".join(f"{k} {math.fsum(v):,.1f}" for k, v in sorted(groups.items()))
+
+
 def render_readme(manifest: dict) -> str:
     files = manifest["files"]
+    items = by_item(files)
+    projects = sorted({r["project"] for r in files.values()}, key=list(PROJECT_JA).index)
     lines = [
-        "# WorldPop の人口グリッド (COG)",
+        "# WorldPop のグリッドデータ (COG)",
         "",
-        "WorldPop (https://www.worldpop.org/) が配布する人口グリッドの GeoTIFF を、HTTP Range 要求で必要な部分だけを読めるように Cloud Optimized GeoTIFF (COG) に変換したもの。",
+        "WorldPop (https://www.worldpop.org/) が配布するグリッドデータの GeoTIFF を、HTTP Range 要求で必要な部分だけを読めるように Cloud Optimized GeoTIFF (COG) に変換したもの。",
         "配布元の data.worldpop.org は Range 要求に応えず毎回ファイル全体を返すため、GDAL の /vsicurl/ などで直接読めない。そのための非公式のコピーで、WorldPop とは関係がない。",
+        "",
+        "置いてあるのは " + "、".join(PROJECT_JA[p] for p in projects) + "。",
+        "STAC の item にある GeoTIFF の asset をすべて置いている。サムネイルと zip (年齢性別の個別の GeoTIFF をまとめた archive、都市化度の entities と statistics) は置いていない。",
         "",
         "パスは元の URL の `GIS/` 以降をそのまま写している。たとえば",
         "`https://data.worldpop.org/GIS/Population/...` は `https://z.yuiseki.net/static/worldpop/GIS/Population/...` にある。ファイル名も元のまま。",
@@ -363,35 +513,82 @@ def render_readme(manifest: dict) -> str:
         "GDAL 3.9 の `gdal_translate "
         + " ".join(COG_OPTIONS)
         + "` で COG に変換しただけで、値は変えていない (再投影、再標本化、データ型や nodata の変更はしていない)。",
-        "変換のあと、元のファイルと比べて、幅と高さ、座標系、geotransform、nodata、データ型が一致すること、全画素の値が一致すること (nodata を除いた合計も一致すること) を確かめた。",
+        "変換のあと、どのファイルも元のファイルと比べて、幅と高さ、座標系、geotransform、nodata、データ型が一致すること、全画素の値が一致すること (nodata を除いた合計も一致すること) を確かめた。",
         "",
-        "ライセンスと引用のしかたは [LICENSE](LICENSE) を見ること (CC BY 4.0)。",
+        "ライセンスと引用のしかたは [LICENSE](LICENSE) を見ること (CC BY 4.0)。どのファイルがどの DOI の引用に当たるかも LICENSE にある。",
         "",
         "## 置いてあるファイル",
         "",
-        "| ファイル | 年 | 解像度 | 大きさ (bytes) | 幅 x 高さ | nodata を除いた合計 |",
-        "|---|---|---|---|---|---|",
+        f"ファイルが {PER_FILE_ROWS} 個を超える item (年齢性別) は item ごとに 1 行にまとめた。ファイルごとの記録は [manifest.json](manifest.json) にある。",
+        "年齢性別のファイル名の m は男性、f は女性、t は男女の計 (2020 年で合計が m と f の和に一致することを確かめた)。数字は年齢階級で、STAC の agesex:age_label では 00 が 0-1 years、01 が 1-5 years、05 が 5-10 years、以下 5 歳ごとで、90 が 90+ years。",
     ]
-    for rel, r in files.items():
-        lines.append(
-            f"| [{Path(rel).name}]({rel}) | {r['year']} | {r['resolution']} | {fmt_int(r['cog_bytes'])} "
-            f"| {r['width']} x {r['height']} | {r['sum']:,.1f} |"
-        )
+    for proj in projects:
+        lines += ["", f"### {PROJECT_JA[proj]}", ""]
+        rows = [(sid, fs) for sid, fs in items.items() if fs[0][1]["project"] == proj]
+        if all(len(fs) <= PER_FILE_ROWS for _, fs in rows):
+            lines += [
+                "| ファイル | 年 | 解像度 | asset | 大きさ (bytes) | 幅 x 高さ | 型 | nodata を除いた合計 |",
+                "|---|---|---|---|---|---|---|---|",
+            ]
+            for _, fs in rows:
+                for rel, r in fs:
+                    lines.append(
+                        f"| [{Path(rel).name}]({rel}) | {r['year']} | {r['resolution'] or '-'} "
+                        f"| {r['asset']} | {fmt_int(r['cog_bytes'])} | {r['width']} x {r['height']} "
+                        f"| {r['data_type']} | {r['sum']:,.1f} |"
+                    )
+        else:
+            lines += [
+                "| ディレクトリ | 年 | 解像度 | ファイル数 | 大きさの合計 (bytes) | 幅 x 高さ | 型 | nodata を除いた合計 (性別ごと) |",
+                "|---|---|---|---|---|---|---|---|",
+            ]
+            for _, fs in rows:
+                r = fs[0][1]
+                dirs = sorted({str(Path(rel).parent) for rel, _ in fs})
+                lines.append(
+                    f"| {', '.join(f'[{d}/]({d}/)' for d in dirs)} | {r['year']} | {r['resolution'] or '-'} "
+                    f"| {len(fs)} | {fmt_int(sum(x['cog_bytes'] for _, x in fs))} "
+                    f"| {r['width']} x {r['height']} | {r['data_type']} "
+                    f"| {sums_by_sex(fs)} |"
+                )
     lines += [
         "",
         "## 元データ",
         "",
         "元の大きさは HTTP の Content-Length、STAC の size の両方と一致することを確かめた。sha256 は元のファイルと COG の両方を載せる。data.worldpop.org の HTTPS は遅く Range にも応えないため、多くは同じファイルを ftp.worldpop.org から分割して取得し、先頭 256 KiB が HTTPS のものと一致することを確かめている。どちらから取ったかは「取得経路」の列にある。",
+        "年齢性別の GeoTIFF は、1 ファイルずつ FTP で取ると接続のたびに 1 分ほどかかるため、同じ item の archive (zip) を FTP で 1 度だけ取り、その中から取り出した (取得経路 FTP (zip))。取り出したファイルは zip の CRC を通り、大きさと先頭 256 KiB が個別の URL の HTTPS のものと一致することを確かめている。",
         "",
         "| ファイル | 元の URL | 取得経路 | 取得日時 (UTC) | 元の大きさ (bytes) | 元の sha256 | COG の sha256 | STAC の item id | DOI |",
         "|---|---|---|---|---|---|---|---|---|",
     ]
-    for rel, r in files.items():
-        lines.append(
-            f"| {rel} | {r['source_url']} | {'FTP' if r.get('fetched_via', '').startswith('ftp:') else 'HTTPS'} | {r['fetched_at']} | {fmt_int(r['source_bytes'])} "
-            f"| {r['source_sha256']} | {r['cog_sha256']} | {r['stac_id']} "
-            f"| [{r['doi']}](https://doi.org/{r['doi']}) |"
-        )
+    grouped = []
+    for sid, fs in items.items():
+        if len(fs) > PER_FILE_ROWS:
+            grouped.append((sid, fs))
+            continue
+        for rel, r in fs:
+            lines.append(
+                f"| {rel} | {r['source_url']} | {via_label(r)} | {r['fetched_at']} | {fmt_int(r['source_bytes'])} "
+                f"| {r['source_sha256']} | {r['cog_sha256']} | {r['stac_id']} "
+                f"| [{r['doi']}](https://doi.org/{r['doi']}) |"
+            )
+    if grouped:
+        lines += [
+            "",
+            "item ごとにまとめたもの (ファイルごとの URL と sha256 は manifest.json):",
+            "",
+            "| STAC の item id | ファイル数 | 取得経路 | archive の URL | 取得日時 (UTC) | 元の大きさの合計 (bytes) | DOI |",
+            "|---|---|---|---|---|---|---|",
+        ]
+        for sid, fs in grouped:
+            r = fs[0][1]
+            archives = sorted({x.get("archive_url") or "-" for _, x in fs})
+            vias = sorted({via_label(x) for _, x in fs})
+            lines.append(
+                f"| {sid} | {len(fs)} | {', '.join(vias)} | {', '.join(archives)} "
+                f"| {min(x['fetched_at'] for _, x in fs)} | {fmt_int(sum(x['source_bytes'] for _, x in fs))} "
+                f"| [{r['doi']}](https://doi.org/{r['doi']}) |"
+            )
     lines += [
         "",
         "STAC の item は `https://api.stac.worldpop.org/collections/<国>/items/<item id>` にある。",
@@ -419,7 +616,8 @@ def render_license(manifest: dict) -> str:
         "  Original data: https://www.worldpop.org/ (files from https://data.worldpop.org/)",
         "",
         "Credit: cite the original datasets as WorldPop gives them (the",
-        "coordinate_reference_system:citation property of each STAC item):",
+        "coordinate_reference_system:citation property of each STAC item). Each",
+        "dataset has its own DOI:",
         "",
     ]
     for _doi, e in sorted(by_doi.items()):
@@ -427,7 +625,14 @@ def render_license(manifest: dict) -> str:
         lines.append(f"  {cit}")
         lines.append("")
         lines.append("    Files under this citation:")
-        lines += [f"      {f}" for f in e["files"]]
+        dirs: dict[str, list[str]] = {}
+        for f in e["files"]:
+            dirs.setdefault(str(Path(f).parent), []).append(f)
+        for d, fs in dirs.items():
+            if len(fs) > PER_FILE_ROWS:
+                lines.append(f"      {d}/ ({len(fs)} .tif files)")
+            else:
+                lines += [f"      {f}" for f in fs]
         lines.append("")
     lines += [
         "These files were changed from the originals:",
@@ -439,7 +644,8 @@ def render_license(manifest: dict) -> str:
         "  - No pixel value of the full-resolution image was changed. The size,",
         "    coordinate reference system, geotransform, data type and nodata value",
         "    are the same as in the originals. See README.md for the checks, the",
-        "    source URLs, dates, sizes and sha256 sums.",
+        "    source URLs, dates, sizes and sha256 sums (manifest.json has them for",
+        "    every file).",
         "",
         "These files are provided as is, without warranty of any kind. The copy on",
         "this server is unofficial and not affiliated with or endorsed by WorldPop",
@@ -463,124 +669,288 @@ def up_to_date(dest: Path, rel: str, record: dict | None, source_bytes: int) -> 
     )
 
 
-def process(item: dict, args: argparse.Namespace, manifest: dict) -> str:
-    p = item["properties"]
-    href = item["assets"]["data"]["href"]
-    rel = relpath(href)
-    h = head(href)
+def head_ok(url: str) -> dict[str, str]:
+    h = head(url)
     if h.get("status") != "200" or "content-length" not in h:
-        raise RuntimeError(f"{href}: HEAD returned {h}")
-    source_bytes = int(h["content-length"])
+        raise RuntimeError(f"{url}: HEAD returned {h}")
+    return h
+
+
+def check_prefix(rel: str, path: Path, prefix: bytes) -> None:
+    """The copy must be the file that the HTTPS URL serves (as far as prefix goes)."""
+    with path.open("rb") as f:
+        if f.read(len(prefix)) != prefix:
+            raise RuntimeError(f"{rel}: copy differs from HTTPS in the first {len(prefix)} bytes")
+
+
+PREFIX_BYTES = 256 * 1024
+
+
+def process_item(item: dict, args: argparse.Namespace, manifest: dict) -> dict[str, int]:
+    p = item["properties"]
+    tifs = geotiff_assets(item)
+    sources = source_assets(item)
+    with ThreadPoolExecutor(max_workers=args.meta_jobs) as pool:
+        heads = dict(
+            zip(
+                [a["href"] for a in sources],
+                pool.map(lambda a: head_ok(a["href"]), sources),
+                strict=True,
+            )
+        )
+    sizes = {href: int(h["content-length"]) for href, h in heads.items()}
     lo, hi = stac_size_bytes(p["size"])
-    if not lo <= source_bytes <= hi:
-        raise RuntimeError(f"{item['id']}: Content-Length {source_bytes} vs STAC size {p['size']}")
-    with _lock:
-        record = manifest["files"].get(rel)
-    if up_to_date(args.dest, rel, record, source_bytes):
-        log(f"skip {rel} (already placed, source {fmt_int(source_bytes)} bytes)")
-        return "skipped"
-    if source_bytes > MAX_BYTES:
-        raise RuntimeError(f"{rel}: source is {source_bytes} bytes, above {MAX_BYTES}; stopping")
+    total = sum(sizes.values())
+    if not lo <= total <= hi:
+        raise RuntimeError(
+            f"{item['id']}: Content-Length {total} of {len(sizes)} files vs STAC size {p['size']}"
+        )
+    for _k, a in tifs:
+        if "file:size" in a:
+            flo, fhi = stac_size_bytes(a["file:size"])
+            if not flo <= sizes[a["href"]] <= fhi:
+                raise RuntimeError(
+                    f"{a['href']}: Content-Length {sizes[a['href']]} vs STAC {a['file:size']}"
+                )
+
+    counts = {"skipped": 0, "placed": 0, "dry-run": 0}
+    todo = []
+    for k, a in tifs:
+        rel = relpath(a["href"])
+        with _lock:
+            record = manifest["files"].get(rel)
+        if up_to_date(args.dest, rel, record, sizes[a["href"]]):
+            counts["skipped"] += 1
+            continue
+        if sizes[a["href"]] > MAX_BYTES:
+            raise RuntimeError(
+                f"{rel}: source is {sizes[a['href']]} bytes, above {MAX_BYTES}; stopping"
+            )
+        todo.append((k, a))
+    if counts["skipped"]:
+        log(f"skip {counts['skipped']} of {len(tifs)} files of {item['id']} (already placed)")
+    if not todo:
+        return counts
+    arch = archive_asset(item)
+    use_arch = (
+        arch is not None and args.via == "ftp" and args.archive and len(todo) >= args.archive_min
+    )
     if args.dry_run:
-        log(f"would fetch {rel} ({fmt_int(source_bytes)} bytes)")
-        return "dry-run"
+        if len(todo) > PER_FILE_ROWS:
+            dirs = sorted({str(Path(relpath(a["href"])).parent) for _, a in todo})
+            log(
+                f"would fetch {len(todo)} files of {item['id']} into {', '.join(dirs)} "
+                f"({fmt_int(sum(sizes[a['href']] for _, a in todo))} bytes)"
+            )
+        else:
+            for _k, a in todo:
+                log(f"would fetch {relpath(a['href'])} ({fmt_int(sizes[a['href']])} bytes)")
+        if use_arch:
+            log(f"  (taken out of {arch['href']})")
+        counts["dry-run"] = len(todo)
+        return counts
 
     work = Path(tempfile.mkdtemp(prefix=item["id"] + ".", dir=args.scratch))
     try:
-        src = work / Path(rel).name
-        log(f"fetch {href} ({fmt_int(source_bytes)} bytes)")
-        fetched_at = now_utc()
-        if args.via == "ftp":
-            took = download_ftp(href, src, source_bytes, args.attempts, args.connections)
-            # The FTP copy must be the file that the HTTPS URL serves.
-            prefix = https_prefix(href, 256 * 1024)
-            with src.open("rb") as f:
-                if f.read(len(prefix)) != prefix:
-                    raise RuntimeError(f"{rel}: FTP copy differs from HTTPS in the first bytes")
+        if use_arch:
+            counts["placed"] += fetch_from_archive(item, arch, todo, heads, args, manifest, work)
         else:
-            took = download(href, src, source_bytes, args.attempts)
-        log(f"  fetched {src.name} in {took:.0f} s ({source_bytes / took / 1e6:.2f} MB/s)")
-        src_sha = sha256(src)
-
-        cog = work / (src.stem + ".cog.tif")
-        t0 = time.monotonic()
-        subprocess.run(
-            [str(args.gdal_bin / "gdal_translate"), "-q", *COG_OPTIONS, str(src), str(cog)],
-            check=True, timeout=3600,
-        )  # fmt: skip
-        log(f"  converted in {time.monotonic() - t0:.0f} s: {fmt_int(cog.stat().st_size)} bytes")
-        cog_bytes = cog.stat().st_size
-        if cog_bytes > MAX_BYTES:
-            raise RuntimeError(f"{rel}: COG is {cog_bytes} bytes, above {MAX_BYTES}; stopping")
-
-        a, b = shape_of(gdalinfo(args.gdal_bin, src)), shape_of(gdalinfo(args.gdal_bin, cog))
-        if a != b:
-            raise RuntimeError(f"{rel}: raster properties changed:\n{a}\n{b}")
-        if (a["size"][0], a["size"][1]) != (p.get("data:width"), p.get("data:height")):
-            raise RuntimeError(f"{rel}: size {a['size']} differs from STAC")
-        layout = gdalinfo_layout(args.gdal_bin, cog)
-        if layout != "COG":
-            raise RuntimeError(f"{rel}: LAYOUT is {layout}, not COG")
-        t0 = time.monotonic()
-        bands = compare_pixels(args.gdal_python, src, cog)
-        for bd in bands:
-            if not bd["equal"] or bd["sum_src"] != bd["sum_cog"]:
-                raise RuntimeError(f"{rel}: pixel values differ: {bd}")
-        log(
-            f"  verified in {time.monotonic() - t0:.0f} s: shape, CRS, geotransform, nodata, "
-            f"type and all pixels equal; sum {bands[0]['sum_src']:,.1f} "
-            f"over {fmt_int(bands[0]['valid_pixels'])} pixels"
-        )
-        cog_sha = sha256(cog)
-
-        final = args.dest / rel
-        final.parent.mkdir(parents=True, exist_ok=True)
-        partial = final.with_name(final.name + ".partial")
-        shutil.copyfile(cog, partial)
-        if sha256(partial) != cog_sha:
-            partial.unlink()
-            raise RuntimeError(f"{rel}: copy to {partial} does not match")
-        os.chmod(partial, 0o644)
-        os.replace(partial, final)
-
-        record = {
-            "stac_id": item["id"],
-            "collection": item.get("collection"),
-            "project": p["project"],
-            "year": p["year"],
-            "resolution": p["resolution"],
-            "title": p.get("title"),
-            "release": p.get("Release"),
-            "version": p.get("Version"),
-            "doi": p.get("Digital Object Identifier (DOI)"),
-            "citation": p.get("coordinate_reference_system:citation"),
-            "source_url": href,
-            "source_last_modified": h.get("last-modified"),
-            "source_etag": h.get("etag"),
-            "fetched_at": fetched_at,
-            "download_seconds": round(took, 1),
-            "fetched_via": ftp_url(href) if args.via == "ftp" else href,
-            "source_bytes": source_bytes,
-            "stac_size": p["size"],
-            "source_sha256": src_sha,
-            "cog_bytes": cog_bytes,
-            "cog_sha256": cog_sha,
-            "public_url": PUBLIC_PREFIX + rel,
-            "width": a["size"][0],
-            "height": a["size"][1],
-            "data_type": a["bands"][0]["type"],
-            "nodata": a["bands"][0]["noDataValue"],
-            "valid_pixels": bands[0]["valid_pixels"],
-            "sum": bands[0]["sum_src"],
-            "gdal_translate_options": COG_OPTIONS,
-        }
-        with _lock:
-            manifest["files"][rel] = record
-            save_manifest(args.dest, manifest)
-        log(f"  placed {final}")
-        return "placed"
+            for k, a in todo:
+                href = a["href"]
+                rel = relpath(href)
+                src = work / Path(rel).name
+                log(f"fetch {href} ({fmt_int(sizes[href])} bytes)")
+                fetched_at = now_utc()
+                if args.via == "ftp":
+                    took = download_ftp(href, src, sizes[href], args.attempts, args.connections)
+                    check_prefix(rel, src, https_prefix(href, PREFIX_BYTES))
+                    via = {"fetched_via": ftp_url(href)}
+                else:
+                    took = download(href, src, sizes[href], args.attempts)
+                    via = {"fetched_via": href}
+                log(f"  fetched {src.name} in {took:.0f} s ({sizes[href] / took / 1e6:.2f} MB/s)")
+                place(item, k, a, src, heads[href], fetched_at, took, via, args, manifest, work)
+                counts["placed"] += 1
+        return counts
     finally:
         shutil.rmtree(work, ignore_errors=True)
+
+
+def fetch_from_archive(
+    item: dict,
+    arch: dict,
+    todo: list[tuple[str, dict]],
+    heads: dict[str, dict[str, str]],
+    args: argparse.Namespace,
+    manifest: dict,
+    work: Path,
+) -> int:
+    """Fetch the item's zip once and place the wanted GeoTIFFs out of it."""
+    ah = head_ok(arch["href"])
+    arch_bytes = int(ah["content-length"])
+    if "file:size" in arch:
+        lo, hi = stac_size_bytes(arch["file:size"])
+        if not lo <= arch_bytes <= hi:
+            raise RuntimeError(
+                f"{arch['href']}: Content-Length {arch_bytes} vs STAC {arch['file:size']}"
+            )
+    zpath = work / Path(arch["href"]).name
+    log(f"fetch {arch['href']} ({fmt_int(arch_bytes)} bytes) for {len(todo)} GeoTIFFs")
+    with ThreadPoolExecutor(max_workers=args.meta_jobs) as pool:
+        # The HTTPS prefixes are slow (about 50 kB/s each); fetch them meanwhile.
+        prefixes = {a["href"]: pool.submit(https_prefix, a["href"], PREFIX_BYTES) for _, a in todo}
+        fetched_at = now_utc()
+        took = download_ftp(arch["href"], zpath, arch_bytes, args.attempts, args.connections)
+        log(f"  fetched {zpath.name} in {took:.0f} s ({arch_bytes / took / 1e6:.2f} MB/s)")
+        arch_sha = sha256(zpath)
+        with zipfile.ZipFile(zpath) as zf:
+            members = {Path(i.filename).name: i for i in zf.infolist() if not i.is_dir()}
+            wanted = {Path(a["href"]).name for _, a in geotiff_assets(item)}
+            extra = sorted(set(members) - wanted)
+            lacking = sorted(wanted - set(members))
+            log(
+                f"  {zpath.name}: {len(members)} members, {len(wanted & set(members))} are "
+                f"GeoTIFF assets of the item; not assets: {extra or 'none'}; "
+                f"assets not in it: {lacking or 'none'}"
+            )
+            placed = 0
+            for k, a in todo:
+                href = a["href"]
+                rel = relpath(href)
+                name = Path(rel).name
+                if name not in members:
+                    raise RuntimeError(f"{rel}: not in {arch['href']}")
+                src = work / name
+                with zf.open(members[name]) as fin, src.open("wb") as fout:
+                    shutil.copyfileobj(fin, fout, 1 << 20)  # raises on a bad CRC
+                expected = int(heads[href]["content-length"])
+                if src.stat().st_size != expected:
+                    raise RuntimeError(
+                        f"{rel}: zip member is {src.stat().st_size} bytes, URL {expected}"
+                    )
+                check_prefix(rel, src, prefixes[href].result())
+                via = {
+                    "fetched_via": ftp_url(arch["href"]) + "#" + members[name].filename,
+                    "archive_url": arch["href"],
+                    "archive_member": members[name].filename,
+                    "archive_bytes": arch_bytes,
+                    "archive_sha256": arch_sha,
+                    "archive_last_modified": ah.get("last-modified"),
+                }
+                place(item, k, a, src, heads[href], fetched_at, took, via, args, manifest, work)
+                src.unlink()
+                placed += 1
+    return placed
+
+
+def place(
+    item: dict,
+    key: str,
+    asset: dict,
+    src: Path,
+    h: dict[str, str],
+    fetched_at: str,
+    took: float,
+    via: dict,
+    args: argparse.Namespace,
+    manifest: dict,
+    work: Path,
+) -> None:
+    """Convert one fetched GeoTIFF to COG, verify it against the original and place it."""
+    p = item["properties"]
+    href = asset["href"]
+    rel = relpath(href)
+    source_bytes = src.stat().st_size
+    src_sha = sha256(src)
+
+    cog = work / (src.stem + ".cog.tif")
+    t0 = time.monotonic()
+    subprocess.run(
+        [str(args.gdal_bin / "gdal_translate"), "-q", *COG_OPTIONS, str(src), str(cog)],
+        check=True, timeout=3600,
+    )  # fmt: skip
+    cog_bytes = cog.stat().st_size
+    log(f"  {src.name}: converted in {time.monotonic() - t0:.0f} s: {fmt_int(cog_bytes)} bytes")
+    if cog_bytes > MAX_BYTES:
+        raise RuntimeError(f"{rel}: COG is {cog_bytes} bytes, above {MAX_BYTES}; stopping")
+
+    a, b = shape_of(gdalinfo(args.gdal_bin, src)), shape_of(gdalinfo(args.gdal_bin, cog))
+    if a != b:
+        raise RuntimeError(f"{rel}: raster properties changed:\n{a}\n{b}")
+    if (a["size"][0], a["size"][1]) != (p.get("data:width"), p.get("data:height")):
+        raise RuntimeError(f"{rel}: size {a['size']} differs from STAC")
+    layout = gdalinfo_layout(args.gdal_bin, cog)
+    if layout != "COG":
+        raise RuntimeError(f"{rel}: LAYOUT is {layout}, not COG")
+    t0 = time.monotonic()
+    bands = compare_pixels(args.gdal_python, src, cog)
+    for bd in bands:
+        if not bd["equal"] or bd["sum_src"] != bd["sum_cog"]:
+            raise RuntimeError(f"{rel}: pixel values differ: {bd}")
+    log(
+        f"  {src.name}: verified in {time.monotonic() - t0:.0f} s: shape, CRS, geotransform, "
+        f"nodata, type and all pixels equal; sum {bands[0]['sum_src']:,.1f} "
+        f"over {fmt_int(bands[0]['valid_pixels'])} pixels"
+    )
+    cog_sha = sha256(cog)
+
+    final = args.dest / rel
+    final.parent.mkdir(parents=True, exist_ok=True)
+    partial = final.with_name(final.name + ".partial")
+    shutil.copyfile(cog, partial)
+    if sha256(partial) != cog_sha:
+        partial.unlink()
+        raise RuntimeError(f"{rel}: copy to {partial} does not match")
+    os.chmod(partial, 0o644)
+    os.replace(partial, final)
+    cog.unlink()
+
+    only_file = len(source_assets(item)) == 1
+    record = {
+        "stac_id": item["id"],
+        "collection": item.get("collection"),
+        "project": p["project"],
+        "year": p["year"],
+        "resolution": p.get("resolution"),
+        "asset": key,
+        "asset_title": asset.get("title"),
+        "title": p.get("title"),
+        "release": p.get("Release"),
+        "version": p.get("Version"),
+        "doi": p.get("Digital Object Identifier (DOI)"),
+        "citation": p.get("coordinate_reference_system:citation"),
+        "source_url": href,
+        "source_last_modified": h.get("last-modified"),
+        "source_etag": h.get("etag"),
+        "fetched_at": fetched_at,
+        "download_seconds": round(took, 1),
+        **via,
+        "source_bytes": source_bytes,
+        # The STAC size this file was checked against: its asset's file:size,
+        # or the item's size when the item has this one file only.
+        "stac_size": asset.get("file:size") or (p["size"] if only_file else None),
+        "item_stac_size": p["size"],
+        "source_sha256": src_sha,
+        "cog_bytes": cog_bytes,
+        "cog_sha256": cog_sha,
+        "public_url": PUBLIC_PREFIX + rel,
+        "width": a["size"][0],
+        "height": a["size"][1],
+        "data_type": a["bands"][0]["type"],
+        "nodata": a["bands"][0]["noDataValue"],
+        "valid_pixels": bands[0]["valid_pixels"],
+        "sum": bands[0]["sum_src"],
+        "gdal_translate_options": COG_OPTIONS,
+    }
+    extra = {k: v for k, v in asset.items() if ":" in k and k != "file:size"}
+    if extra:
+        record["asset_properties"] = extra
+    if len(a["bands"]) > 1:
+        record["bands"] = len(a["bands"])
+    with _lock:
+        manifest["files"][rel] = record
+        save_manifest(args.dest, manifest)
+    log(f"  placed {final}")
 
 
 def main() -> int:
@@ -588,11 +958,21 @@ def main() -> int:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     ap.add_argument("--country", default="JPN", help="STAC collection (ISO alpha-3), default JPN")
-    ap.add_argument("--year", type=int, nargs="+", required=True, help="data years, e.g. 2020 2025")
     ap.add_argument(
-        "--project", default="Population", help="properties.project, default Population"
+        "--year", nargs="+", required=True, help="data years, e.g. 2020 2025 or 2015-2030"
     )
-    ap.add_argument("--resolution", nargs="+", default=["100m", "1km"], help="default 100m 1km")
+    ap.add_argument(
+        "--project",
+        nargs="+",
+        default=["Population"],
+        help="properties.project or pop, dug, agesex; default Population",
+    )
+    ap.add_argument(
+        "--resolution",
+        nargs="+",
+        default=["any"],
+        help="100m, 1km, none (items without a resolution) or any (default)",
+    )
     ap.add_argument("--dest", type=Path, default=DEST)
     ap.add_argument("--scratch", type=Path, default=SCRATCH)
     ap.add_argument("--gdal-bin", type=Path, default=GDAL_BIN)
@@ -604,29 +984,54 @@ def main() -> int:
         default="ftp",
         help="ftp: aria2c split over ftp.worldpop.org (default); https: curl, one stream",
     )
-    ap.add_argument("--connections", type=int, default=6, help="aria2c connections per file (ftp)")
-    ap.add_argument("--jobs", type=int, default=2, help="files fetched at the same time")
+    ap.add_argument("--connections", type=int, default=4, help="aria2c connections per file (ftp)")
+    ap.add_argument("--jobs", type=int, default=1, help="items fetched at the same time")
+    ap.add_argument(
+        "--meta-jobs",
+        type=int,
+        default=4,
+        help="HEAD and prefix requests at the same time per item",
+    )
+    ap.add_argument(
+        "--no-archive",
+        dest="archive",
+        action="store_false",
+        help="fetch each GeoTIFF on its own even when the item has an archive",
+    )
+    ap.add_argument(
+        "--archive-min",
+        type=int,
+        default=5,
+        help="use the item's archive when at least this many of its GeoTIFFs are wanted",
+    )
     ap.add_argument("--dry-run", action="store_true", help="list what would be fetched")
     args = ap.parse_args()
+    years = parse_years(args.year)
+    projects = [project_name(x) for x in args.project]
+    resolutions = [x.lower() for x in args.resolution]
 
     log(f"STAC search {args.country}")
-    items = select(stac_items(args.country), args.project, args.year, args.resolution)
+    items = select(stac_items(args.country), projects, years, resolutions)
     log(f"{len(items)} items: {', '.join(f['id'] for f in items)}")
     args.dest.mkdir(parents=True, exist_ok=True)
     args.scratch.mkdir(parents=True, exist_ok=True)
     manifest = load_manifest(args.dest)
 
     failures = []
+    totals = {"skipped": 0, "placed": 0, "dry-run": 0}
     with ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:
-        futures = {pool.submit(process, f, args, manifest): f["id"] for f in items}
+        futures = {pool.submit(process_item, f, args, manifest): f["id"] for f in items}
         for fut, item_id in futures.items():
             try:
-                fut.result()
+                for k, v in fut.result().items():
+                    totals[k] += v
             except Exception as e:  # report every item, then fail
                 failures.append(item_id)
                 log(f"ERROR {item_id}: {e}")
 
+    log(f"files: {totals}")
     if not args.dry_run and manifest["files"]:
+        save_manifest(args.dest, manifest)
         write_atomic(args.dest / "README.md", render_readme(manifest))
         write_atomic(args.dest / "LICENSE", render_license(manifest))
         log("README.md and LICENSE rebuilt")
