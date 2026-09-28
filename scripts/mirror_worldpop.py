@@ -80,6 +80,15 @@ COG_OPTIONS = [
     "-co", "OVERVIEWS=AUTO",
     "-co", "BIGTIFF=IF_SAFER",
 ]  # fmt: skip
+# Class grids (Degree of Urbanisation) must not have interpolated overviews:
+# the default resampling made codes 3 and 30 into 7 to 26 at low zoom.
+CATEGORICAL = {"Degree of Urbanisation"}
+
+
+def cog_options(project: str) -> list[str]:
+    return COG_OPTIONS + (["-co", "RESAMPLING=NEAREST"] if project in CATEGORICAL else [])
+
+
 UA = "study-geoai-mirror/1 (+https://z.yuiseki.net/static/worldpop/)"
 
 _lock = threading.Lock()
@@ -513,6 +522,7 @@ def render_readme(manifest: dict) -> str:
         "GDAL 3.9 の `gdal_translate "
         + " ".join(COG_OPTIONS)
         + "` で COG に変換しただけで、値は変えていない (再投影、再標本化、データ型や nodata の変更はしていない)。",
+        "都市化度 (区分のコードの格子) だけは `-co RESAMPLING=NEAREST` を足し、縮小版 (overview) でも元にあるコードだけが出るようにしている。ほかは既定の補間で縮小版を作っている。元の解像度の値はどれも元と同じ。",
         "変換のあと、どのファイルも元のファイルと比べて、幅と高さ、座標系、geotransform、nodata、データ型が一致すること、全画素の値が一致すること (nodata を除いた合計も一致すること) を確かめた。",
         "",
         "ライセンスと引用のしかたは [LICENSE](LICENSE) を見ること (CC BY 4.0)。どのファイルがどの DOI の引用に当たるかも LICENSE にある。",
@@ -719,7 +729,7 @@ def process_item(item: dict, args: argparse.Namespace, manifest: dict) -> dict[s
         rel = relpath(a["href"])
         with _lock:
             record = manifest["files"].get(rel)
-        if up_to_date(args.dest, rel, record, sizes[a["href"]]):
+        if not args.rebuild and up_to_date(args.dest, rel, record, sizes[a["href"]]):
             counts["skipped"] += 1
             continue
         if sizes[a["href"]] > MAX_BYTES:
@@ -866,7 +876,7 @@ def place(
     cog = work / (src.stem + ".cog.tif")
     t0 = time.monotonic()
     subprocess.run(
-        [str(args.gdal_bin / "gdal_translate"), "-q", *COG_OPTIONS, str(src), str(cog)],
+        [str(args.gdal_bin / "gdal_translate"), "-q", *cog_options(p["project"]), str(src), str(cog)],
         check=True, timeout=3600,
     )  # fmt: skip
     cog_bytes = cog.stat().st_size
@@ -940,7 +950,7 @@ def place(
         "nodata": a["bands"][0]["noDataValue"],
         "valid_pixels": bands[0]["valid_pixels"],
         "sum": bands[0]["sum_src"],
-        "gdal_translate_options": COG_OPTIONS,
+        "gdal_translate_options": cog_options(p["project"]),
     }
     extra = {k: v for k, v in asset.items() if ":" in k and k != "file:size"}
     if extra:
@@ -1005,6 +1015,9 @@ def main() -> int:
         help="use the item's archive when at least this many of its GeoTIFFs are wanted",
     )
     ap.add_argument("--dry-run", action="store_true", help="list what would be fetched")
+    ap.add_argument(
+        "--rebuild", action="store_true", help="fetch and place again even if already placed"
+    )
     args = ap.parse_args()
     years = parse_years(args.year)
     projects = [project_name(x) for x in args.project]
