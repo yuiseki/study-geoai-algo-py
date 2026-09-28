@@ -12,6 +12,8 @@
 | [Overture Maps](stac/overture-maps.md) | 全世界の建物、道路、POI、行政区域、住所、土地被覆 | 建物だけで 25 億件 | GeoParquet | テーマごと |
 | [WorldPop](stac/worldpop.md) | 全世界の人口グリッド (総人口、年齢性別、都市化度) | 248 か国 / 2015〜2030 年 | GeoTIFF (100m と 1km) | CC-BY-4.0 |
 | [Sentinel-2 L2A (Planetary Computer)](stac/sentinel-2-l2a-planetary-computer.md) | 地表反射率。分光 12 バンド (10/20/60m) と SCL、visual。2015 年から更新中 | 東京の bbox で 1 か月 16 件、1 件は全アセットで約 2.05GB | STAC API + COG。SAS トークンの署名が必須 | Copernicus Sentinel data terms (本文は未確認) |
+| [HOTOSM OpenAerialMap](stac/hotosm-openaerialmap.md) | 航空写真、ドローン、衛星の災害画像と Copernicus DEM (5 コレクション) | OAM 21,810 件、Maxar 35,966 件など。日本は OAM 804 件、Maxar 242 件 | STAC API + COG | コレクションごと (CC-BY-4.0、CC-BY-NC-4.0、public-domain など) |
+| [Maxar Open Data](stac/maxar-opendata.md) | 災害イベントごとの衛星画像 (ARD)。災害前の撮影も含む | 55 イベント、1,109 acquisition。日本は能登半島地震の 1 イベント | 静的 STAC (検索 API 無し) + COG (0.305m) | CC-BY-NC-4.0 |
 
 fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラーで、持っているのはメタデータだけ。
 
