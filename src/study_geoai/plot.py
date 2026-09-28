@@ -25,8 +25,10 @@ def choropleth(
     label: str,
     diverging: bool = False,
     outline: str | None = None,
+    categorical: bool = False,
 ) -> Path:
-    """rows are (GeoJSON geometry, value). diverging centres the colours on 0."""
+    """rows are (GeoJSON geometry, value). diverging centres the colours on 0;
+    categorical colours integer classes 0, 1, 2, ... with a discrete palette."""
     patches, values = [], []
     for geojson, value in rows:
         for p in _patches(geojson):
@@ -35,7 +37,14 @@ def choropleth(
     fig, ax = plt.subplots(figsize=(8, 7))
     coll = PatchCollection(patches, edgecolor="white", linewidth=0.3)
     coll.set_array(values)
-    if diverging:
+    if categorical:
+        from matplotlib.colors import BoundaryNorm, ListedColormap
+
+        k = int(max(values)) + 1
+        colours = plt.get_cmap("tab10").colors[:k]
+        coll.set_cmap(ListedColormap(colours))
+        coll.set_norm(BoundaryNorm([i - 0.5 for i in range(k + 1)], k))
+    elif diverging:
         span = max(abs(min(values)), abs(max(values))) or 1
         coll.set_cmap("RdBu_r")
         coll.set_norm(TwoSlopeNorm(vcenter=0, vmin=-span, vmax=span))

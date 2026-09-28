@@ -177,3 +177,85 @@ def tile_cells(
             """)
         con.sql("drop view _t; drop view _c")
     return con.read_parquet(str(path))
+
+
+KINDS = ("food", "retail", "lodging", "culture", "other")
+_RULES = [
+    ("retail", ("store", "shop", "market", "mall", "boutique", "outlet")),
+    ("food", ("restaurant", "bar", "cafe", "eatery", "coffee", "bakery", "pub", "izakaya",
+              "food", "dessert", "tea", "diner", "bistro")),
+    ("lodging", ("hotel", "hostel", "inn", "motel", "lodging", "accommodation", "guest_house",
+                 "ryokan")),
+    ("culture", ("worship", "historic", "museum", "gallery", "venue", "theater", "theatre",
+                 "temple", "shrine", "landmark", "monument", "attraction")),
+]  # fmt: skip
+
+
+def place_kind(category: str | None) -> str:
+    """One of KINDS for an Overture basic_category, by the words in its name.
+
+    The first matching rule wins, so food_and_beverage_store is retail and coffee_shop,
+    which also contains shop, is caught by retail first; coffee_shop is special-cased.
+    """
+    if not category:
+        return "other"
+    if category in ("coffee_shop", "tea_shop", "juice_shop", "donut_shop", "ice_cream_shop"):
+        return "food"
+    for kind, words in _RULES:
+        if any(w in category for w in words):
+            return kind
+    return "other"
+
+
+def small_area_profiles(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation:
+    """small_areas plus POI kind shares and michiyomi street averages per small area.
+
+    share_<kind>: share of the small area's places of each kind (NULL without places).
+    n_scenes, undergrounded_share, mean_green, mean_poles, mean_roadway_m: michiyomi
+    scenes inside the small area (quarantined scenes left out).
+    """
+    path = cache_path("features", f"{overture.RELEASE}-{michiyomi.MICHIYOMI_REVISION[:12]}",
+                      f"profiles-{area.name}")  # fmt: skip
+    if not path.exists():
+        small_areas(con, area).create_view("_sa")
+        places = overture.read(con, area, "places", "place", ["id", "basic_category"])
+        cats = places.aggregate("basic_category").fetchall()
+        con.execute("create or replace temp table _kind (basic_category varchar, kind varchar)")
+        con.executemany("insert into _kind values (?, ?)", [(c, place_kind(c)) for (c,) in cats])
+        places.create_view("_p")
+        michiyomi.scenes(con, area).create_view("_s")
+        shares = ", ".join(
+            f"avg((coalesce(k.kind, 'other') = '{k}')::int) as share_{k}" for k in KINDS
+        )
+        with writing(path) as tmp:
+            con.sql(f"""
+                copy (
+                    with p as (
+                        select sa.key11, {shares}
+                        from _sa sa join _p on st_contains(sa.geometry, _p.geometry)
+                        left join _kind k on k.basic_category is not distinct from _p.basic_category
+                        group by sa.key11
+                    ),
+                    s as (
+                        select sa.key11, count(*) as n_scenes,
+                               avg((_s.undergrounded = '無電柱化済')::int)
+                                 filter (where _s.undergrounded in ('無電柱化済', '架空線あり'))
+                                 as undergrounded_share,
+                               avg(_s.green_ratio) as mean_green,
+                               avg(_s.poles_visible) as mean_poles,
+                               avg(_s.roadway_width_m) as mean_roadway_m
+                        from _sa sa join _s on st_contains(sa.geometry, _s.geometry)
+                        where _s.quarantined = 0
+                        group by sa.key11
+                    )
+                    select sa.* exclude (geometry), p.* exclude (key11),
+                           coalesce(s.n_scenes, 0) as n_scenes,
+                           s.* exclude (key11, n_scenes), sa.geometry
+                    from _sa sa left join p using (key11) left join s using (key11)
+                    order by sa.key11
+                ) to '{tmp}' (format parquet)
+            """)
+        for view in ("_sa", "_p", "_s"):
+            con.sql(f"drop view {view}")
+        con.sql("drop table _kind")
+    return con.read_parquet(str(path))

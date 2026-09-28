@@ -73,3 +73,28 @@ def test_taito_tile_cells():
     total = opencellid.cells(con, area).aggregate("count(*)").fetchone()[0]
     assert 0 < cells <= total  # cells outside any tested tile are not counted
     assert missing_nearest == 0
+
+
+def test_place_kinds():
+    assert features.place_kind("food_and_beverage_store") == "retail"
+    assert features.place_kind("restaurant") == "food"
+    assert features.place_kind("coffee_shop") == "food"
+    assert features.place_kind("hotel") == "lodging"
+    assert features.place_kind("buddhist_place_of_worship") == "culture"
+    assert features.place_kind("atm") == "other"
+    assert features.place_kind(None) == "other"
+
+
+@pytest.mark.network
+def test_taito_small_area_profiles():
+    con = connect()
+    area = aoi.load("taito", con)
+    features.small_area_profiles(con, area).create_view("pr")
+    n, bad_shares, scenes = con.sql(
+        "select count(*), count(*) filter (where n_places > 0 and "
+        "abs(share_food + share_retail + share_lodging + share_culture + share_other - 1) > 1e-9), "
+        "sum(n_scenes) from pr"
+    ).fetchone()
+    assert n == 108
+    assert bad_shares == 0  # the five kinds add up to all places
+    assert scenes > 0
