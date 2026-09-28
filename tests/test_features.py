@@ -39,3 +39,21 @@ def test_taito_small_area_values_are_sane():
     assert lo >= 0 and hi < 100_000  # people per km2
     assert bad_cover == 0
     assert negative == 0
+
+
+@pytest.mark.network
+def test_taito_tile_table():
+    from study_geoai import worldpop
+
+    con = connect()
+    area = aoi.load("taito", con)
+    features.tiles(con, area).create_view("t")
+    n, keys, missing, pop, scenes = con.sql(
+        "select count(*), count(distinct quadkey), count(*) filter (where avg_d_kbps is null), "
+        "sum(population), sum(n_scenes) from t"
+    ).fetchone()
+    assert n == keys == 62  # the tiles that meet the ward
+    assert missing == 0
+    total = worldpop.grid(con, area, 2025).aggregate("sum(population)").fetchone()[0]
+    assert 0 < pop <= total + 1  # Ookla has no tile where nobody tested
+    assert scenes > 0
