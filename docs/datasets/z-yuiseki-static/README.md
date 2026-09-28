@@ -8,8 +8,8 @@
 | ディレクトリ | 中身 | 詳細 |
 |---|---|---|
 | openstreetmap/ | (調査中) | [openstreetmap.md](openstreetmap.md) |
-| overture/ | (調査中) | [overture.md](overture.md) |
-| cesg/ | (調査中) | [cesg.md](cesg.md) |
+| overture/ | Overture の建物・交通・水域の全世界 PMTiles (60GB、2024-11 ビルド)。もう 1 つは 0 バイト | [overture.md](overture.md) |
+| cesg/ | 東京周辺の POI 検索一式 (Overture Places 45 万件、DuckDB FTS) と Valhalla 経路タイル | [cesg.md](cesg.md) |
 | planetarble/ | planetarble の出力。全球と日本の衛星画像 PMTiles 16 個と ETOPO 2022 標高 COG | [planetarble.md](planetarble.md) |
 | gsi/ | 国土地理院シームレス空中写真の日本全域。z18 まで、PMTiles と MBTiles の 6 通り、合計 2.5TB 超 | [gsi.md](gsi.md) |
 | mapterhorn/ | Mapterhorn 全球標高タイル (2026-01-06 版)。z0-12、512px 可逆 WebP、663GB | [mapterhorn.md](mapterhorn.md) |
