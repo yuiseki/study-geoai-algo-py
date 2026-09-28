@@ -19,9 +19,20 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 `https://z.yuiseki.net/static/` は nginx の自動一覧で公開しているファイル置き場。
 全体の構成と共通の注意は [z-yuiseki-static/README.md](z-yuiseki-static/README.md)、ディレクトリごとの中身はその下の各ファイル。
 
+## source.coop/smartmaps
+
+<https://source.coop/smartmaps> の 18 リポジトリ。一覧は [source-coop-smartmaps/README.md](source-coop-smartmaps/README.md)、リポジトリごとの中身はその下の各ファイル。
+
+## その他
+
+| 出どころ | 中身 | 規模 | データの形 | ライセンス |
+|---|---|---|---|---|
+| [Ookla Speedtest](ookla-speedtest/README.md) | 固定回線と携帯の速度・遅延を約 610m タイルで平均したもの (四半期ごと) | 2019 年第 1 四半期から 30 四半期 × 2 種別、Parquet 15.13GB | Parquet, Shapefile | CC BY-NC-SA 4.0 |
+| [OpenCelliD](opencellid/README.md) | 携帯基地局の推定位置 (直近 18 か月に観測されたもの) | 未確認 (取得に API トークンが要る) | CSV | CC BY-SA 4.0 |
+
 ## 新しい出どころを足すとき
 
-- 1 出どころ 1 ファイル。STAC なら `stac/`、ファイル置き場ならその名前のディレクトリを作る。
+- 1 出どころ 1 ファイル。STAC なら `stac/`、それ以外は出どころの名前でディレクトリを作り、入口を `README.md` にする。中身が多ければその下を 1 ディレクトリ (またはリポジトリ) 1 ファイルに分ける。
 - 数字は実際に読んで確かめた値を書き、確かめた日付を添える。
 - 上の表に 1 行足す。
 
