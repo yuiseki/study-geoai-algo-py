@@ -8,6 +8,7 @@ dependencies = [
     "catboost>=1.2.10",
     # Must match the HiGHS bundled in ortools (same soname libhighs.so.1).
     # ortools 9.15 ships HiGHS 1.12.0; bump both together.
+    "duckdb>=1.5.5",
     "highspy>=1.12,<1.13",
     "lightgbm>=4.7.0",
     "networkx>=3.7",
