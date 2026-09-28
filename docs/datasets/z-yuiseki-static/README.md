@@ -7,7 +7,7 @@
 
 | ディレクトリ | 中身 | 詳細 |
 |---|---|---|
-| openstreetmap/ | (調査中) | [openstreetmap.md](openstreetmap.md) |
+| openstreetmap/ | OSM planet 3 版、地域抽出、Layercake GeoParquet、taginfo、Wiki ダンプ、OpenMapTiles の PMTiles | [openstreetmap.md](openstreetmap.md) |
 | overture/ | Overture の建物・交通・水域の全世界 PMTiles (60GB、2024-11 ビルド)。もう 1 つは 0 バイト | [overture.md](overture.md) |
 | cesg/ | 東京周辺の POI 検索一式 (Overture Places 45 万件、DuckDB FTS) と Valhalla 経路タイル | [cesg.md](cesg.md) |
 | planetarble/ | planetarble の出力。全球と日本の衛星画像 PMTiles 16 個と ETOPO 2022 標高 COG | [planetarble.md](planetarble.md) |
@@ -42,3 +42,5 @@
 - 一覧の大きさは nginx の丸めた表示 (`6G` など) で、正確なバイト数ではない。正確な値は HEAD の `Content-Length` で取る。
 - GDAL の `/vsicurl/` は、GeoPackage 2 つ (gpkg/ と kontur/) と planetarble/ の GeoTIFF を「Range downloading not supported」で開けなかった。GDAL の詳細ログでは、Range 付きの GET に 200 が返っていた。
   curl で試すと、`Accept-Encoding: gzip` を付けた Range 要求にだけ 200 が返り、付けなければ 206 だった。ただしどちらも 1 回ずつしか試しておらず、原因はまだ仮説。
+- 巨大な Parquet は、DuckDB の httpfs で直接読むとフッターだけでも 60 秒以内に返らないことがある。
+  そのときは、curl の範囲要求でフッターだけ取り、空のファイルの末尾に書いてからローカルで読む (openstreetmap/ の 4 本はこれで読めた)。
