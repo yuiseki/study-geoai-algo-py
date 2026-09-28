@@ -57,3 +57,19 @@ def test_taito_tile_table():
     total = worldpop.grid(con, area, 2025).aggregate("sum(population)").fetchone()[0]
     assert 0 < pop <= total + 1  # Ookla has no tile where nobody tested
     assert scenes > 0
+
+
+@pytest.mark.network
+def test_taito_tile_cells():
+    from study_geoai import opencellid
+
+    con = connect()
+    area = aoi.load("taito", con)
+    features.tile_cells(con, area).create_view("tc")
+    n, cells, missing_nearest = con.sql(
+        "select count(*), sum(n_cells), count(*) filter (where nearest_m is null) from tc"
+    ).fetchone()
+    assert n == 62
+    total = opencellid.cells(con, area).aggregate("count(*)").fetchone()[0]
+    assert 0 < cells <= total  # cells outside any tested tile are not counted
+    assert missing_nearest == 0

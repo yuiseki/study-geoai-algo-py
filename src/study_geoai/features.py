@@ -18,7 +18,7 @@ michiyomi scenes (share undergrounded, mean visible poles, mean green).
 
 import duckdb
 
-from study_geoai import census, michiyomi, ookla, overture, worldpop
+from study_geoai import census, michiyomi, ookla, opencellid, overture, worldpop
 from study_geoai.aoi import Area, cache_path, writing
 
 AREA_KM2 = "st_area_spheroid(st_flipcoordinates({g})) / 1e6"
@@ -134,4 +134,46 @@ def tiles(
             """)
         for view in ("_t", "_w", "_b", "_p", "_s"):
             con.sql(f"drop view {view}")
+    return con.read_parquet(str(path))
+
+
+def tile_cells(
+    con: duckdb.DuckDBPyConnection, area: Area, year: int = 2026, quarter: int = 2
+) -> duckdb.DuckDBPyRelation:
+    """OpenCelliD cells per Ookla tile: n_cells, n_lte, n_nr, operators, nearest_m, mean_range_m.
+
+    nearest_m is from the tile centre to the nearest cell in the area within about 2 km.
+    """
+    path = cache_path("features", f"opencellid-{opencellid.VERSION}-ookla{year}q{quarter}",
+                      f"tile-cells-{area.name}")  # fmt: skip
+    if not path.exists():
+        ookla.tiles(con, area, "mobile", year, quarter).create_view("_t")
+        opencellid.cells(con, area).create_view("_c")
+        with writing(path) as tmp:
+            con.sql(f"""
+                copy (
+                    with inside as (
+                        select _t.quadkey, count(*) as n_cells,
+                               count(*) filter (where _c.radio = 'LTE') as n_lte,
+                               count(*) filter (where _c.radio = 'NR') as n_nr,
+                               count(distinct _c.net) as operators,
+                               avg(_c.range_m) as mean_range_m
+                        from _t join _c on st_contains(_t.geometry, _c.geometry)
+                        group by _t.quadkey
+                    ),
+                    nearest as (
+                        select _t.quadkey,
+                               min(st_distance_sphere(st_centroid(_t.geometry), _c.geometry))
+                                 as nearest_m
+                        from _t join _c on st_dwithin(st_centroid(_t.geometry), _c.geometry, 0.02)
+                        group by _t.quadkey
+                    )
+                    select _t.quadkey, coalesce(i.n_cells, 0) as n_cells,
+                           coalesce(i.n_lte, 0) as n_lte, coalesce(i.n_nr, 0) as n_nr,
+                           coalesce(i.operators, 0) as operators, n.nearest_m, i.mean_range_m
+                    from _t left join inside i using (quadkey) left join nearest n using (quadkey)
+                    order by _t.quadkey
+                ) to '{tmp}' (format parquet)
+            """)
+        con.sql("drop view _t; drop view _c")
     return con.read_parquet(str(path))
