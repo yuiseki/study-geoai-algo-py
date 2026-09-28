@@ -9,6 +9,7 @@
 |---|---|---|
 | openstreetmap/ | OSM planet 3 版、地域抽出、Layercake GeoParquet、taginfo、Wiki ダンプ、OpenMapTiles の PMTiles | [openstreetmap.md](openstreetmap.md) |
 | gtfs/ | 東京のバスの GTFS-JP 5 つ (都営バス、台東区、杉並区、荒川区、葛飾区) を版ごとにそのまま置いたもの (2026-09-28 に作成) | [../tokyo-gtfs/README.md](../tokyo-gtfs/README.md) |
+| ksj/ | 国土数値情報の東京都の P04 医療機関、P29 学校、A31a 洪水浸水想定、mesh500r6 将来推計人口を GeoParquet にしたミラー (2026-09-28 に作成、すべて CC BY 4.0) | [../stac/mlit-nlftp.md](../stac/mlit-nlftp.md) |
 | ookla/ | Ookla Speedtest の 2026 年第 2 四半期 (mobile、fixed) を Range 要求で読める GeoParquet にしたミラー (2026-09-28 に作成) | [../ookla-speedtest/README.md](../ookla-speedtest/README.md) |
 | overture/ | Overture の建物・交通・水域の全世界 PMTiles (60GB、2024-11 ビルド)。もう 1 つは 0 バイト | [overture.md](overture.md) |
 | cesg/ | 東京周辺の POI 検索一式 (Overture Places 45 万件、DuckDB FTS) と Valhalla 経路タイル | [cesg.md](cesg.md) |
@@ -46,3 +47,4 @@
   curl で試すと、`Accept-Encoding: gzip` を付けた Range 要求にだけ 200 が返り、付けなければ 206 だった。ただしどちらも 1 回ずつしか試しておらず、原因はまだ仮説。
 - 巨大な Parquet は、DuckDB の httpfs で直接読むとフッターだけでも 60 秒以内に返らないことがある。
   そのときは、curl の範囲要求でフッターだけ取り、空のファイルの末尾に書いてからローカルで読む (openstreetmap/ の 4 本はこれで読めた)。
+- Range で読ませるファイルは 512MB 未満にする。前段の Cloudflare は 512MB を超えるファイルをキャッシュせず (cf-cache-status が MISS のまま)、Range 要求の最初の 1 回でファイル全体を送ろうとする。677MB の GeoParquet は台東区付近の読み出しに 67〜97 秒かかり、半分に分けたら 0.5〜0.7 秒になった (キャッシュに載る最初の 1 回だけ約 23 秒)。
