@@ -5,6 +5,7 @@ description = "Study environment for classical ML and optimisation in GeoAI."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "catboost>=1.2.10",
     # Must match the HiGHS bundled in ortools (same soname libhighs.so.1).
     # ortools 9.15 ships HiGHS 1.12.0; bump both together.
     "highspy>=1.12,<1.13",
@@ -14,6 +15,8 @@ dependencies = [
     "ortools>=9.15.6755,<9.16",
     "scikit-learn>=1.9.1",
     "scipy>=1.18.1",
+    "shap>=0.52.0",
+    "statsmodels>=0.15.0",
     "xgboost>=3.4.1",
 ]
 
@@ -33,3 +36,7 @@ ignore = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+filterwarnings = [
+    # shap itself calls matplotlib's pending-deprecated Colormap.set_bad/over/under.
+    "ignore::PendingDeprecationWarning:shap.plots.colors._colors",
+]

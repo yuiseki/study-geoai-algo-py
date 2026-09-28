@@ -7,6 +7,9 @@ Study environment for classical machine learning and mathematical optimisation, 
 | scikit-learn | General ML |
 | xgboost | Gradient boosting |
 | lightgbm | Gradient boosting |
+| catboost | Gradient boosting |
+| statsmodels | Time series (ARIMA/ETS) and statistics |
+| shap | Model explanation |
 | scipy (scipy.optimize) | Continuous optimisation |
 | networkx | Graphs and networks |
 | ortools | LP/MIP, CP-SAT, routing |

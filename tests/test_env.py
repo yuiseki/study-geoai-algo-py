@@ -32,6 +32,37 @@ def test_lightgbm():
     assert model.score(x, y) > 0.9
 
 
+def test_catboost():
+    from catboost import CatBoostClassifier
+
+    x, y = _xy()
+    model = CatBoostClassifier(iterations=20, verbose=0, allow_writing_files=False).fit(x, y)
+    assert model.score(x, y) > 0.9
+
+
+def test_statsmodels_arima():
+    from statsmodels.tsa.arima.model import ARIMA
+
+    rng = np.random.default_rng(0)
+    series = np.zeros(300)
+    for t in range(1, 300):
+        series[t] = 0.7 * series[t - 1] + rng.normal()
+    fit = ARIMA(series, order=(1, 0, 0), trend="n").fit()
+    assert abs(fit.params[0] - 0.7) < 0.1
+
+
+def test_shap():
+    import shap
+    import xgboost as xgb
+
+    x, y = _xy()
+    model = xgb.XGBClassifier(n_estimators=20).fit(x, y)
+    values = shap.TreeExplainer(model).shap_values(x)
+    importance = np.abs(values).mean(axis=0)
+    # y depends only on features 0 and 1
+    assert set(np.argsort(importance)[-2:]) == {0, 1}
+
+
 def test_scipy_optimize():
     from scipy.optimize import minimize
 
