@@ -37,6 +37,10 @@ Study environment for classical machine learning and mathematical optimisation, 
 | 多目的意思決定 | weighted sum、Pareto frontier | 「最適」が一つではない問題 |
 | 評価設計 | K-fold、Group CV、TimeSeriesSplit、Spatial CV | データリークを防ぐ |
 
+## Curriculum
+
+[docs/curriculum.md](docs/curriculum.md) sets out what each step does with Taito City (small, checked by eye on a map) and the 23 wards of Tokyo (larger, testing whether it generalises), using the datasets surveyed in [docs/datasets/](docs/datasets/README.md).
+
 ## Learning order
 
 1. 線形回帰 / ロジスティック回帰
