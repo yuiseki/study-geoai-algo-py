@@ -69,3 +69,12 @@ def test_an_unknown_name_falls_back_to_the_town():
     assert how == "town"
     assert area.contains(lon, lat)
     assert geocode.locate(con, area, "存在しない施設ゼロゼロ", "") == (None, None, None)
+
+
+@pytest.mark.network
+def test_the_ward_can_come_from_the_publisher_when_there_is_no_address():
+    con = connect()
+    area = aoi.load("taito", con)
+    lon, lat, how = geocode.locate(con, area, "平成小学校", None, ward="台東区")
+    assert how == "name"
+    assert area.contains(lon, lat)

@@ -118,7 +118,7 @@ def facilities(
             for row in rows:
                 if row["status"] in ("no_coords", "bad_coords"):
                     row["lon"], row["lat"], row["position"] = locate(
-                        con, area, row.get("name"), row.get("address")
+                        con, area, row.get("name"), row.get("address"), row["organization"]
                     )
         cols = ["code5", "organization", "item_id", "item_title", "row", "name", "lon", "lat",
                 "status", "position", "address", "attributes"]  # fmt: skip

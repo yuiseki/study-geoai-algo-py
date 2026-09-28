@@ -95,17 +95,27 @@ def _inside(con: duckdb.DuckDBPyConnection, area: Area, lon: float, lat: float) 
 
 
 def locate(
-    con: duckdb.DuckDBPyConnection, area: Area, name: str | None, address: str | None
+    con: duckdb.DuckDBPyConnection,
+    area: Area,
+    name: str | None,
+    address: str | None,
+    ward: str | None = None,
 ) -> tuple[float | None, float | None, str | None]:
-    """lon, lat and how they were found ("name" or "town"), or (None, None, None)."""
+    """lon, lat and how they were found ("name" or "town"), or (None, None, None).
+
+    ward (such as 台東区) is used when the address does not give one; some lists, such
+    as polling stations, have no address column at all.
+    """
     parts = town(address) if address else None
-    ward = parts[0] if parts else ""
+    ward = parts[0] if parts else (ward or "")
     if name:
         # Nominatim does not narrow "台東区 中央図書館" to the ward (it found a bus stop in
         # Yokohama), but "台東区立中央図書館" and "中央図書館 台東区 東京都" work; the latter
         # also finds 中央図書館浅草橋分室. So try several forms, keep candidates in the area,
         # and prefer an exact name, then the shortest name containing it.
-        queries = [f"{ward}立{core(name)}", f"{name} {ward} 東京都", f"{ward} {name}"]
+        queries = [f"{name} 東京都"]
+        if ward:
+            queries = [f"{ward}立{core(name)}", f"{name} {ward} 東京都", f"{ward} {name}"]
         best = None
         for q in dict.fromkeys(q.strip() for q in queries if q.strip()):
             for r in search(q):
