@@ -36,6 +36,10 @@ Study environment for classical machine learning and mathematical optimisation, 
 | 多目的意思決定 | weighted sum、Pareto frontier | 「最適」が一つではない問題 |
 | 評価設計 | K-fold、Group CV、TimeSeriesSplit、Spatial CV | データリークを防ぐ |
 
+Each method has its own directory under `src/`, named `NNN-X-method`:
+`NNN` is the row of the table above (001 to 016) and `X` is the method within that row (A, B, ...).
+For example, `src/003-C-lightgbm/` is the third method of the Boosting row.
+
 ## Setup
 
 ```sh
