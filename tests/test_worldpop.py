@@ -10,7 +10,8 @@ from study_geoai import aoi, worldpop
 from study_geoai.db import connect
 
 
-def test_url_follows_worldpop_layout():
+@pytest.mark.network
+def test_url_comes_from_the_mirror_manifest():
     assert worldpop.url(2020).endswith(
         "/2020/JPN/v1/100m/constrained/jpn_pop_2020_CN_100m_R2025A_v1.tif"
     )
@@ -46,3 +47,32 @@ def test_taito_population_grid():
     assert lowest >= 0
     # WorldPop's modelled 2020 population for the ward, against 211,444 in the census.
     assert 0.8 * 211_444 < total < 1.2 * 211_444
+
+
+@pytest.mark.network
+def test_taito_agesex_adds_up():
+    con = connect()
+    area = aoi.load("taito", con)
+    worldpop.agesex(con, area, 2020).create_view("a")
+    by_sex = dict(con.sql("select sex, sum(population) from a group by 1").fetchall())
+    groups = con.sql("select count(distinct age_group) from a").fetchone()[0]
+    assert groups == 20
+    assert abs(by_sex["f"] + by_sex["m"] - by_sex["t"]) < 1
+    # Against the total population grid at the same 1 km resolution.
+    total = worldpop.grid(con, area, 2020, "1km").aggregate("sum(population)").fetchone()[0]
+    assert abs(by_sex["t"] / total - 1) < 0.01
+
+
+@pytest.mark.network
+@pytest.mark.parametrize(("level", "value"), [(1, 3), (2, 30)])
+def test_taito_urbanisation(level, value):
+    # The grid is 1 km in Mollweide; every cell centred in Taito City has one value.
+    con = connect()
+    area = aoi.load("taito", con)
+    n, values = (
+        worldpop.urbanisation(con, area, 2020, level)
+        .aggregate("count(*), list(distinct value)")
+        .fetchone()
+    )
+    assert n == 12
+    assert values == [value]
