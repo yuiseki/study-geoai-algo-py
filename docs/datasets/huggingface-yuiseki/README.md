@@ -16,13 +16,13 @@
 | osm-wiki | 2026-09-17 | (なし) | (なし) | OSM Wiki 8 言語 78,178 ページの平文 (2026-01-30 ダンプ) | [osm-wiki.md](osm-wiki.md) |
 | osm-tag-corpus | 2026-09-07 | odbl | 10K-100K | OSM タグ 9,803 種の多言語説明と世界での使用回数 | [osm-tag-corpus.md](osm-tag-corpus.md) |
 | text2geoql | 2026-08-29 | odbl | 1K-10K | TRIDENT 中間言語から Overpass QL への合成対 4,897 件 | [text2geoql.md](text2geoql.md) |
-| estat-boundary-2020 | 2026-09-26 | cc-by-4.0 | 100K-1M | (調査中) | [estat-boundary-2020.md](estat-boundary-2020.md) |
-| jp-admin-2026-09 | 2026-09-26 | cc-by-4.0 | 1K-10K | (調査中) | [jp-admin-2026-09.md](jp-admin-2026-09.md) |
-| abr-src-2026-09 | 2026-09-26 | cc-by-4.0 | 1M-10M | (調査中) | [abr-src-2026-09.md](abr-src-2026-09.md) |
-| geo-triples-jp-gov | 2026-09-26 | cc-by-4.0 | 100K-1M | (調査中) | [geo-triples-jp-gov.md](geo-triples-jp-gov.md) |
-| geo-triples-japan | 2026-09-26 | odbl | 1M-10M | (調査中) | [geo-triples-japan.md](geo-triples-japan.md) |
-| geo-triples-tokyo23 | 2026-09-25 | odbl | 1M-10M | (調査中) | [geo-triples-tokyo23.md](geo-triples-tokyo23.md) |
-| ne-admin0-10m | 2026-09-26 | other | 1K-10K | (調査中) | [ne-admin0-10m.md](ne-admin0-10m.md) |
+| estat-boundary-2020 | 2026-09-26 | cc-by-4.0 | 100K-1M | 2020 年国勢調査の小地域ポリゴン 23 万件と人口・世帯 | [estat-boundary-2020.md](estat-boundary-2020.md) |
+| jp-admin-2026-09 | 2026-09-26 | cc-by-4.0 | 1K-10K | 都道府県 47 と市区町村 1,918 のコード・読み・ポリゴン・人口 | [jp-admin-2026-09.md](jp-admin-2026-09.md) |
+| abr-src-2026-09 | 2026-09-26 | cc-by-4.0 | 1M-10M | アドレス・ベース・レジストリの町字 72.7 万件と代表点 (境界なし) | [abr-src-2026-09.md](abr-src-2026-09.md) |
+| geo-triples-jp-gov | 2026-09-26 | cc-by-4.0 | 100K-1M | 国勢調査境界の都道府県・市区町村の隣接と包含の三つ組と文 | [geo-triples-jp-gov.md](geo-triples-jp-gov.md) |
+| geo-triples-japan | 2026-09-26 | odbl | 1M-10M | OSM の全国の市区町村と POI 8 万の空間関係の三つ組と文 | [geo-triples-japan.md](geo-triples-japan.md) |
+| geo-triples-tokyo23 | 2026-09-25 | odbl | 1M-10M | 東京 23 区と POI と Natural Earth の空間関係の三つ組と文 | [geo-triples-tokyo23.md](geo-triples-tokyo23.md) |
+| ne-admin0-10m | 2026-09-26 | other | 1K-10K | Natural Earth 5.1.1 の 10m の国・州と米国の郡 (3 層) | [ne-admin0-10m.md](ne-admin0-10m.md) |
 | wikipedia-geotagged | 2026-09-24 | cc-by-sa-4.0 | 100K-1M | 座標付きの英語版と日本語版 Wikipedia の本文。英 137 万件、日 22 万件 (2026-09-01 ダンプ) | [wikipedia-geotagged.md](wikipedia-geotagged.md) |
 | wikivoyage-geotagged | 2026-09-24 | cc-by-sa-4.0 | 10K-100K | 座標付きの英語版 Wikivoyage 2.9 万件の本文。種類と国の列はすべて空 | [wikivoyage-geotagged.md](wikivoyage-geotagged.md) |
 | wikidata-gazetteer | 2026-09-21 | cc0-1.0 | 10M-100M | 位置を持つ Wikidata 項目 1,220 万件と 553 言語の名前 6,250 万件 (2026-08-31 ダンプ) | [wikidata-gazetteer.md](wikidata-gazetteer.md) |

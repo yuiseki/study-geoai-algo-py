@@ -26,6 +26,11 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 
 <https://source.coop/smartmaps> の 18 リポジトリ。一覧は [source-coop-smartmaps/README.md](source-coop-smartmaps/README.md)、リポジトリごとの中身はその下の各ファイル。
 
+## Hugging Face の yuiseki のデータセット
+
+<https://huggingface.co/yuiseki/datasets> の地理に関わる 20 個。一覧は [huggingface-yuiseki/README.md](huggingface-yuiseki/README.md)、データセットごとの中身はその下の各ファイル。
+12 ステップに直接使えるのは、凍結した OSM (osm-tokyo23-src-2026-08、osm-japan-src-2026-08) と、国勢調査の小地域境界 (estat-boundary-2020)、市区町村 (jp-admin-2026-09)。
+
 ## その他
 
 | 出どころ | 中身 | 規模 | データの形 | ライセンス |
