@@ -10,9 +10,9 @@
 | openstreetmap/ | (調査中) | [openstreetmap.md](openstreetmap.md) |
 | overture/ | (調査中) | [overture.md](overture.md) |
 | cesg/ | (調査中) | [cesg.md](cesg.md) |
-| planetarble/ | (調査中) | [planetarble.md](planetarble.md) |
-| gsi/ | (調査中) | [gsi.md](gsi.md) |
-| mapterhorn/ | (調査中) | [mapterhorn.md](mapterhorn.md) |
+| planetarble/ | planetarble の出力。全球と日本の衛星画像 PMTiles 16 個と ETOPO 2022 標高 COG | [planetarble.md](planetarble.md) |
+| gsi/ | 国土地理院シームレス空中写真の日本全域。z18 まで、PMTiles と MBTiles の 6 通り、合計 2.5TB 超 | [gsi.md](gsi.md) |
+| mapterhorn/ | Mapterhorn 全球標高タイル (2026-01-06 版)。z0-12、512px 可逆 WebP、663GB | [mapterhorn.md](mapterhorn.md) |
 | kontur/ | Kontur Population 2023-11-01 版の GeoPackage (6.7GB) と同じものの .gz、取得ログ | [kontur.md](kontur.md) |
 | worldbank/ | WDI の国別年次指標 (縦持ち)。217 か国、1990〜2024 年、16 指標。うち CO2 の指標は壊れている | [worldbank.md](worldbank.md) |
 | natural-earth/ | Natural Earth の国 (110m/50m) と州 (10m) の GeoParquet。列を絞り name_ja 付き | [natural-earth.md](natural-earth.md) |
@@ -40,5 +40,5 @@
 - 1 ファイルの調査は 60 秒で打ち切る。読めなかったものは「60 秒以内に読めなかった」と書いて深追いしない。
 - DuckDB はこのリポジトリの uv 環境の 1.5.5 を使う (`uv run python`)。1.5.5 より前は使わない。
 - 一覧の大きさは nginx の丸めた表示 (`6G` など) で、正確なバイト数ではない。正確な値は HEAD の `Content-Length` で取る。
-- GDAL の `/vsicurl/` は、GeoPackage 2 つ (gpkg/ と kontur/) を「Range downloading not supported」で開けなかった。GDAL の詳細ログでは、Range 付きの GET に 200 が返っていた。
+- GDAL の `/vsicurl/` は、GeoPackage 2 つ (gpkg/ と kontur/) と planetarble/ の GeoTIFF を「Range downloading not supported」で開けなかった。GDAL の詳細ログでは、Range 付きの GET に 200 が返っていた。
   curl で試すと、`Accept-Encoding: gzip` を付けた Range 要求にだけ 200 が返り、付けなければ 206 だった。ただしどちらも 1 回ずつしか試しておらず、原因はまだ仮説。
