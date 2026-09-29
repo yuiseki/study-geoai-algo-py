@@ -49,6 +49,7 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [stars.optgeo.org](stars-optgeo/README.md) | Martin のタイルサーバー。空中写真、標高、Overture、OSM、国土地理院の最適化ベクトルタイル (bvmap) など 43 レイヤー | 表示用のタイル | MVT、PNG、JPEG、WebP | レイヤーごと (bvmap は国土地理院コンテンツ利用規約) |
 | [国土地理院 最適化ベクトルタイル](gsi-optimal-bvmap/README.md) | 数値地図 (国土基本情報) の道路中心線、建物、等高線など 24 レイヤー。全国、2026-07-01 時点 | 地物 (MVT、タイル境界で切られる) | PMTiles 16.9GB (Range 可) | 国土地理院コンテンツ利用規約 (出典の明示) |
 | [OpenCelliD](opencellid/README.md) | 携帯基地局の推定位置 (直近 18 か月に観測されたもの) | 未確認 (取得に API トークンが要る) | CSV | CC BY-SA 4.0 |
+| [NYC TLC Trip Record Data](nyc-tlc/README.md) | ニューヨーク市のタクシーと配車の乗車記録 (乗降のゾーン ID と時刻、料金) と、263 のゾーン境界 | 2009 年から毎月。2026-07 は yellow 353 万行 61.7MB、fhvhv 2,092 万行 511MB | Parquet (CloudFront、Range 可)、境界は Shapefile の zip | 記載無し (NYC.gov の利用規約を指す)。再配布の許可は不明 |
 
 ## ハッカソン向けの候補
 
