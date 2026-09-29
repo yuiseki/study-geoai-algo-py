@@ -1,4 +1,4 @@
-# Meta の移動データ (HDX): Movement Range Maps と Movement Distribution
+# Meta のデータ (HDX): Movement Range Maps、Movement Distribution、Commuting Zones、Business Activity Trends
 
 2026-09-29 に読んで確かめた内容。Facebook の位置情報を共有している利用者から、行政区域ごとの 1 日の移動の程度を出したもの。どちらも Humanitarian Data Exchange (HDX) で配られている。
 
@@ -50,12 +50,66 @@ COVID-19 の外出自粛への反応を見るためのデータ。2022-05-22 で
 
 - どちらも HDX の記載は CC BY (Creative Commons Attribution International)。Meta の組織のデータセットには別の条件のもの (`hdx-other`、`other-pd-nr`) もあるので、使うたびにデータセットごとに確かめる。
 - 出典は「Data for Good at Meta, Movement Range Maps (または Movement Distribution), HDX」と書く。
-- Movement Distribution は直近 90 日しか残らない。時系列として使うなら、取った分を自分で残しておかないと再現できない。CC BY なので、ミラーすることはライセンス上できる。
+- Movement Distribution は直近 90 日しか残らない。時系列として使うなら、取った分を自分で残しておかないと再現できない。CC BY なので、ミラーすることはライセンス上できる。z.yuiseki.net にミラーを置いた (下の「z.yuiseki.net のミラー」)。
 
 ## 同じ組織の他のデータ
 
 HDX の `meta` には 224 のデータセットがある。ほとんど (約 180) は国ごとの High Resolution Population Density Maps で、日本の分 (`japan-high-resolution-population-density-maps-demographic-estimates`、CC BY) もある。
-ほかに Social Connectedness Index、Relative Wealth Index、Commuting Zones、AI-Detected Missing Roads など。中身はまだ見ていない。
+ほかに Social Connectedness Index、Relative Wealth Index、Commuting Zones、Business Activity Trends during Crisis、AI-Detected Missing Roads など。Commuting Zones と Business Activity Trends は下で見た。残りの中身はまだ見ていない。
+
+## Commuting Zones
+
+<https://data.humdata.org/dataset/commuting-zones>、CC BY。人の移動のまとまりから求めた通勤圏のポリゴン (2023 年 3 月版、CSV 1 本 16.5MB)。
+
+- 6,541 の通勤圏、215 か国。日本は 54。列は `region`、`fbcz_id`、`name`、`fbcz_id_num`、`cz_gen_ds` (`3/5/23`)、`win_population`、`win_roads_km`、`area`、`country` (英語の国名)、`geography` (WKT、WGS 84)。
+- 33 の通勤圏 (Juneau、Zadar、Stanley、長崎など、海岸線の細かいもの) は WKT が 32,759 文字で切れていて、ポリゴンとして読めない。表計算ソフトの 1 セルの上限 (32,767 文字) で切れたものと思われる。ほかに 1 つ (米国の covenant life) が ST_IsValid で false。
+- `win_population` は上下が切りそろえてある (winsorize) ように見える。最大値 4,442,659.362 と最小値 1,924.466 に 328 ずつ (5%) が並ぶ。日本では名古屋、大阪、千葉、横浜、さいたまが同じ値。大都市の人口の比較には使えない。
+
+## Business Activity Trends during Crisis
+
+<https://data.humdata.org/dataset/facebook-business-activity-trends-during-crisis>、CC BY。災害の前後で Facebook のビジネスページの活動がどう変わったか。行政区域 × 業種 × 日ごとに、活動が平時の分布のどの分位にあたるか (`activity_quantile`)。
+
+- 災害ごとに CSV 1 本、5 本で 154MB、1,888,011 行。ブラジル南部の洪水 (2024-05〜07)、中東欧の洪水 (2024-09〜10、8 か国)、ハリケーン Beryl (2024-06〜10、14 か国)、Helene (2024-09〜10、米国)、ロサンゼルスの山火事 (2025-01〜03)。
+- ファイルによって列が違う。ブラジルのものだけ `polygon_level`、`polygon_version`、`latitude`、`longitude` を持ち、country が 2 文字 (`BR`)。ほかは 3 文字。
+- 業種の無い行が、ブラジルでは空、ほかでは文字列の `NA`。`All` とは別の行。
+- 米国の 3 本 (Helene、Beryl、ロサンゼルス) には、同じ区域・業種・日の行が 2 つ以上あるものが多く (Helene は 48,764 組)、値が少しずつ違う。どちらが正しいかは分からない。
+- 日本は含まない。
+
+## z.yuiseki.net のミラー (2026-09-29)
+
+Movement Distribution、Movement Range Maps、Commuting Zones、Business Activity Trends の 4 つを、元のファイルのままと Parquet の両方で <https://z.yuiseki.net/static/hdx-meta/> に置いた。取得スクリプトは [scripts/mirror_hdx_meta.py](../../../scripts/mirror_hdx_meta.py)、テストは [tests/test_mirror_hdx_meta.py](../../../tests/test_mirror_hdx_meta.py)。置いたものの説明、出典の表示、加工の中身は、置き場の README.md、LICENSE、manifest.json にある。
+
+| Parquet | 行数 | 大きさ | 期間 |
+|---|---:|---:|---|
+| movement-distribution/movement_distribution_2026.parquet | 11,735,260 | 89.2MB | 2026-06-01〜2026-08-31 |
+| movement-range-maps/movement_range_2020.parquet | 5,229,342 | 38.9MB | 2020-03-01〜2020-12-31 |
+| movement-range-maps/movement_range_2021.parquet | 5,287,242 | 38.6MB | 2021 |
+| movement-range-maps/movement_range_2022.parquet | 1,662,956 | 12.2MB | 2022-01-01〜2022-05-22 |
+| commuting-zones/commuting_zones.parquet (GeoParquet) | 6,541 | 13.6MB | 2023-03 |
+| facebook-business-activity-trends-during-crisis/business_activity_trends.parquet | 1,888,011 | 10.4MB | 2024-05〜2025-03 |
+
+- 元のファイルは 22 本、1,245,212,427 bytes (`<dataset>/original/`)。Parquet は合計 202,882,696 bytes。名前は HDX の名前を整えたもの (拡張子の無い `Movement Distribution 1 June - 15 June, 2026` は `movement-distribution-1-june-15-june-2026.csv`)。HDX での名前、resource id、URL、sha256 は manifest.json にある。
+- どれも HDX の API で license_id が `cc-by` であることを確かめてから置いた。
+- 元のファイルはすべて、S3 の ETag (MD5) と一致することを確かめた。Movement Range Maps の 2020 年の zip は、API の示す大きさ (56,561,599 bytes) と配られるファイル (56,560,052 bytes) が違う。配られたほうが ETag と一致し、zip としても壊れていない。API の大きさが古いと考えられる。
+- Parquet は zstd、国、区域、日付の順に並べてある。型は日付と double と整数だけ付け、ID は文字列のまま。行数と数値の列の合計が元のファイルと一致することを確かめてから置いた。どれも 512MB 未満。
+- 公開 URL で確かめた: どの Parquet も `curl -r -100` に初回から 206。DuckDB の httpfs で、Movement Distribution の日本 (546,312 行、1,804 区域)、Movement Range Maps の台東区 `JPN.41.51_1` (813 行、名前は `NA`) などの集計がローカルのファイルと一致した。
+- HTTP の URL には `*` が使えない (DuckDB は `allow_asterisks_in_http_paths` を求める)。年ごとのファイルは `read_parquet([...])` に並べる。
+
+### Movement Distribution のミラーで分かったこと
+
+- 12 本の CSV の期間は、境目の日で重なる。2026-06-15〜16、07-01、08-01 の行 (617,668 行) は 2 つのファイルにあり、値はすべて同じだった。HDX の更新日が新しいファイルの行を残し、古いほうを落とした。`1 June - 15 June` のファイルは実際には 06-16 まである。
+- 6/15〜7/1 の 4 本 (元の名前は `combined_part1`〜`4`) は、日でなく行数で切ってあり、6/19、6/23、6/27 は 2 つのファイルに分かれて入っている (区域は重ならない)。4 本とも 656,243 行。
+- 2026-06-01〜08-31 の 92 日のうち 16 日が無い (8 月の 4、5、7、9、10、13、17、19〜22、24、26、28〜30 日)。`2026-08-18_to_2026-08-31` のファイルにある日は 18、23、25、27、31 日の 5 日だけ。ファイル名の期間を信じず、`ds` で確かめること。
+- 1 日はおよそ 154,400 行 (38,600 区域 × 4 区分)。日本は 1,804 区域 (level 2)。割合が負の行は全体で 301,846 行。
+- HDX から消えたファイルは消さずに残す。2 週間ごとに次のコマンドを流すと、新しいファイルだけを落とし、残っているすべての CSV から Parquet を作り直す。
+
+```sh
+cd /Workspaces/repos/__yuiseki/_study/study-geoai
+systemd-run --user --scope -p MemoryMax=8G -p MemorySwapMax=0 \
+  uv run python -u scripts/mirror_hdx_meta.py > /tmp/study-geoai-mirror-hdx-meta/logs/run-$(date +%Y%m%dT%H%M%S).log 2>&1
+```
+
+- 同じ resource のまま中身が差し替わった場合は、古いファイルを `original/superseded/` に移して残す (Parquet には使わない)。
 
 ## 学習ステップとの対応 (案)
 
