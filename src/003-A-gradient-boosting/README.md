@@ -44,3 +44,7 @@ uv run python src/003-A-gradient-boosting/run.py
 - 3-B: 信号のある問題 (無電柱化) で、XGBoost の早期打ち切りと学習率を見る。
 - 3-C: 同じタイルの別の四半期の速度との一致から、説明できる上限 (雑音の天井) を測る。
 - 3-D: OpenCelliD の基地局を特徴量に足す。
+
+## 出典
+
+- みちよみ (finalvent/michiyomi-tokyo-streetscape、CC BY-SA 4.0): © Mapillary contributors (CC BY-SA 4.0) を加工、国土数値情報 (用途地域 A29、学校 P29) (国土交通省)、東京都建設局 緊急輸送道路。

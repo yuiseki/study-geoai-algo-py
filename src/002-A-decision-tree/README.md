@@ -40,3 +40,7 @@ roadway_width_m > 3.25  -> 架空線あり
 ```
 
 車道が 3.25m 以下の細い道で、緑が多いところだけが無電柱化済と読まれている (台東区では谷中などの路地が当たりそう。地図では確かめていない)。学習データでの AUC は 0.838。
+
+## 出典
+
+- みちよみ (finalvent/michiyomi-tokyo-streetscape、CC BY-SA 4.0): © Mapillary contributors (CC BY-SA 4.0) を加工、国土数値情報 (用途地域 A29、学校 P29) (国土交通省)、東京都建設局 緊急輸送道路。

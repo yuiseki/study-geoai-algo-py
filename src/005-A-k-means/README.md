@@ -54,3 +54,7 @@ uv run python src/005-A-k-means/run.py
 ## 緯度経度だけで k-means にかけると
 
 `output/lonlat-taito.png` は、台東区の POI 15,971 点の緯度経度だけを k = 8 でまとめたもの。区をほぼ同じ大きさの 8 つの塊に切り分けただけで、街の中身とは関係が無い。k-means は「近いもの」をまとめる方法で、何を「近い」とするか (どの特徴量の空間で距離を測るか) で意味が決まる。
+
+## 出典
+
+- みちよみ (finalvent/michiyomi-tokyo-streetscape、CC BY-SA 4.0): © Mapillary contributors (CC BY-SA 4.0) を加工、国土数値情報 (用途地域 A29、学校 P29) (国土交通省)、東京都建設局 緊急輸送道路。

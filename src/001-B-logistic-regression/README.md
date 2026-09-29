@@ -57,3 +57,7 @@ street のモデルの係数 (標準化した特徴量 1 つあたり):
 
 - 同じ場所の別の年のシーン、同じ撮影の続きのシーン (`sequence_id`) が、学習とテストの両方に入っている。ランダムな 5 分割の AUC は楽観的なはず。4 番で `cell_250m` や `sequence_id` を groups にして比べる。
 - 照明の数が電柱の代わりになっているかは、電柱の数との相関や、電柱の数で層を分けた当てはめで見られる。
+
+## 出典
+
+- みちよみ (finalvent/michiyomi-tokyo-streetscape、CC BY-SA 4.0): © Mapillary contributors (CC BY-SA 4.0) を加工、国土数値情報 (用途地域 A29、学校 P29) (国土交通省)、東京都建設局 緊急輸送道路。

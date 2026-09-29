@@ -79,3 +79,7 @@ scikit-learn の `BayesianGaussianMixture(weight_concentration_prior_type="diric
 - DPMM でも k を決めなくてよくはならない。k を決める代わりに、上限と、共分散の事前分布 (1 つの型の広がり) を決める必要がある。既定の設定では上限が事実上の k になり、教科書で型の数を決めるとされる γ はほとんど効かなかった。
 - 共分散の事前分布を大きめにすると、上限に左右されない安定した答えになる。ただしその数は、事前分布の大きさとデータの量で変わる。
 - 得られた型そのものは読みやすい。k-means では分かれなかった「特に密な都心」が、1 つの型として出てきた。
+
+## 出典
+
+- みちよみ (finalvent/michiyomi-tokyo-streetscape、CC BY-SA 4.0): © Mapillary contributors (CC BY-SA 4.0) を加工、国土数値情報 (用途地域 A29、学校 P29) (国土交通省)、東京都建設局 緊急輸送道路。

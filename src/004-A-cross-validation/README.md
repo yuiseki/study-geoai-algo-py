@@ -48,3 +48,7 @@ uv run python src/004-A-cross-validation/run.py
 - 「まだデータの無い場所で予測したい」(新しい区、新しい街) なら、空間ブロックか区ごとの点数が実際に近い。
 - 「同じ場所の来年を予測したい」なら、撮影年で分ける (4-B)。
 - ランダム分割の点数は、どちらの使いどころでも楽観的になりうる。
+
+## 出典
+
+- みちよみ (finalvent/michiyomi-tokyo-streetscape、CC BY-SA 4.0): © Mapillary contributors (CC BY-SA 4.0) を加工、国土数値情報 (用途地域 A29、学校 P29) (国土交通省)、東京都建設局 緊急輸送道路。

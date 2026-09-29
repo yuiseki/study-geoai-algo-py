@@ -34,3 +34,7 @@ uv run python src/002-B-random-forest/run.py
 
 はじめは 23 区の無電柱化の全 988,619 行で森を作り、プロセスの最大メモリが 16GB (616 秒) に達した。DuckDB に付けた 4GB の上限は scikit-learn には効かない。
 クラスの比率を保った 20 万行の標本にし、部分依存を 5,000 行で計算するようにしたら、1.5GB (57 秒) になった。森の AUC は全体で 0.893、標本で 0.888。
+
+## 出典
+
+- みちよみ (finalvent/michiyomi-tokyo-streetscape、CC BY-SA 4.0): © Mapillary contributors (CC BY-SA 4.0) を加工、国土数値情報 (用途地域 A29、学校 P29) (国土交通省)、東京都建設局 緊急輸送道路。

@@ -34,3 +34,7 @@ uv run python src/003-D-cell-towers/run.py
 OpenCelliD の位置は利用者の観測から推定したもので、実際の基地局の位置ではない。事業者 (net) も分けていないし、Ookla の速度も事業者を分けていない。速度を決めるはずの「どの事業者の、どの局に、どれだけの人がつないでいるか」は、この材料では見えない。
 
 どこまでが説明できる上限なのかは、3-C で、同じタイルの別の四半期の速度との一致から測る。
+
+## 出典
+
+- みちよみ (finalvent/michiyomi-tokyo-streetscape、CC BY-SA 4.0): © Mapillary contributors (CC BY-SA 4.0) を加工、国土数値情報 (用途地域 A29、学校 P29) (国土交通省)、東京都建設局 緊急輸送道路。
