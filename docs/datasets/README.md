@@ -53,26 +53,6 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [Meta の移動データ (HDX)](hdx-meta-movement/README.md) | Facebook の位置情報から出した行政区域ごとの 1 日の移動。Movement Range Maps (2020-03〜2022-05、終了) と Movement Distribution (家からの距離 4 区分、直近 90 日のみ) | Range Maps は 2021〜2022 年分で 695 万行、日本 679 区域。Distribution は 4 日分で 62 万行、日本 1,802 区域 | TSV の zip、CSV (署名付き S3、Range 可だが部分読みは不可) | CC BY |
 | [全国の人流オープンデータ](mlit-1km-fromto/README.md) | 国土交通省の 1km メッシュ別と市区町村単位発地別の滞在人口 (平日/休日 × 昼/深夜/終日)。元は Agoop の GPS | 2019-01〜2021-12 の月別、47 都道府県で zip 191.7MB。東京都のメッシュ別は 49 万行 | 入れ子の zip の CSV (署名付き S3)。ページはログインを求めるが API からは不要。z.yuiseki.net に Parquet のミラーあり | 政府標準利用規約 2.0 準拠 (CC BY 4.0 互換) |
 
-## ハッカソン向けの候補
-
-いただいた表に、調べた結果の「日本での代替」の列を足したもの。左の 5 列は元の表のまま。
-
-| データセット | 種類 | 主な内容 | ハッカソンでの用途 | ライセンス等 | 日本での代替 |
-|---|---|---|---|---|---|
-| [WorldPop](stac/worldpop.md) | 人口ラスター | グリッド人口推計 | 需要・人口密度、基地局候補地の評価 | CC BY 4.0 が基本 | そのまま使える (日本も収録)。町丁目単位なら [estat-boundary-2020](huggingface-yuiseki/estat-boundary-2020.md) の人口も |
-| [NASA SRTM](nasa-srtm/README.md) | DEM | 標高・地形 | 電波伝搬、見通し、3D地形 | NASA open data / 原則CC0 | [Mapterhorn](mapterhorn/README.md)。日本は国土地理院の 1m〜10m DEM で上書きされている |
-| OpenStreetMap ([Geofabrik](geofabrik/README.md) ほか) | ベクタ | 道路、建物、POI、インフラ等 | 道路網、地物、候補地点 | ODbL | そのまま使える。凍結版は [osm-tokyo23-src-2026-08](huggingface-yuiseki/osm-tokyo23-src-2026-08.md)、タイルは [OpenStreetMap Japan PMTiles](openstreetmap-japan-pmtiles/README.md) |
-| [Google Open Buildings](google-open-buildings/README.md) | 建物 | 建物フットプリント、派生版では高さ | 3D環境、遮蔽物、建物密度 | CC BY 4.0 または ODbL | 日本を含まないので [Overture Maps](stac/overture-maps.md) の buildings。3D なら source.coop の [smartmaps/xing](source-coop-smartmaps/xing.md) (PLATEAU の 3D Tiles) |
-| [OpenCelliD](opencellid/README.md) | 通信インフラ | 基地局・セル位置 | serving cell、既存基地局配置 | CC BY-SA 4.0 | そのまま使える (取得に API トークンが要る)。source.coop の [smartmaps/opencellid](source-coop-smartmaps/opencellid.md) に 2024-06-14 時点の PMTiles もある |
-| [KartaView / GrabMaps 360 Imagery](kartaview-grabmaps-imagery/README.md) | street-level imagery | 道路沿い画像、360°画像 | 電柱・街灯の物体検出 | CC BY-SA 4.0 の公開画像あり | 東京なら [みちよみ](michiyomi/README.md)。Mapillary の画像から電柱の数と道路照明の数を VLM で読み取り済み |
-
-元の表の記載を調べて分かったこと:
-
-- NASA SRTM の「原則CC0」は NASA 自身の一般方針の書き方と合っている。ただし配布元によって表記が違い、CGIAR の SRTM 90m 版は商用利用と再配布が禁止されている。
-- Google Open Buildings の「派生版では高さ」は、Google 自身の 2.5D 版 (高さのラスタ、2016〜2023 年) のこと。実効の解像度は約 4m で、100m で頭打ちになる。「CC BY 4.0 または ODbL」は本家が 2 つから選べる二重ライセンス。
-- KartaView の「CC BY-SA 4.0 の公開画像あり」は、KartaView の画像全体に一律にかかる条件。GrabMaps の画像も KartaView の中の 1 ユーザーの投稿として公開されている。公開されているのは Yogyakarta、Langkawi、Krabi の 3 都市。
-- 日本で見通しを計算するなら、Mapterhorn の土台 (Copernicus GLO-30) は建物や樹木の上を測った表面 (DSM)、国土地理院の DEM は地面 (DTM) なので、場所によって遮蔽物が入っていたりいなかったりする。
-
 ## 新しい出どころを足すとき
 
 - 1 出どころ 1 ファイル。STAC なら `stac/`、それ以外は出どころの名前でディレクトリを作り、入口を `README.md` にする。中身が多ければその下を 1 ディレクトリ (またはリポジトリ) 1 ファイルに分ける。
