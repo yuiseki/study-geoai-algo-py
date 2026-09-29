@@ -134,3 +134,22 @@ def test_taito_place_points_in_metres():
     assert set(kinds) <= set(features.KINDS) and "food" in kinds
     assert set(wards) <= {"13106", None}
     assert named > 0.95
+
+
+@pytest.mark.network
+def test_taito_street_cells():
+    con = connect()
+    features.street_cells(con, aoi.load("taito", con)).create_view("sc")
+    n, cells, least, shares = con.sql("""
+        select count(*), count(distinct cell_250m), min(n_scenes),
+               list_value(min(undergrounded_share), max(undergrounded_share),
+                          min(block_paving_share), max(wires_high_share))
+        from sc
+    """).fetchone()
+    assert n == cells and 100 < n < 205  # Taito has 205 cells, some with few scenes
+    assert least >= features.MIN_SCENES
+    assert all(0 <= s <= 1 for s in shares)
+    area = con.sql("select avg(st_area_spheroid(st_flipcoordinates(geometry))) from sc").fetchone()[
+        0
+    ]
+    assert 55_000 < area < 70_000  # 0.00275 by 0.00225 degrees near 35.7 N is about 62,000 m2

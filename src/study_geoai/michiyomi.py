@@ -51,6 +51,25 @@ NUMERIC = {"roadway_width_m", "sidewalk_left_width_m", "sidewalk_right_width_m",
            "poles_visible", "lights_road"}  # fmt: skip
 
 
+# cell_250m is row * 100000 + column; the south-west corner is at
+# (20 + row * CELL_LAT, 120 + column * CELL_LON). Found from the scenes, not documented.
+CELL_LAT, CELL_LON = 0.00225, 0.00275
+
+
+def cell_bounds(cell: int) -> tuple[float, float, float, float]:
+    """west, south, east, north of a cell_250m (about 250 m by 250 m near Tokyo)."""
+    row, column = divmod(int(cell), 100_000)
+    south, west = 20 + row * CELL_LAT, 120 + column * CELL_LON
+    return west, south, west + CELL_LON, south + CELL_LAT
+
+
+def cell_sql(column: str = "cell_250m") -> str:
+    """A DuckDB expression for the polygon of the cell_250m in the named column."""
+    west = f"(120 + ({column} % 100000) * {CELL_LON})"
+    south = f"(20 + ({column} // 100000) * {CELL_LAT})"
+    return f"st_makeenvelope({west}, {south}, {west} + {CELL_LON}, {south} + {CELL_LAT})"
+
+
 def scenes(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation:
     """One row per scene in the area: COLUMNS, the FIELDS pulled from analysis, and geometry.
 

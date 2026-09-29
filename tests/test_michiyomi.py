@@ -30,3 +30,20 @@ def test_taito_scenes():
     assert 0 < poles_max < 100
     assert bad_width == 0
     assert "架空線あり" in undergrounded
+
+
+def test_cell_bounds_from_the_id():
+    # row 6976, column 7187: south-west corner 20 + 6976 * 0.00225, 120 + 7187 * 0.00275
+    west, south, east, north = michiyomi.cell_bounds(697607187)
+    assert west == pytest.approx(139.76425) and south == pytest.approx(35.696)
+    assert east - west == pytest.approx(0.00275) and north - south == pytest.approx(0.00225)
+
+
+@pytest.mark.network
+def test_taito_scenes_lie_in_their_cells():
+    con = connect()
+    michiyomi.scenes(con, aoi.load("taito", con)).create_view("s")
+    rows = con.sql("select cell_250m, lon, lat from s using sample 2000 rows (reservoir, 0)")
+    for cell, lon, lat in rows.fetchall():
+        west, south, east, north = michiyomi.cell_bounds(cell)
+        assert west - 1e-9 <= lon < east + 1e-9 and south - 1e-9 <= lat < north + 1e-9

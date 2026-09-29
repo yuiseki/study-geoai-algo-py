@@ -234,6 +234,52 @@ def place_points(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyR
     """)
 
 
+MIN_SCENES = 30  # fewer street scenes than this make a cell's averages too noisy
+
+
+def street_cells(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation:
+    """michiyomi street measures averaged per 250 m cell (cell_250m), for cells with at
+    least MIN_SCENES scenes (quarantined scenes left out).
+
+    Shares are taken among the scenes where the answer is known (不明 and 該当なし
+    left out): undergrounded_share, wires_high_share (wire_density 高),
+    block_paving_share (surface ブロック) and poor_sight_share (sight_distance 不良).
+    sidewalk_share is the share of scenes with a sidewalk seen on either side.
+    """
+    michiyomi.scenes(con, area).create_view("_sc")
+
+    def share(column, hit, known):
+        known = ", ".join(f"'{k}'" for k in known)
+        return f"avg(({column} = '{hit}')::int) filter (where {column} in ({known}))"
+
+    return con.sql(f"""
+        select cell_250m, count(*) as n_scenes,
+               avg(roadway_width_m) as roadway_width_m,
+               avg((coalesce(sidewalk_left_width_m, 0) + coalesce(sidewalk_right_width_m, 0))
+                   / nullif((sidewalk_left_width_m is not null)::int
+                            + (sidewalk_right_width_m is not null)::int, 0))
+                 as sidewalk_width_m,
+               avg((sidewalk_left = 'あり' or sidewalk_right = 'あり')::int) as sidewalk_share,
+               avg(poles_visible) as poles, avg(lights_road) as lights,
+               avg(green_ratio) as green, avg(colorfulness) as colorfulness,
+               {share("undergrounded", "無電柱化済", ["無電柱化済", "架空線あり"])}
+                 as undergrounded_share,
+               {share("wire_density", "高", ["なし", "低", "中", "高"])} as wires_high_share,
+               {
+        share(
+            "surface",
+            "ブロック",
+            ["アスファルト", "ブロック", "コンクリート", "混在", "砂利", "土・苔"],
+        )
+    } as block_paving_share,
+               {share("sight_distance", "不良", ["良", "不良"])} as poor_sight_share,
+               {michiyomi.cell_sql()} as geometry
+        from _sc where quarantined = 0
+        group by cell_250m having count(*) >= {MIN_SCENES}
+        order by cell_250m
+    """)
+
+
 def small_area_profiles(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation:
     """small_areas plus POI kind shares and michiyomi street averages per small area.
 
