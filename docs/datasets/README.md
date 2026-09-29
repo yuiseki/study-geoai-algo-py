@@ -46,7 +46,8 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [みちよみ](michiyomi/README.md) | 東京都の街路画像 (Mapillary) を VLM で構造化したもの。歩道、電柱、街灯、路面など | 1,914,451 シーン、一括版は Parquet 1.97GB | Parquet (Hugging Face) と API | CC BY-SA 4.0 (Mapillary のロゴ表示が要る) |
 | [Google Open Buildings](google-open-buildings/README.md) | 衛星画像から推定した建物ポリゴン (v1〜v3) と、建物の有無・高さのラスタ (2.5D Temporal、2016〜2023 年)。アフリカ、南アジア、東南アジア、中南米で、日本は含まない | v3 ポリゴン約 18.5 億件、CSV.gz 333 本で 178.26GB | CSV.gz、GeoTIFF、ミラーに GeoParquet | CC BY 4.0 と ODbL 1.0 から選ぶ二重ライセンス |
 | [PLATEAU](plateau/README.md) | 国土交通省の 3D 都市モデル。この学習では深追いしない (理由はリンク先) | 約 300 都市 (2025 年度末の予定) | CityGML ほか | データセットごとに確かめる (未確認) |
-| [stars.optgeo.org](stars-optgeo/README.md) | Martin のタイルサーバー。空中写真、標高、Overture、OSM、国土地理院の基盤地図情報ベクトルタイル (bvmap) など 43 レイヤー | 表示用のタイル | MVT、PNG、JPEG、WebP | レイヤーごと (bvmap は未確認) |
+| [stars.optgeo.org](stars-optgeo/README.md) | Martin のタイルサーバー。空中写真、標高、Overture、OSM、国土地理院の最適化ベクトルタイル (bvmap) など 43 レイヤー | 表示用のタイル | MVT、PNG、JPEG、WebP | レイヤーごと (bvmap は国土地理院コンテンツ利用規約) |
+| [国土地理院 最適化ベクトルタイル](gsi-optimal-bvmap/README.md) | 数値地図 (国土基本情報) の道路中心線、建物、等高線など 24 レイヤー。全国、2026-07-01 時点 | 地物 (MVT、タイル境界で切られる) | PMTiles 16.9GB (Range 可) | 国土地理院コンテンツ利用規約 (出典の明示) |
 | [OpenCelliD](opencellid/README.md) | 携帯基地局の推定位置 (直近 18 か月に観測されたもの) | 未確認 (取得に API トークンが要る) | CSV | CC BY-SA 4.0 |
 
 ## ハッカソン向けの候補
