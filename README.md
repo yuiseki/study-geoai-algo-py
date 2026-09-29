@@ -22,133 +22,133 @@ uv run python -u src/001-A-linear-regression/run.py
 
 係数、損失関数、正則化、バイアス
 
-- [x] 線形回帰 ([001-A](src/001-A-linear-regression/README.md))
-- [x] Ridge / Lasso ([001-A](src/001-A-linear-regression/README.md))
-- [ ] Elastic Net
-- [x] ロジスティック回帰 ([001-B](src/001-B-logistic-regression/README.md))
+- [x] 線形回帰 (既知のデータをもとに変数同士の直線的な関係を数式で表し、未知の値を予測する。 [001-A](src/001-A-linear-regression/README.md))
+- [x] Ridge / Lasso (通常の線形回帰で、過学習を防ぐためのペナルティ項を加えた、回帰分析の手法。 [001-A](src/001-A-linear-regression/README.md))
+- [ ] Elastic Net (Ridge と Lasso のペナルティを混ぜて使う線形回帰。)
+- [x] ロジスティック回帰 (特徴量の重み付き和をシグモイド関数に通し、あるクラスに入る確率を予測する分類の手法。 [001-B](src/001-B-logistic-regression/README.md))
 
 ### 木系モデル
 
 非線形、相互作用、過学習
 
-- [x] 決定木 (Decision Tree) ([002-A](src/002-A-decision-tree/README.md))
-- [x] ランダムフォレスト (Random Forest) ([002-B](src/002-B-random-forest/README.md))
-- [x] 部分依存 (partial dependence) ([002-B](src/002-B-random-forest/README.md))
+- [x] 決定木 (Decision Tree) (特徴量のしきい値で「はい/いいえ」の分岐を繰り返し、データを分けて予測する木構造のモデル。 [002-A](src/002-A-decision-tree/README.md))
+- [x] ランダムフォレスト (Random Forest) (行と特徴量を無作為に選んで作った多数の決定木の予測を平均 (多数決) する手法。 [002-B](src/002-B-random-forest/README.md))
+- [x] 部分依存 (partial dependence) (ほかの特徴量を固定したまま 1 つの特徴量だけを動かしたとき、予測が平均してどう変わるかを描く方法。 [002-B](src/002-B-random-forest/README.md))
 
 ### Boosting
 
 現実の表形式データで強い理由
 
-- [x] Gradient Boosting (scikit-learn の HistGradientBoosting) ([003-A](src/003-A-gradient-boosting/README.md))
-- [x] XGBoost (学習率、深さ、早期打ち切り) ([003-A](src/003-A-gradient-boosting/README.md), [003-B](src/003-B-xgboost/README.md))
-- [x] LightGBM ([003-A](src/003-A-gradient-boosting/README.md))
-- [x] CatBoost ([003-A](src/003-A-gradient-boosting/README.md), [003-E](src/003-E-pooled-target/README.md))
+- [x] Gradient Boosting (scikit-learn の HistGradientBoosting) (前の木の残差 (誤差) を次の木が学ぶように、浅い木を順に足していく手法。 [003-A](src/003-A-gradient-boosting/README.md))
+- [x] XGBoost (学習率、深さ、早期打ち切り) (正則化と高速化の工夫を入れた勾配ブースティングの実装。 [003-A](src/003-A-gradient-boosting/README.md), [003-B](src/003-B-xgboost/README.md))
+- [x] LightGBM (特徴量をヒストグラムにまとめ、葉ごとに木を伸ばして速く学習する勾配ブースティングの実装。 [003-A](src/003-A-gradient-boosting/README.md))
+- [x] CatBoost (カテゴリ変数をそのまま扱え、左右対称な木を使う勾配ブースティングの実装。 [003-A](src/003-A-gradient-boosting/README.md), [003-E](src/003-E-pooled-target/README.md))
 
 ### 評価設計
 
 データリークを防ぐ
 
-- [x] K-fold / 層化 K-fold (StratifiedKFold) ([001-B](src/001-B-logistic-regression/README.md), [004-A](src/004-A-cross-validation/README.md))
-- [x] Group CV / 空間ブロック CV (GroupKFold でブロックを作った) ([004-A](src/004-A-cross-validation/README.md), [004-C](src/004-C-small-areas/README.md))
-- [ ] verde の BlockKFold
-- [x] 時間で分ける (過去で学習、未来で試す) ([004-B](src/004-B-data-leakage/README.md))
-- [ ] TimeSeriesSplit
-- [x] データリーク (target encoding、答えの言い換え) ([001-B](src/001-B-logistic-regression/README.md), [004-B](src/004-B-data-leakage/README.md))
-- [x] out-of-fold 予測をまとめて採点 ([004-A](src/004-A-cross-validation/README.md))
-- [x] 目的変数の雑音の天井 ([003-C](src/003-C-noise-ceiling/README.md))
+- [x] K-fold / 層化 K-fold (StratifiedKFold) (データを K 個に分け、1 つを試験、残りを学習に使うことを K 回繰り返して評価する方法。層化はクラスの割合を各分割で揃える。 [001-B](src/001-B-logistic-regression/README.md), [004-A](src/004-A-cross-validation/README.md))
+- [x] Group CV / 空間ブロック CV (GroupKFold でブロックを作った) (同じグループ (近い場所) の行が学習と試験の両方に入らないように、グループ単位で分けて評価する方法。 [004-A](src/004-A-cross-validation/README.md), [004-C](src/004-C-small-areas/README.md))
+- [ ] verde の BlockKFold (座標を四角いブロックに区切り、ブロック単位で分ける空間交差検証の実装。)
+- [x] 時間で分ける (過去で学習、未来で試す) (過去のデータで学習して未来のデータで試し、実際に使うときと同じ条件で評価する方法。 [004-B](src/004-B-data-leakage/README.md))
+- [ ] TimeSeriesSplit (学習の期間を少しずつ延ばしながら、その直後の期間で試すことを繰り返す時系列の交差検証。)
+- [x] データリーク (target encoding、答えの言い換え) (本番では使えない答えの情報が特徴量や学習に紛れ込み、評価が実力より良く見えること。 [001-B](src/001-B-logistic-regression/README.md), [004-B](src/004-B-data-leakage/README.md))
+- [x] out-of-fold 予測をまとめて採点 (各行を、その行を学習に使わなかったモデルで予測し、全行の予測をまとめて 1 回で採点する方法。 [004-A](src/004-A-cross-validation/README.md))
+- [x] 目的変数の雑音の天井 (目的変数そのものに含まれる雑音のために、どんなモデルでも超えられない点数の上限。 [003-C](src/003-C-noise-ceiling/README.md))
 
 ### クラスタリング
 
 教師なしで構造を見つける
 
-- [x] k-means、シルエット ([005-A](src/005-A-k-means/README.md), [005-C](src/005-C-grid-types/README.md))
-- [x] DBSCAN、k 距離グラフ ([005-B](src/005-B-dbscan/README.md))
-- [x] HDBSCAN ([005-B](src/005-B-dbscan/README.md))
-- [x] ディリクレ過程混合 (DPMM、BayesianGaussianMixture) ([005-D](src/005-D-dpmm/README.md))
-- [x] MAUP (集計単位で結果が変わる) ([005-C](src/005-C-grid-types/README.md))
+- [x] k-means、シルエット (データを k 個の塊に分け、各点を最も近い塊の中心に割り当てることを繰り返す手法。シルエットは塊の分かれ具合の指標。 [005-A](src/005-A-k-means/README.md), [005-C](src/005-C-grid-types/README.md))
+- [x] DBSCAN、k 距離グラフ (半径 eps の中に点が十分ある所を密な塊としてつなぎ、どこにも入らない点を外れ値とする手法。k 距離グラフは eps の目安を探す図。 [005-B](src/005-B-dbscan/README.md))
+- [x] HDBSCAN (eps を 1 つに決めず、密度の階層から安定して残る塊を選ぶ DBSCAN の拡張。 [005-B](src/005-B-dbscan/README.md))
+- [x] ディリクレ過程混合 (DPMM、BayesianGaussianMixture) (塊の数を事前に固定せず、データに合わせて必要な数だけ正規分布を使う混合モデル。 [005-D](src/005-D-dpmm/README.md))
+- [x] MAUP (集計単位で結果が変わる) (同じデータでも、集計する区画の大きさや区切り方を変えると分析の結果が変わる問題。 [005-C](src/005-C-grid-types/README.md))
 
 ### 次元削減
 
 高次元データをどう圧縮するか
 
-- [x] PCA ([006-A](src/006-A-pca/README.md), [006-B](src/006-B-pca-wards/README.md))
-- [x] 並行分析、ブートストラップ (残す主成分の数) ([006-A](src/006-A-pca/README.md))
+- [x] PCA (データのばらつきが最も大きい向きから順に新しい軸 (主成分) を取り、少ない軸で要約する次元削減の手法。 [006-A](src/006-A-pca/README.md), [006-B](src/006-B-pca-wards/README.md))
+- [x] 並行分析、ブートストラップ (残す主成分の数) (乱数のデータの固有値と比べたり、データを復元抽出し直して軸の安定性を見たりして、残す主成分の数を決める方法。 [006-A](src/006-A-pca/README.md))
 
 ### 異常検知
 
 「普通から外れる」とは何か
 
-- [ ] Isolation Forest
-- [ ] LOF (Local Outlier Factor)
+- [ ] Isolation Forest (無作為な分割を繰り返し、少ない回数で孤立する点ほど異常とみなす異常検知の手法。)
+- [ ] LOF (Local Outlier Factor) (近所の点と比べて周りの密度が低い点ほど異常とみなす異常検知の手法。)
 
 ### 時系列
 
 時間順序、未来情報リーク
 
-- [ ] ARIMA / ETS
-- [ ] lag 特徴 + GBDT
+- [ ] ARIMA / ETS (過去の値と誤差の自己相関 (ARIMA) や、水準、傾向、季節の指数平滑 (ETS) で、時系列の先を予測する統計モデル。)
+- [ ] lag 特徴 + GBDT (過去の時点の値 (ラグ) を特徴量にして、時系列の予測を勾配ブースティングの回帰として解く方法。)
 
 ### 確率・不確実性
 
 「当たる」以外に「どれくらい信用できるか」
 
-- [x] 較正 (calibration): Platt、isotonic、ECE、Brier、信頼度曲線 ([011-B](src/011-B-calibration/README.md))
-- [ ] 予測区間 (prediction interval)
+- [x] 較正 (calibration): Platt、isotonic、ECE、Brier、信頼度曲線 (予測した確率が、実際にその割合で当たるように合わせること。Platt はシグモイド、isotonic は単調な階段で合わせ、ECE、Brier、信頼度曲線で合い具合を測る。 [011-B](src/011-B-calibration/README.md))
+- [ ] 予測区間 (prediction interval) (1 つの値ではなく、本当の値が一定の確率で入る範囲を予測すること。)
 
 ### 説明可能性
 
 モデルが何を根拠にしているか
 
-- [x] permutation importance ([011-A](src/011-A-shap/README.md))
-- [x] SHAP (TreeExplainer) ([011-A](src/011-A-shap/README.md))
+- [x] permutation importance (1 つの特徴量の値をシャッフルしたとき、点数がどれだけ下がるかで、その特徴量の重要度を測る方法。 [011-A](src/011-A-shap/README.md))
+- [x] SHAP (TreeExplainer) (1 件ごとの予測を、各特徴量の寄与の足し算に分ける説明の手法 (協力ゲームのシャープレイ値に基づく)。 [011-A](src/011-A-shap/README.md))
 
 ### 線形最適化
 
 制約付きで最良解を選ぶ
 
-- [x] LP、LP 緩和 ([008-A](src/008-A-lp/README.md))
-- [x] 双対価格 ([008-A](src/008-A-lp/README.md))
-- [x] 内点法 ([008-B](src/008-B-milp/README.md))
+- [x] LP、LP 緩和 (線形の制約のもとで線形の目的を最大 (最小) にする最適化。LP 緩和は、整数の変数を連続値に緩めて LP として解くこと。 [008-A](src/008-A-lp/README.md))
+- [x] 双対価格 (制約を 1 単位緩めたとき、目的の値がどれだけ良くなるかを表す値。 [008-A](src/008-A-lp/README.md))
+- [x] 内点法 (制約の境界ではなく実行可能な領域の内側を通って、LP の最適解に近づく解法。 [008-B](src/008-B-milp/README.md))
 
 ### 整数最適化
 
 選ぶ/選ばない、配置、割当
 
-- [x] MILP (最大被覆) ([008-B](src/008-B-milp/README.md))
-- [x] 欲張り法と LP の上限による保証 ([008-B](src/008-B-milp/README.md))
-- [x] p-median、交換法 (Teitz-Bart) ([009-B](src/009-B-facility-location/README.md))
+- [x] MILP (最大被覆) (一部の変数を整数 (0 か 1 など) に限った線形最適化。最大被覆は、k か所を選んで覆う人の数を最大にする問題。 [008-B](src/008-B-milp/README.md))
+- [x] 欲張り法と LP の上限による保証 (その時点で最も得な選択を順に取る近似解法と、LP 緩和の値 (最適値の上限) を比べて、最適からどれだけ離れうるかを示すこと。 [008-B](src/008-B-milp/README.md))
+- [x] p-median、交換法 (Teitz-Bart) (p か所の施設を選び、需要から最寄りの施設までの距離の合計を最小にする問題。交換法は、選んだ施設を 1 つずつ入れ替えて改善していく近似解法。 [009-B](src/009-B-facility-location/README.md))
 
 ### グラフ
 
 経路・ネットワーク問題
 
-- [x] Dijkstra (多始点) ([007-A](src/007-A-dijkstra/README.md))
-- [x] A* ([007-B](src/007-B-a-star/README.md))
-- [x] 二部グラフの最大マッチング ([010-A](src/010-A-cp-sat/README.md))
-- [ ] min-cost flow (輸送問題は LP で解いた)
+- [x] Dijkstra (多始点) (始点から近い順にノードの最短距離を確定していく最短経路の手法。多始点は、複数の始点をまとめて 1 回で探す。 [007-A](src/007-A-dijkstra/README.md))
+- [x] A* (ゴールまでの距離の見積もりを足して有望な方向から探し、Dijkstra より少ない探索で最短経路を見つける手法。 [007-B](src/007-B-a-star/README.md))
+- [x] 二部グラフの最大マッチング (2 つのグループの間で、同じ点を 2 度使わずに結べる組の数を最大にする問題。 [010-A](src/010-A-cp-sat/README.md))
+- [ ] min-cost flow (容量と費用のあるネットワークで、必要な量を最小の費用で流す問題。輸送問題は LP で解いた。)
 
 ### 組合せ最適化
 
 探索空間が爆発する問題
 
-- [ ] knapsack
-- [x] assignment (輸送問題、ハンガリアン法) ([009-A](src/009-A-assignment/README.md))
-- [ ] TSP
-- [ ] VRP
+- [ ] knapsack (重さの上限の中で、価値の合計が最大になるように品物を選ぶ問題。)
+- [x] assignment (輸送問題、ハンガリアン法) (人と仕事のように 2 つの集まりを組み合わせ、費用の合計を最小にする割当の問題。ハンガリアン法はその厳密な解法。 [009-A](src/009-A-assignment/README.md))
+- [ ] TSP (すべての地点を 1 回ずつ回って出発点に戻る、最短の巡回路を求める問題 (巡回セールスマン問題)。)
+- [ ] VRP (複数の車両で、容量や時間の制約を守りながら、すべての客を回る最短の経路を求める問題 (配送計画問題)。)
 
 ### 制約充足
 
 勤務表、スケジューリング
 
-- [x] CP-SAT ([010-A](src/010-A-cp-sat/README.md))
-- [x] 区間変数と NoOverlap、対称性の除去 ([010-B](src/010-B-scheduling/README.md))
+- [x] CP-SAT (変数の取りうる値と制約を書くと、制約伝播と SAT ソルバーの探索で解を見つける OR-Tools の制約ソルバー。 [010-A](src/010-A-cp-sat/README.md))
+- [x] 区間変数と NoOverlap、対称性の除去 (開始と長さを持つ区間を変数にし、NoOverlap で同じ資源の区間が重ならないようにする。対称性の除去は、入れ替えても同じになる解を 1 つに絞って探索を減らすこと。 [010-B](src/010-B-scheduling/README.md))
 
 ### 多目的意思決定
 
 「最適」が一つではない問題
 
-- [x] 重み付き和 (weighted sum) ([012-A](src/012-A-multi-objective-optimization/README.md))
-- [x] パレートフロンティア、ε 制約法 ([012-B](src/012-B-epsilon-constraint/README.md))
+- [x] 重み付き和 (weighted sum) (複数の目的に重みを掛けて足し、1 つの目的にして解く多目的最適化の方法。 [012-A](src/012-A-multi-objective-optimization/README.md))
+- [x] パレートフロンティア、ε 制約法 (どの目的も同時には改善できない解 (パレート解) の集まり。ε 制約法は、1 つの目的だけを残し、ほかを上限の制約にして解くことを繰り返して、パレート解を並べる方法。 [012-B](src/012-B-epsilon-constraint/README.md))
 
 ## ステップごとの記録
 
