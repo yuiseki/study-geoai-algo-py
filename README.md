@@ -157,8 +157,8 @@ uv run python -u src/001-A-linear-regression/run.py
 
 実験を、データサイエンティストの作業の順 (問題設定、データの確認、ベースライン、評価、モデル、誤差の分析、結論) に並べ直したもの。
 
-- [001 携帯の通信速度は、街の様子から予測できるか](case-stadies/001-mobile-speed/README.md): 003-A から 003-E。予測の信号が弱く、複雑なモデルを採用する根拠が無い。
-- [002 台東区の拠点の配置](case-stadies/002-shelter-planning/README.md): 007、008、009、012。単一の最適解ではなく、トレードオフを示す。
+- [001 携帯の通信速度は、街の様子から予測できるか](case-studies/001-mobile-speed/README.md): 003-A から 003-E と 004-E。予測の信号が弱く、複雑なモデルを採用する根拠が無い。
+- [002 台東区の拠点の配置](case-studies/002-shelter-planning/README.md): 007、008、009 (009-C を含む)、012。単一の最適解ではなく、トレードオフを示す。
 
 ## ステップごとの記録
 
@@ -189,6 +189,7 @@ uv run python -u src/001-A-linear-regression/run.py
 - 004-B データリーク ([README](src/004-B-data-leakage/README.md), [run.py](src/004-B-data-leakage/run.py)): target encoding の漏れはランダム分割では見抜けない。撮影年の漏れは小さい。
 - 004-C 範囲の小ささ ([README](src/004-C-small-areas/README.md), [run.py](src/004-C-small-areas/run.py)): 空間 CV で点数が下がるのはどの区でも同じで、ブロックの少ない区ほど大きい。
 - 004-D 時系列 ([README](src/004-D-time-series/README.md), [run.py](src/004-D-time-series/run.py)): 東京の月の気温は、温暖化で平年値が 1.3C 低く外れ、ETS が最も良い。月の雨はどの手法も平年値を超えない。混ぜた K-fold の甘さはこの系列では小さい。
+- 004-E 速度の評価のやり直し ([README](src/004-E-speed-evaluation/README.md), [run.py](src/004-E-speed-evaluation/run.py)): 区の平均は当たらず、縮めた前四半期がどのモデルとも同等以上。時間だけで分けると同じタイルの場所を覚えて点数が倍以上に見え、時間と空間で分けると元に戻る。
 
 ### 5. k-means / DBSCAN (と DPMM)
 
@@ -219,6 +220,7 @@ uv run python -u src/001-A-linear-regression/run.py
 
 - 009-A 割当 ([README](src/009-A-assignment/README.md), [run.py](src/009-A-assignment/run.py)): 容量のある避難場所への割当。輸送問題の LP は自動的に整数で、ハンガリアン法と一致する。荒川の氾濫時は実行不可能。
 - 009-B p-median ([README](src/009-B-facility-location/README.md), [run.py](src/009-B-facility-location/run.py)): 交換法でほぼ最適。同じ数の拠点でも、p-median と最大被覆では選ぶ場所がまったく違う。
+- 009-C ランダムな配置 ([README](src/009-C-random-placement/README.md), [run.py](src/009-C-random-placement/run.py)): 最適は 2,000 回のランダムな配置のどれよりも良い。現在の避難場所は平均の距離ではランダムより良く、400m のカバーではランダム並み。
 
 ### 10. CP-SAT / スケジューリング
 
