@@ -50,7 +50,7 @@ PAGE = f"https://www.geospatial.jp/ckan/dataset/{DATASET}"
 PUBLIC_PREFIX = f"https://z.yuiseki.net/static/{DATASET}/"
 DEST = Path("/www/html/static") / DATASET
 SCRATCH = Path(tempfile.gettempdir()) / "study-geoai-mirror-mlit-jinryu"
-UA = f"study-geoai-mirror/1 (+{PUBLIC_PREFIX})"
+UA = f"study-geoai-algo-py-mirror/1 (+{PUBLIC_PREFIX})"
 # Cloudflare in front of z.yuiseki.net does not cache files above 512 MB and
 # then answers the first Range request with the whole body.
 MAX_BYTES = 512 * 1024 * 1024
@@ -330,7 +330,7 @@ def render_readme(manifest: dict) -> str:
 |---|---:|---|
 {src}
 
-記録の本体は [manifest.json](manifest.json)。この README と LICENSE は、取得スクリプト (study-geoai の scripts/mirror_mlit_jinryu.py) を流すたびに作り直される。
+記録の本体は [manifest.json](manifest.json)。この README と LICENSE は、取得スクリプト (study-geoai-algo-py の scripts/mirror_mlit_jinryu.py) を流すたびに作り直される。
 """
 
 

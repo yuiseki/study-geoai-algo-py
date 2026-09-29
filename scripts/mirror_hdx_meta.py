@@ -42,7 +42,7 @@ PAGE = "https://data.humdata.org/dataset/{}"
 PUBLIC_PREFIX = "https://z.yuiseki.net/static/hdx-meta/"
 DEST = Path("/www/html/static/hdx-meta")
 SCRATCH = Path("/tmp/study-geoai-mirror-hdx-meta")
-UA = f"study-geoai-mirror/1 (+{PUBLIC_PREFIX})"
+UA = f"study-geoai-algo-py-mirror/1 (+{PUBLIC_PREFIX})"
 # Cloudflare in front of z.yuiseki.net does not cache files above 512 MB and
 # then answers the first Range request with the whole body.
 MAX_BYTES = 512 * 1024 * 1024
@@ -912,7 +912,7 @@ select * from read_parquet([
 {chr(10).join(sections)}
 ## 更新
 
-取得は {manifest["built"]}。Movement Distribution は HDX に直近の約 90 日しか残らず、2 週間ごとに新しいファイルが足されて古いものが消える。取得スクリプト (study-geoai の scripts/mirror_hdx_meta.py) を流し直すと、新しいファイルだけを落とし、HDX から消えたファイルも消さずに残したまま、手元にある元のファイルすべてから Parquet を作り直す。
+取得は {manifest["built"]}。Movement Distribution は HDX に直近の約 90 日しか残らず、2 週間ごとに新しいファイルが足されて古いものが消える。取得スクリプト (study-geoai-algo-py の scripts/mirror_hdx_meta.py) を流し直すと、新しいファイルだけを落とし、HDX から消えたファイルも消さずに残したまま、手元にある元のファイルすべてから Parquet を作り直す。
 
 新しく落としたファイルは、サーバーの示す長さと、S3 の ETag が MD5 のときはその MD5 と一致することを確かめてから置く。記録の本体は [manifest.json](manifest.json) (resource id、HDX での名前と URL と大きさ、更新日、sha256、取得時刻)。この README と LICENSE は、スクリプトを流すたびに作り直される。
 """

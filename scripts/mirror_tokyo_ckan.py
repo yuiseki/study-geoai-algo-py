@@ -3,7 +3,7 @@
 The files are listed in the Tokyo Open Data Catalog (CKAN), indexed as a static
 STAC at https://stac.yuiseki.net/tokyo-ckan/, but they live on each ward's own
 site, where links break (one Taito City CSV was already 404 on 2026-09-28).
-This copies them unchanged, one directory per dataset, so study-geoai can read
+This copies them unchanged, one directory per dataset, so study-geoai-algo-py can read
 the same bytes later. Only CC-BY-4.0 datasets are copied.
 
     uv run python scripts/mirror_tokyo_ckan.py              # the default families
@@ -37,7 +37,7 @@ ITEMS = "https://stac.yuiseki.net/tokyo-ckan/items.parquet"
 ASSETS = "https://stac.yuiseki.net/tokyo-ckan/assets.parquet"
 DEST = Path("/www/html/static/tokyo-ckan-files")
 PUBLIC = "https://z.yuiseki.net/static/tokyo-ckan-files"
-UA = "study-geoai-mirror/1 (+https://z.yuiseki.net/static/tokyo-ckan-files/)"
+UA = "study-geoai-algo-py-mirror/1 (+https://z.yuiseki.net/static/tokyo-ckan-files/)"
 MAX_BYTES = 50 * 1024 * 1024
 FAMILIES = [
     "指定緊急避難場所一覧", "防災行政無線設置一覧", "公衆無線LANアクセスポイント一覧",
@@ -112,7 +112,7 @@ def write_docs(dest: Path, manifest: dict) -> None:
         "# 東京 23 区の施設一覧 (CSV の再配布)",
         "",
         "東京都オープンデータカタログ (CKAN) に載っている 23 区の施設一覧の CSV を、取得したときのまま (中身を変えずに) 置いたもの。",
-        "元のファイルは各区のサイトにあり、リンクが切れることがあるので、study-geoai で同じ中身を読めるように写した。",
+        "元のファイルは各区のサイトにあり、リンクが切れることがあるので、study-geoai-algo-py で同じ中身を読めるように写した。",
         "CC-BY-4.0 のデータセットだけを置いている。ライセンスとクレジットは [LICENSE](LICENSE)、記録の本体は [manifest.json](manifest.json)。",
         "",
         f"置いたファイル {len(ok)}、取得できなかったもの {len(bad)}。",

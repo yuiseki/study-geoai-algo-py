@@ -1,5 +1,5 @@
 [project]
-name = "study-geoai"
+name = "study-geoai-algo-py"
 version = "0.1.0"
 description = "Study environment for classical ML and optimisation in GeoAI."
 readme = "README.md"

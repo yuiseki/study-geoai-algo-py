@@ -104,7 +104,7 @@ Movement Distribution、Movement Range Maps、Commuting Zones、Business Activit
 - HDX から消えたファイルは消さずに残す。2 週間ごとに次のコマンドを流すと、新しいファイルだけを落とし、残っているすべての CSV から Parquet を作り直す。
 
 ```sh
-cd /Workspaces/repos/__yuiseki/_study/study-geoai
+cd study-geoai-algo-py
 systemd-run --user --scope -p MemoryMax=8G -p MemorySwapMax=0 \
   uv run python -u scripts/mirror_hdx_meta.py > /tmp/study-geoai-mirror-hdx-meta/logs/run-$(date +%Y%m%dT%H%M%S).log 2>&1
 ```

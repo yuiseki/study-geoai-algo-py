@@ -30,7 +30,7 @@ def overlapping(bboxes: list[list[float]], bbox: tuple[float, float, float, floa
 
 
 def _json(url: str) -> dict:
-    req = urllib.request.Request(url, headers={"User-Agent": "study-geoai"})
+    req = urllib.request.Request(url, headers={"User-Agent": "study-geoai-algo-py"})
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
 

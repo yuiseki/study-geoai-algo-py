@@ -90,7 +90,7 @@ def cog_options(project: str) -> list[str]:
     return COG_OPTIONS + (["-co", "RESAMPLING=NEAREST"] if project in CATEGORICAL else [])
 
 
-UA = "study-geoai-mirror/1 (+https://z.yuiseki.net/static/worldpop/)"
+UA = "study-geoai-algo-py-mirror/1 (+https://z.yuiseki.net/static/worldpop/)"
 
 _lock = threading.Lock()
 
@@ -603,7 +603,7 @@ def render_readme(manifest: dict) -> str:
     lines += [
         "",
         "STAC の item は `https://api.stac.worldpop.org/collections/<国>/items/<item id>` にある。",
-        "記録の本体は [manifest.json](manifest.json)。この README と LICENSE は、取得スクリプト (study-geoai の scripts/mirror_worldpop.py) を流すたびに作り直される。",
+        "記録の本体は [manifest.json](manifest.json)。この README と LICENSE は、取得スクリプト (study-geoai-algo-py の scripts/mirror_worldpop.py) を流すたびに作り直される。",
         "",
     ]
     return "\n".join(lines)

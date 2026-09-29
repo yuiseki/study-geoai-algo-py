@@ -48,7 +48,7 @@ def manifest() -> dict:
     global _manifest
     if _manifest is None:
         req = urllib.request.Request(
-            f"{BASE}/manifest.json?cb={int(time.time())}", headers={"User-Agent": "study-geoai"}
+            f"{BASE}/manifest.json?cb={int(time.time())}", headers={"User-Agent": "study-geoai-algo-py"}
         )
         with urllib.request.urlopen(req, timeout=30) as r:
             _manifest = json.load(r)

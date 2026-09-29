@@ -79,7 +79,7 @@ def search(query: str) -> list[dict]:
         return json.loads(path.read_text())
     params = {"q": query, "format": "jsonv2", "limit": 10, "countrycodes": "jp"}
     req = urllib.request.Request(
-        f"{NOMINATIM}?{urllib.parse.urlencode(params)}", headers={"User-Agent": "study-geoai"}
+        f"{NOMINATIM}?{urllib.parse.urlencode(params)}", headers={"User-Agent": "study-geoai-algo-py"}
     )
     with urllib.request.urlopen(req, timeout=30) as r:
         results = json.load(r)
