@@ -38,6 +38,9 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.16.9",
 ]
+tabpfn = [
+    "tabpfn==9.0.0",
+]
 
 [tool.ruff]
 target-version = "py312"

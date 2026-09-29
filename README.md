@@ -19,7 +19,7 @@ uv run python -u src/001-A-linear-regression/run.py
 
 ## TODO
 
-用語とアルゴリズムの達成度。チェックが付いているものは実験で動かしたもの (括弧の中がその実験)、付いていないものはまだ動かしていないもの。各系統の最初の行は、身につけたい感覚。52 項目のうち 46 項目が済み。
+用語とアルゴリズムの達成度。チェックが付いているものは実験で動かしたもの (括弧の中がその実験)、付いていないものはまだ動かしていないもの。各系統の最初の行は、身につけたい感覚。53 項目のうち 47 項目が済み。
 
 ### 回帰・分類
 
@@ -46,6 +46,7 @@ uv run python -u src/001-A-linear-regression/run.py
 - [x] XGBoost (学習率、深さ、早期打ち切り) (正則化と高速化の工夫を入れた勾配ブースティングの実装。 [003-A](src/003-A-gradient-boosting/README.md), [003-B](src/003-B-xgboost/README.md))
 - [x] LightGBM (特徴量をヒストグラムにまとめ、葉ごとに木を伸ばして速く学習する勾配ブースティングの実装。 [003-A](src/003-A-gradient-boosting/README.md))
 - [x] CatBoost (カテゴリ変数をそのまま扱え、左右対称な木を使う勾配ブースティングの実装。 [003-A](src/003-A-gradient-boosting/README.md), [003-E](src/003-E-pooled-target/README.md))
+- [x] TabPFN (人工的な表で事前学習した Transformer に、学習データの行を入力として読ませ、学習なしの 1 回の順伝播で予測する表形式の基盤モデル。 [003-F](src/003-F-tabpfn/README.md))
 
 ### 評価設計
 
@@ -186,6 +187,7 @@ uv run python -u src/001-A-linear-regression/run.py
 - 003-C 雑音の天井 ([README](src/003-C-noise-ceiling/README.md), [run.py](src/003-C-noise-ceiling/run.py)): 同じタイルの前の四半期ですら速度をほとんど説明できない。目的変数がほとんど雑音。
 - 003-D 基地局 ([README](src/003-D-cell-towers/README.md), [run.py](src/003-D-cell-towers/run.py)): OpenCelliD の基地局を足しても、ほとんど良くならない。
 - 003-E まとめた目的変数 ([README](src/003-E-pooled-target/README.md), [run.py](src/003-E-pooled-target/run.py)): 3 四半期を測定回数で重み付けすると少し上がるが、乱数の種による揺れがモデルの差と同じくらいある。
+- 003-F TabPFN ([README](src/003-F-tabpfn/README.md), [run.py](src/003-F-tabpfn/run.py)): 23 区の無電柱化で、120 行の TabPFN が 1,000 行の XGBoost と同じ、3,000 行で全 83 万行の XGBoost との差 0.013。ただし 10,000 行で 164 秒と、GBDT より数百倍遅い。
 
 ### 4. 交差検証とデータリーク
 
