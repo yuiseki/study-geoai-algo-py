@@ -31,7 +31,8 @@ def manifest() -> dict:
     global _manifest
     if _manifest is None:
         req = urllib.request.Request(
-            f"{BASE}/manifest.json?cb={int(time.time())}", headers={"User-Agent": "study-geoai-algo-py"}
+            f"{BASE}/manifest.json?cb={int(time.time())}",
+            headers={"User-Agent": "study-geoai-algo-py"},
         )
         with urllib.request.urlopen(req, timeout=30) as r:
             _manifest = json.load(r)
@@ -73,7 +74,9 @@ def _rows(record: dict) -> list[dict]:
     enc = record.get("encoding")
     if enc not in DECODE:
         return [{**base, "row": None, "status": f"unsupported_{enc}"}]
-    req = urllib.request.Request(f"{BASE}/{record['path']}", headers={"User-Agent": "study-geoai-algo-py"})
+    req = urllib.request.Request(
+        f"{BASE}/{record['path']}", headers={"User-Agent": "study-geoai-algo-py"}
+    )
     with urllib.request.urlopen(req, timeout=60) as r:
         text = r.read().decode(DECODE[enc])
     table = list(csv.reader(io.StringIO(text)))

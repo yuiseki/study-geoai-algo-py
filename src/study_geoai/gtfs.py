@@ -34,7 +34,9 @@ def load(con: duckdb.DuckDBPyConnection, name: str) -> list[str]:
     path = FEEDS[name]
     folder = CACHE_DIR / "gtfs" / path.removesuffix(".zip")
     if not (folder / "trips.txt").exists():
-        req = urllib.request.Request(f"{MIRROR}/{path}", headers={"User-Agent": "study-geoai-algo-py"})
+        req = urllib.request.Request(
+            f"{MIRROR}/{path}", headers={"User-Agent": "study-geoai-algo-py"}
+        )
         with urllib.request.urlopen(req, timeout=60) as r:
             data = r.read()
         tmp = folder.with_suffix(".partial")
