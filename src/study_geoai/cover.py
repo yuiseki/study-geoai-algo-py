@@ -149,3 +149,40 @@ def solve_ortools(sets, pop: np.ndarray, k: float, integer: bool) -> dict:
     s.Solve()
     return {"objective": s.Objective().Value(), "seconds": time.perf_counter() - t,
             "x": np.array([v.solution_value() for v in x])}  # fmt: skip
+
+
+def solve_multi(sets, pop: np.ndarray, flood: np.ndarray, k: int | None = None,
+                w_site: float = 0.0, w_flood: float = 0.0, max_flood: float | None = None,
+                time_limit: float = 60.0) -> dict:  # fmt: skip
+    """Covering with three objectives: people covered (more), sites opened (fewer)
+    and the flood rank summed over the opened sites (lower).
+
+    Weighted sum: maximise covered - w_site * sites - w_flood * flood.
+    epsilon constraint: add sum(flood_j x_j) <= max_flood (and fix k to fix the
+    sites). k=None leaves the number of sites free. A MILP via scipy (HiGHS).
+    """
+    from scipy.optimize import Bounds, LinearConstraint, milp
+
+    m, n = len(sets), len(pop)
+    a = _matrix(sets, n).tocsr()  # rows: y_i - sum x_j <= 0, then sum x_j
+    cons = [LinearConstraint(a[:n], -np.inf, 0)]
+    if k is not None:
+        cons.append(LinearConstraint(a[n:], k, k))
+    if max_flood is not None:
+        row = np.concatenate([flood, np.zeros(n)])[None, :]
+        cons.append(LinearConstraint(row, -np.inf, max_flood))
+    c = np.concatenate([w_site + w_flood * flood, -pop]).astype(float)
+    integrality = np.concatenate([np.ones(m), np.zeros(n)])
+    t = time.perf_counter()
+    r = milp(c, constraints=cons, integrality=integrality, bounds=Bounds(0, 1),
+             options={"time_limit": time_limit})  # fmt: skip
+    seconds = time.perf_counter() - t
+    if r.x is None:
+        return {"status": r.message, "seconds": seconds}
+    x = np.round(r.x[:m])
+    hit = np.zeros(n, dtype=bool)
+    for j in np.flatnonzero(x > 0.5):
+        hit[sets[j]] = True
+    return {"x": x, "covered": float(pop[hit].sum()), "sites": int(x.sum()),
+            "flood": float(flood @ x), "status": "Optimal" if r.status == 0 else r.message,
+            "seconds": seconds}  # fmt: skip

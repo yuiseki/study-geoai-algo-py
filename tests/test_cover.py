@@ -75,3 +75,30 @@ def test_interior_point_gives_the_same_lp():
     a = cover.solve(SETS, POP, 1.5, integer=False, lp_solver="ipm")
     b = cover.solve(SETS, POP, 1.5, integer=False, lp_solver="simplex")
     assert a["objective"] == pytest.approx(b["objective"], rel=1e-6)
+
+
+# three sites covering disjoint groups of 10, 20 and 14 people, with flood ranks 0, 2 and 1
+M_SETS = [np.array([0]), np.array([1]), np.array([2])]
+M_POP = np.array([10.0, 20.0, 14.0])
+M_FLOOD = np.array([0.0, 2.0, 1.0])
+
+
+def test_weighted_sum_never_picks_an_unsupported_point():
+    picked = set()
+    for w in np.linspace(0, 20, 81):
+        r = cover.solve_multi(M_SETS, M_POP, M_FLOOD, k=1, w_flood=w)
+        picked.add(int(np.flatnonzero(r["x"] > 0.5)[0]))
+    # site 2 (14 people, rank 1) lies below the line from (10, 0) to (20, 2)
+    assert picked == {0, 1}
+
+
+def test_epsilon_constraint_finds_it():
+    r = cover.solve_multi(M_SETS, M_POP, M_FLOOD, k=1, max_flood=1.0)
+    assert np.flatnonzero(r["x"] > 0.5).tolist() == [2]
+    assert r["covered"] == pytest.approx(14.0) and r["flood"] == pytest.approx(1.0)
+
+
+def test_free_k_trades_people_against_sites():
+    few = cover.solve_multi(M_SETS, M_POP, M_FLOOD, w_site=15.0)
+    many = cover.solve_multi(M_SETS, M_POP, M_FLOOD, w_site=5.0)
+    assert few["sites"] == 1 and many["sites"] == 3
