@@ -260,3 +260,107 @@ strings .venv/lib/python3.12/site-packages/ortools/.libs/libhighs.so.1 | grep -x
 ```
 
 [tests/test_env.py](tests/test_env.py) の `test_ortools_and_highspy_share_one_process` checks both import orders.
+
+## TODO
+
+用語とアルゴリズムの達成度。[x] は実験で動かしたもの (括弧の中がその実験)、[ ] はまだ動かしていないもの。52 項目のうち 40 項目が済み。
+
+### 回帰・分類
+
+- [x] 線形回帰 ([001-A](src/001-A-linear-regression/README.md))
+- [x] Ridge / Lasso ([001-A](src/001-A-linear-regression/README.md))
+- [ ] Elastic Net
+- [x] ロジスティック回帰 ([001-B](src/001-B-logistic-regression/README.md))
+
+### 木系モデル
+
+- [x] 決定木 (Decision Tree) ([002-A](src/002-A-decision-tree/README.md))
+- [x] ランダムフォレスト (Random Forest) ([002-B](src/002-B-random-forest/README.md))
+- [x] 部分依存 (partial dependence) ([002-B](src/002-B-random-forest/README.md))
+
+### Boosting
+
+- [x] Gradient Boosting (scikit-learn の HistGradientBoosting) ([003-A](src/003-A-gradient-boosting/README.md))
+- [x] XGBoost (学習率、深さ、早期打ち切り) ([003-A](src/003-A-gradient-boosting/README.md), [003-B](src/003-B-xgboost/README.md))
+- [x] LightGBM ([003-A](src/003-A-gradient-boosting/README.md))
+- [x] CatBoost ([003-A](src/003-A-gradient-boosting/README.md), [003-E](src/003-E-pooled-target/README.md))
+
+### 評価設計
+
+- [x] K-fold / 層化 K-fold (StratifiedKFold) ([001-B](src/001-B-logistic-regression/README.md), [004-A](src/004-A-cross-validation/README.md))
+- [x] Group CV / 空間ブロック CV (GroupKFold でブロックを作った) ([004-A](src/004-A-cross-validation/README.md), [004-C](src/004-C-small-areas/README.md))
+- [ ] verde の BlockKFold
+- [x] 時間で分ける (過去で学習、未来で試す) ([004-B](src/004-B-data-leakage/README.md))
+- [ ] TimeSeriesSplit
+- [x] データリーク (target encoding、答えの言い換え) ([001-B](src/001-B-logistic-regression/README.md), [004-B](src/004-B-data-leakage/README.md))
+- [x] out-of-fold 予測をまとめて採点 ([004-A](src/004-A-cross-validation/README.md))
+- [x] 目的変数の雑音の天井 ([003-C](src/003-C-noise-ceiling/README.md))
+
+### クラスタリング
+
+- [x] k-means、シルエット ([005-A](src/005-A-k-means/README.md), [005-C](src/005-C-grid-types/README.md))
+- [x] DBSCAN、k 距離グラフ ([005-B](src/005-B-dbscan/README.md))
+- [x] HDBSCAN ([005-B](src/005-B-dbscan/README.md))
+- [x] ディリクレ過程混合 (DPMM、BayesianGaussianMixture) ([005-D](src/005-D-dpmm/README.md))
+- [x] MAUP (集計単位で結果が変わる) ([005-C](src/005-C-grid-types/README.md))
+
+### 次元削減
+
+- [x] PCA ([006-A](src/006-A-pca/README.md), [006-B](src/006-B-pca-wards/README.md))
+- [x] 並行分析、ブートストラップ (残す主成分の数) ([006-A](src/006-A-pca/README.md))
+
+### 異常検知
+
+- [ ] Isolation Forest
+- [ ] LOF (Local Outlier Factor)
+
+### 時系列
+
+- [ ] ARIMA / ETS
+- [ ] lag 特徴 + GBDT
+
+### 確率・不確実性
+
+- [x] 較正 (calibration): Platt、isotonic、ECE、Brier、信頼度曲線 ([011-B](src/011-B-calibration/README.md))
+- [ ] 予測区間 (prediction interval)
+
+### 説明可能性
+
+- [x] permutation importance ([011-A](src/011-A-shap/README.md))
+- [x] SHAP (TreeExplainer) ([011-A](src/011-A-shap/README.md))
+
+### 線形最適化
+
+- [x] LP、LP 緩和 ([008-A](src/008-A-lp/README.md))
+- [x] 双対価格 ([008-A](src/008-A-lp/README.md))
+- [x] 内点法 ([008-B](src/008-B-milp/README.md))
+
+### 整数最適化
+
+- [x] MILP (最大被覆) ([008-B](src/008-B-milp/README.md))
+- [x] 欲張り法と LP の上限による保証 ([008-B](src/008-B-milp/README.md))
+- [x] p-median、交換法 (Teitz-Bart) ([009-B](src/009-B-facility-location/README.md))
+
+### グラフ
+
+- [x] Dijkstra (多始点) ([007-A](src/007-A-dijkstra/README.md))
+- [x] A* ([007-B](src/007-B-a-star/README.md))
+- [x] 二部グラフの最大マッチング ([010-A](src/010-A-cp-sat/README.md))
+- [ ] min-cost flow (輸送問題は LP で解いた)
+
+### 組合せ最適化
+
+- [ ] knapsack
+- [x] assignment (輸送問題、ハンガリアン法) ([009-A](src/009-A-assignment/README.md))
+- [ ] TSP
+- [ ] VRP
+
+### 制約充足
+
+- [x] CP-SAT ([010-A](src/010-A-cp-sat/README.md))
+- [x] 区間変数と NoOverlap、対称性の除去 ([010-B](src/010-B-scheduling/README.md))
+
+### 多目的意思決定
+
+- [x] 重み付き和 (weighted sum) ([012-A](src/012-A-multi-objective-optimization/README.md))
+- [x] パレートフロンティア、ε 制約法 ([012-B](src/012-B-epsilon-constraint/README.md))
