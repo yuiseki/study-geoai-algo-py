@@ -172,15 +172,27 @@ def crew_cpsat(t: Trips, arcs: set, rules: CrewRules, max_drivers: int, time_lim
             work.append(model.NewOptionalFixedSizeIntervalVar(s, e - s, assign[i, d], f"w{i}_{d}"))
             # a trip before the break ends within max_piece of the first start;
             # a trip after it starts within max_piece of the last end
+            # only the driver's own trips have to keep clear of the break: another
+            # driver may run the bus while this one rests
             before = model.NewBoolVar(f"bf{i}_{d}")
-            model.Add(e <= bstart).OnlyEnforceIf(before)
-            model.Add(s >= bstart + int(rules.break_len)).OnlyEnforceIf(before.Not())
+            model.Add(e <= bstart).OnlyEnforceIf([assign[i, d], before])
+            model.Add(s >= bstart + int(rules.break_len)).OnlyEnforceIf(
+                [assign[i, d], before.Not()]
+            )
             model.Add(e - first <= int(rules.max_piece)).OnlyEnforceIf([assign[i, d], before])
             model.Add(last - s <= int(rules.max_piece)).OnlyEnforceIf([assign[i, d], before.Not()])
         model.AddNoOverlap([*work, brk])
         model.Add(last - first <= int(rules.max_span))
         duties.append((first, last, bstart))
-    for d in range(max_drivers - 1):  # drivers are interchangeable: use them in order
+    # drivers are interchangeable, so number them by their first trip: the trip
+    # that is k-th by start time can only go to drivers 0..k. This removes
+    # relabelled copies of the same solution and keeps the optimum.
+    rank = np.empty(n, dtype=int)
+    rank[np.argsort(t.start, kind="stable")] = np.arange(n)
+    for i in range(n):
+        for d in range(rank[i] + 1, max_drivers):
+            model.Add(assign[i, d] == 0)
+    for d in range(max_drivers - 1):
         model.AddImplication(used[d + 1], used[d])
     model.Minimize(sum(used))
     solver = cp_model.CpSolver()

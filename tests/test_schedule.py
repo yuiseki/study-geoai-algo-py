@@ -103,3 +103,17 @@ def test_arakawa_weekday_trips():
     assert len(t.ids) == 28
     assert (t.end > t.start).all()
     assert t.origin.shape == (28, 2)
+
+
+def test_break_can_fall_while_another_driver_runs_the_bus():
+    # one bus shuttles at one stop from 6:00 to 14:30: 27-minute trips, 3 minutes apart.
+    # Driver A drives 6:00 to 10:00, breaks while B runs 10:00 to 10:30, then
+    # drives 10:30 to 14:30: two drivers. A model that also keeps B's trip out
+    # of A's break finds no break inside the day and needs three.
+    rows = [(6 + k / 2, 6 + k / 2 + 27 / 60, A, A) for k in range(17)]
+    day = trips(rows)
+    arcs = schedule.connections(day, layover=180, speed_kmh=15)
+    rules = schedule.CrewRules(max_piece=4 * H, break_len=30 * 60, max_span=9 * H)
+    r = schedule.crew_cpsat(day, arcs, rules, max_drivers=4, time_limit=20)
+    assert r["status"] == "OPTIMAL"
+    assert r["drivers"] == 2
