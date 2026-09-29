@@ -245,6 +245,7 @@ def street_cells(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyR
     left out): undergrounded_share, wires_high_share (wire_density 高),
     block_paving_share (surface ブロック) and poor_sight_share (sight_distance 不良).
     sidewalk_share is the share of scenes with a sidewalk seen on either side.
+    ward is the ward most of the cell's scenes lie in (cells straddle ward borders).
     """
     michiyomi.scenes(con, area).create_view("_sc")
 
@@ -253,7 +254,7 @@ def street_cells(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyR
         return f"avg(({column} = '{hit}')::int) filter (where {column} in ({known}))"
 
     return con.sql(f"""
-        select cell_250m, count(*) as n_scenes,
+        select cell_250m, mode(ward) as ward, count(*) as n_scenes,
                avg(roadway_width_m) as roadway_width_m,
                avg((coalesce(sidewalk_left_width_m, 0) + coalesce(sidewalk_right_width_m, 0))
                    / nullif((sidewalk_left_width_m is not null)::int

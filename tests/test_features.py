@@ -149,6 +149,8 @@ def test_taito_street_cells():
     assert n == cells and 100 < n < 205  # Taito has 205 cells, some with few scenes
     assert least >= features.MIN_SCENES
     assert all(0 <= s <= 1 for s in shares)
+    wards = con.sql("select list(distinct ward) from sc").fetchone()[0]
+    assert wards == ["台東区"]  # the ward most of a cell's scenes lie in
     area = con.sql("select avg(st_area_spheroid(st_flipcoordinates(geometry))) from sc").fetchone()[
         0
     ]
