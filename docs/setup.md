@@ -7,6 +7,7 @@
 - A 台東区: 小さく速く回し、結果を地図で目で確かめる。ほぼすべてのステップを台東区で動かした。
 - B 東京 23 区: 規模を上げ、ほかの場所でも通用するかを試す。1〜4 番、005-A〜D、006-B、008-B で使った。通信速度 (3 番) は台東区ではタイルが 62 枚しかないので、23 区が主。
 - 4 番で「22 区で学習して台東区で試す」評価をし、004-C で「台東区だけ点数が大きく下がるのは範囲が小さいから」を 23 区すべてで確かめた。
+- FAO FERSPAS の AgERA5 (約 10km の格子) を使う 004-D、005-E、005-F、006-C、011-C は、台東区や 23 区では格子が数個しかないので、日本全体 (3,845 格子)、関東 (331 格子)、23 区の 9 格子の平均を使った。
 - 23 区に広げると重くなるもの (7 番の Python の Dijkstra を 2 万回、10 番の都営バス) は行っていない。
 
 ## 読み方
@@ -31,6 +32,7 @@
 - 基地局: [OpenCelliD](datasets/opencellid/README.md) (source.coop smartmaps の PMTiles)。ogr2ogr で範囲だけ読む。003-D, 003-E
 - 医療機関、学校、洪水浸水想定: [国土数値情報](datasets/stac/mlit-nlftp.md) P04、P29、A31a。z.yuiseki.net/static/ksj/ にミラー (GeoParquet)。将来人口 mesh500r6 もミラーしたが、どのステップでも使っていない。7〜9, 12 番
 - 避難場所: [tokyo-ckan](datasets/stac/tokyo-ckan.md) の指定緊急避難場所一覧。z.yuiseki.net/static/tokyo-ckan-files/ にミラー。7, 9 番
+- 気象の月別格子: [FAO FERSPAS](datasets/stac/fao-ferspas.md) の AgERA5 (雨、基準蒸発散量、日最高気温、日最低気温、1979-2025、0.1 度)。索引の GeoParquet でファイルを選び、各月の COG から日本の範囲だけを Range で読んで、変数ごとに 1 つの配列としてキャッシュ (4 変数 x 564 か月で初回約 10 分)。004-D、005-E、005-F、006-C、011-C
 - バスの時刻表: [台東区めぐりん GTFS](datasets/odpt-taito-megurin/README.md)、[荒川区さくら GTFS](datasets/tokyo-gtfs/README.md)。z.yuiseki.net/static/gtfs/ にミラー。10 番
 
 ## 気をつけること (やりながら見つかったもの)
@@ -52,6 +54,7 @@
 - 1km (3 次メッシュ): 日本の標準地域メッシュ (`study_geoai.mesh`)。005-C, 005-D
 - Ookla のタイル: ズーム 16、約 610m 四方。3 番
 - WorldPop の 100m 格子: 需要の点。8, 12 番
+- AgERA5 の 0.1 度格子: 中心が都道府県の中にあり、AgERA5 が海として扱わないもの。004-D、005-E、005-F、006-C、011-C
 - POI の点、道路網のノード: メートル座標 (平面直角座標系 IX 系、EPSG:6677)。005-B, 7〜9, 12 番
 
 ## 評価と実行の決まり (やりながら決めたもの)
@@ -68,6 +71,7 @@
 - [aoi](../src/study_geoai/aoi.py), [db](../src/study_geoai/db.py): 範囲、キャッシュ、DuckDB の接続 (上限つき)
 - [census](../src/study_geoai/census.py), [overture](../src/study_geoai/overture.py), [michiyomi](../src/study_geoai/michiyomi.py), [worldpop](../src/study_geoai/worldpop.py), [ookla](../src/study_geoai/ookla.py), [opencellid](../src/study_geoai/opencellid.py), [ksj](../src/study_geoai/ksj.py), [ckan](../src/study_geoai/ckan.py), [geocode](../src/study_geoai/geocode.py), [gtfs](../src/study_geoai/gtfs.py), [osm](../src/study_geoai/osm.py): 出どころごとの読み込み
 - [features](../src/study_geoai/features.py), [mesh](../src/study_geoai/mesh.py), [tasks](../src/study_geoai/tasks.py): 特徴量 (小地域、タイル、1km メッシュ、250m 格子、POI の点)、3 次メッシュ、1〜4 番の課題
+- [ferspas](../src/study_geoai/ferspas.py): FAO FERSPAS の AgERA5 月別格子の読み込み、日本の陸の格子、月ごとの平年値
 - [graph](../src/study_geoai/graph.py): 自前の Dijkstra と A* (確定したノードを数える、打ち切り、多始点)
 - [cover](../src/study_geoai/cover.py): 最大被覆 (LP、MILP、欲張り法、需要の行をまとめる、多目的)
 - [facility](../src/study_geoai/facility.py): 輸送問題、ハンガリアン法、p-median、交換法

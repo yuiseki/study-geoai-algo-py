@@ -19,7 +19,7 @@ uv run python -u src/001-A-linear-regression/run.py
 
 ## TODO
 
-用語とアルゴリズムの達成度。チェックが付いているものは実験で動かしたもの (括弧の中がその実験)、付いていないものはまだ動かしていないもの。各系統の最初の行は、身につけたい感覚。52 項目のうち 40 項目が済み。
+用語とアルゴリズムの達成度。チェックが付いているものは実験で動かしたもの (括弧の中がその実験)、付いていないものはまだ動かしていないもの。各系統の最初の行は、身につけたい感覚。52 項目のうち 46 項目が済み。
 
 ### 回帰・分類
 
@@ -55,7 +55,7 @@ uv run python -u src/001-A-linear-regression/run.py
 - [x] Group CV / 空間ブロック CV (GroupKFold でブロックを作った) (同じグループ (近い場所) の行が学習と試験の両方に入らないように、グループ単位で分けて評価する方法。 [004-A](src/004-A-cross-validation/README.md), [004-C](src/004-C-small-areas/README.md))
 - [ ] verde の BlockKFold (座標を四角いブロックに区切り、ブロック単位で分ける空間交差検証の実装。)
 - [x] 時間で分ける (過去で学習、未来で試す) (過去のデータで学習して未来のデータで試し、実際に使うときと同じ条件で評価する方法。 [004-B](src/004-B-data-leakage/README.md))
-- [ ] TimeSeriesSplit (学習の期間を少しずつ延ばしながら、その直後の期間で試すことを繰り返す時系列の交差検証。)
+- [x] TimeSeriesSplit (学習の期間を少しずつ延ばしながら、その直後の期間で試すことを繰り返す時系列の交差検証。 [004-D](src/004-D-time-series/README.md), [011-C](src/011-C-prediction-interval/README.md))
 - [x] データリーク (target encoding、答えの言い換え) (本番では使えない答えの情報が特徴量や学習に紛れ込み、評価が実力より良く見えること。 [001-B](src/001-B-logistic-regression/README.md), [004-B](src/004-B-data-leakage/README.md))
 - [x] out-of-fold 予測をまとめて採点 (各行を、その行を学習に使わなかったモデルで予測し、全行の予測をまとめて 1 回で採点する方法。 [004-A](src/004-A-cross-validation/README.md))
 - [x] 目的変数の雑音の天井 (目的変数そのものに含まれる雑音のために、どんなモデルでも超えられない点数の上限。 [003-C](src/003-C-noise-ceiling/README.md))
@@ -64,7 +64,7 @@ uv run python -u src/001-A-linear-regression/run.py
 
 教師なしで構造を見つける
 
-- [x] k-means、シルエット (データを k 個の塊に分け、各点を最も近い塊の中心に割り当てることを繰り返す手法。シルエットは塊の分かれ具合の指標。 [005-A](src/005-A-k-means/README.md), [005-C](src/005-C-grid-types/README.md))
+- [x] k-means、シルエット (データを k 個の塊に分け、各点を最も近い塊の中心に割り当てることを繰り返す手法。シルエットは塊の分かれ具合の指標。 [005-A](src/005-A-k-means/README.md), [005-C](src/005-C-grid-types/README.md), [005-E](src/005-E-climate-types/README.md))
 - [x] DBSCAN、k 距離グラフ (半径 eps の中に点が十分ある所を密な塊としてつなぎ、どこにも入らない点を外れ値とする手法。k 距離グラフは eps の目安を探す図。 [005-B](src/005-B-dbscan/README.md))
 - [x] HDBSCAN (eps を 1 つに決めず、密度の階層から安定して残る塊を選ぶ DBSCAN の拡張。 [005-B](src/005-B-dbscan/README.md))
 - [x] ディリクレ過程混合 (DPMM、BayesianGaussianMixture) (塊の数を事前に固定せず、データに合わせて必要な数だけ正規分布を使う混合モデル。 [005-D](src/005-D-dpmm/README.md))
@@ -74,29 +74,29 @@ uv run python -u src/001-A-linear-regression/run.py
 
 高次元データをどう圧縮するか
 
-- [x] PCA (データのばらつきが最も大きい向きから順に新しい軸 (主成分) を取り、少ない軸で要約する次元削減の手法。 [006-A](src/006-A-pca/README.md), [006-B](src/006-B-pca-wards/README.md))
-- [x] 並行分析、ブートストラップ (残す主成分の数) (乱数のデータの固有値と比べたり、データを復元抽出し直して軸の安定性を見たりして、残す主成分の数を決める方法。 [006-A](src/006-A-pca/README.md))
+- [x] PCA (データのばらつきが最も大きい向きから順に新しい軸 (主成分) を取り、少ない軸で要約する次元削減の手法。 [006-A](src/006-A-pca/README.md), [006-B](src/006-B-pca-wards/README.md), [006-C](src/006-C-pca-climate/README.md))
+- [x] 並行分析、ブートストラップ (残す主成分の数) (乱数のデータの固有値と比べたり、データを復元抽出し直して軸の安定性を見たりして、残す主成分の数を決める方法。 [006-A](src/006-A-pca/README.md), [006-C](src/006-C-pca-climate/README.md))
 
 ### 異常検知
 
 「普通から外れる」とは何か
 
-- [ ] Isolation Forest (無作為な分割を繰り返し、少ない回数で孤立する点ほど異常とみなす異常検知の手法。)
-- [ ] LOF (Local Outlier Factor) (近所の点と比べて周りの密度が低い点ほど異常とみなす異常検知の手法。)
+- [x] Isolation Forest (無作為な分割を繰り返し、少ない回数で孤立する点ほど異常とみなす異常検知の手法。 [005-F](src/005-F-unusual-months/README.md))
+- [x] LOF (Local Outlier Factor) (近所の点と比べて周りの密度が低い点ほど異常とみなす異常検知の手法。 [005-F](src/005-F-unusual-months/README.md))
 
 ### 時系列
 
 時間順序、未来情報リーク
 
-- [ ] ARIMA / ETS (過去の値と誤差の自己相関 (ARIMA) や、水準、傾向、季節の指数平滑 (ETS) で、時系列の先を予測する統計モデル。)
-- [ ] lag 特徴 + GBDT (過去の時点の値 (ラグ) を特徴量にして、時系列の予測を勾配ブースティングの回帰として解く方法。)
+- [x] ARIMA / ETS (過去の値と誤差の自己相関 (ARIMA) や、水準、傾向、季節の指数平滑 (ETS) で、時系列の先を予測する統計モデル。 [004-D](src/004-D-time-series/README.md))
+- [x] lag 特徴 + GBDT (過去の時点の値 (ラグ) を特徴量にして、時系列の予測を勾配ブースティングの回帰として解く方法。 [004-D](src/004-D-time-series/README.md), [011-C](src/011-C-prediction-interval/README.md))
 
 ### 確率・不確実性
 
 「当たる」以外に「どれくらい信用できるか」
 
 - [x] 較正 (calibration): Platt、isotonic、ECE、Brier、信頼度曲線 (予測した確率が、実際にその割合で当たるように合わせること。Platt はシグモイド、isotonic は単調な階段で合わせ、ECE、Brier、信頼度曲線で合い具合を測る。 [011-B](src/011-B-calibration/README.md))
-- [ ] 予測区間 (prediction interval) (1 つの値ではなく、本当の値が一定の確率で入る範囲を予測すること。)
+- [x] 予測区間 (prediction interval) (1 つの値ではなく、本当の値が一定の確率で入る範囲を予測すること。 [011-C](src/011-C-prediction-interval/README.md))
 
 ### 説明可能性
 
@@ -181,6 +181,7 @@ uv run python -u src/001-A-linear-regression/run.py
 - 004-A 分け方 ([README](src/004-A-cross-validation/README.md), [run.py](src/004-A-cross-validation/run.py)): 台東区では空間ブロックで点数がはっきり下がり、23 区ではほとんど下がらない。
 - 004-B データリーク ([README](src/004-B-data-leakage/README.md), [run.py](src/004-B-data-leakage/run.py)): target encoding の漏れはランダム分割では見抜けない。撮影年の漏れは小さい。
 - 004-C 範囲の小ささ ([README](src/004-C-small-areas/README.md), [run.py](src/004-C-small-areas/run.py)): 空間 CV で点数が下がるのはどの区でも同じで、ブロックの少ない区ほど大きい。
+- 004-D 時系列 ([README](src/004-D-time-series/README.md), [run.py](src/004-D-time-series/run.py)): 東京の月の気温は、温暖化で平年値が 1.3C 低く外れ、ETS が最も良い。月の雨はどの手法も平年値を超えない。混ぜた K-fold の甘さはこの系列では小さい。
 
 ### 5. k-means / DBSCAN (と DPMM)
 
@@ -188,11 +189,14 @@ uv run python -u src/001-A-linear-regression/run.py
 - 005-B DBSCAN と HDBSCAN ([README](src/005-B-dbscan/README.md), [run.py](src/005-B-dbscan/run.py)): POI の点は台東区では区全体が連鎖する。eps を固定すると、塊に入る割合は区の密度でほぼ決まる。
 - 005-C 1km メッシュの型 ([README](src/005-C-grid-types/README.md), [run.py](src/005-C-grid-types/run.py)): 23 区の大きな構造は見えるが、台東区の小さな地区の型は消える (MAUP)。
 - 005-D ディリクレ過程混合 ([README](src/005-D-dpmm/README.md), [run.py](src/005-D-dpmm/run.py)): k を決めなくてよくはならない。型の数を決めていたのは共分散の事前分布だった。
+- 005-E 気候型 ([README](src/005-E-climate-types/README.md), [run.py](src/005-E-climate-types/run.py)): 日本の格子を月ごとの平年値で分けると、48 個の特徴量のままでは暖かさの帯だけになる。主成分にして重みをそろえると日本海側が型になる。
+- 005-F 普通でない月 ([README](src/005-F-unusual-months/README.md), [run.py](src/005-F-unusual-months/run.py)): Isolation Forest と LOF の上位 20 の重なりは 7 か月。1991-2020 年の基準では、真夏の猛暑より季節外れの暑さや 1980 年代の寒さが上位に来る。
 
 ### 6. PCA
 
 - 006-A 台東区 ([README](src/006-A-pca/README.md), [run.py](src/006-A-pca/run.py)): みちよみの 12 の数値から、PC1 は電柱と無電柱化、PC2 は道の広さと細さ。残すのは 2 つ。
 - 006-B 23 区 ([README](src/006-B-pca-wards/README.md), [run.py](src/006-B-pca-wards/run.py)): PC1 は台東区と同じ向き。台東区の軸は平面の中で約 45 度回っていたので、主成分は平面で比べる。
+- 006-C 日本の気候 ([README](src/006-C-pca-climate/README.md), [run.py](src/006-C-pca-climate/run.py)): 暖かさ、雨の多さ、日本海側か太平洋側かの 3 軸。20 年ずらしても軸は変わらないが、東と西に分けると 2 つ目から向きが変わる。
 
 ### 7. Dijkstra / A*
 
@@ -218,6 +222,7 @@ uv run python -u src/001-A-linear-regression/run.py
 
 - 011-A SHAP ([README](src/011-A-shap/README.md), [run.py](src/011-A-shap/run.py)): 無電柱化の XGBoost を説明した。上位 3 つは 3 つの重要度で一致。街灯の数には電柱の代わりという漏れの疑い。
 - 011-B 較正 ([README](src/011-B-calibration/README.md), [run.py](src/011-B-calibration/run.py)): ランダムフォレストはそのままでよく較正されていた。isotonic はどれも改善し、Platt は木のモデルを悪くした。
+- 011-C 予測区間 ([README](src/011-C-prediction-interval/README.md), [run.py](src/011-C-prediction-interval/run.py)): CQR で雨の区間は 90% に戻るが、気温は温暖化で 85% にとどまる。月ごと (10 月、3 月) には保証されない。
 
 ### 12. 多目的最適化
 
