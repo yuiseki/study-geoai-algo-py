@@ -78,7 +78,7 @@ def component_labels(g: Graph) -> np.ndarray:
     return connected_components(m, directed=False)[1]
 
 
-def dijkstra(g: Graph, sources, target=None, return_owner=False, trace=None):
+def dijkstra(g: Graph, sources, target=None, return_owner=False, trace=None, limit=np.inf):
     """Distances from the nearest of sources; stops once target is settled.
 
     Returns (dist, pred, settled), or (dist, owner, settled) with return_owner,
@@ -99,6 +99,8 @@ def dijkstra(g: Graph, sources, target=None, return_owner=False, trace=None):
         d, u = heapq.heappop(heap)
         if done[u]:
             continue
+        if d > limit:
+            break
         done[u] = True
         settled += 1
         if trace is not None:
