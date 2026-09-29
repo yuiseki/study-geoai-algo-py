@@ -1,5 +1,6 @@
 """Tables for the study steps: one row per census small area."""
 
+import numpy as np
 import pytest
 
 from study_geoai import aoi, features, overture
@@ -155,3 +156,11 @@ def test_taito_street_cells():
         0
     ]
     assert 55_000 < area < 70_000  # 0.00275 by 0.00225 degrees near 35.7 N is about 62,000 m2
+
+
+def test_to_metric_keeps_distances():
+    con = connect()
+    # Ueno Station and Asakusa Station: 0.0202 deg east and 0.0034 deg south, about 1.9 km
+    xy = features.to_metric(con, [(139.7774, 35.7141), (139.7976, 35.7107)])
+    assert xy.shape == (2, 2)
+    assert 1_700 < np.hypot(*(xy[0] - xy[1])) < 2_000

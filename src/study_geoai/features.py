@@ -17,6 +17,7 @@ michiyomi scenes (share undergrounded, mean visible poles, mean green).
 """
 
 import duckdb
+import numpy as np
 
 from study_geoai import census, mesh, michiyomi, ookla, opencellid, overture, worldpop
 from study_geoai.aoi import Area, cache_path, writing
@@ -208,6 +209,19 @@ def place_kind(category: str | None) -> str:
 
 
 METRIC_CRS = "EPSG:6677"  # JGD2011 plane rectangular IX, which covers Tokyo
+
+
+def to_metric(con: duckdb.DuckDBPyConnection, lonlat) -> np.ndarray:
+    """(lon, lat) pairs to (x, y) metres in METRIC_CRS."""
+    con.execute("create or replace temp table _ll (i integer, lon double, lat double)")
+    con.executemany("insert into _ll values (?, ?, ?)",
+                    [(i, float(p[0]), float(p[1])) for i, p in enumerate(lonlat)])  # fmt: skip
+    rows = con.sql(f"""
+        select st_x(m), st_y(m) from (
+            select i, st_transform(st_point(lon, lat), 'EPSG:4326', '{METRIC_CRS}',
+                                   always_xy := true) as m from _ll) order by i
+    """).fetchall()
+    return np.array(rows, dtype=float).reshape(-1, 2)
 
 
 def place_points(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation:

@@ -86,3 +86,15 @@ def test_nearest_node():
     idx, gap = graph.nearest(g, np.array([[1.0, 2.0], [139.0, 141.0]]))
     assert idx.tolist() == [g.node((0.0, 0.0)), g.node((140.0, 140.0))]
     assert gap == pytest.approx([np.hypot(1, 2), np.hypot(1, 1)])
+
+
+def test_trace_records_settled_nodes_in_order():
+    g = graph.build(grid())
+    s, t = g.node((0.0, 0.0)), g.node((140.0, 70.0))
+    trace_d, trace_a = [], []
+    dist, _, n_dij = graph.dijkstra(g, [s], target=t, trace=trace_d)
+    _, _, n_star = graph.astar(g, s, t, trace=trace_a)
+    assert len(trace_d) == n_dij and len(trace_a) == n_star
+    assert trace_d[0] == s and trace_d[-1] == t and trace_a[-1] == t
+    # Dijkstra settles nodes in order of distance
+    assert np.all(np.diff(dist[trace_d]) >= -1e-9)

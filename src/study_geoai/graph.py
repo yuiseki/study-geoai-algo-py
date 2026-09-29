@@ -78,11 +78,12 @@ def component_labels(g: Graph) -> np.ndarray:
     return connected_components(m, directed=False)[1]
 
 
-def dijkstra(g: Graph, sources, target=None, return_owner=False):
+def dijkstra(g: Graph, sources, target=None, return_owner=False, trace=None):
     """Distances from the nearest of sources; stops once target is settled.
 
     Returns (dist, pred, settled), or (dist, owner, settled) with return_owner,
-    where owner is the source each node's distance comes from.
+    where owner is the source each node's distance comes from. A list passed as
+    trace gets the settled nodes appended in the order they were settled.
     """
     dist = np.full(g.n_nodes, np.inf)
     pred = np.full(g.n_nodes, -1, dtype=np.int64)
@@ -100,6 +101,8 @@ def dijkstra(g: Graph, sources, target=None, return_owner=False):
             continue
         done[u] = True
         settled += 1
+        if trace is not None:
+            trace.append(u)
         if u == target:
             break
         for v, w in g.neighbours(u):
@@ -110,13 +113,13 @@ def dijkstra(g: Graph, sources, target=None, return_owner=False):
     return (dist, owner if return_owner else pred, settled)
 
 
-def astar(g: Graph, source: int, target: int, inflation: float = 1.0):
+def astar(g: Graph, source: int, target: int, inflation: float = 1.0, trace=None):
     """A* with the straight-line distance to target as the heuristic.
 
     Straight-line distance never overestimates a path along edges whose length
     is at least the distance between their ends, so with inflation 1 the answer
     is exact. inflation > 1 searches less but may return a path up to
-    inflation times the shortest. Returns (length, path, settled).
+    inflation times the shortest. Returns (length, path, settled); trace as in dijkstra.
     """
     goal = g.xy[target]
 
@@ -132,6 +135,8 @@ def astar(g: Graph, source: int, target: int, inflation: float = 1.0):
         if u in done:
             continue
         done.add(u)
+        if trace is not None:
+            trace.append(u)
         if u == target:
             break
         for v, w in g.neighbours(u):
