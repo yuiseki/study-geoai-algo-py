@@ -51,7 +51,7 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [OpenCelliD](opencellid/README.md) | 携帯基地局の推定位置 (直近 18 か月に観測されたもの) | 未確認 (取得に API トークンが要る) | CSV | CC BY-SA 4.0 |
 | [NYC TLC Trip Record Data](nyc-tlc/README.md) | ニューヨーク市のタクシーと配車の乗車記録 (乗降のゾーン ID と時刻、料金) と、263 のゾーン境界 | 2009 年から毎月。2026-07 は yellow 353 万行 61.7MB、fhvhv 2,092 万行 511MB | Parquet (CloudFront、Range 可)、境界は Shapefile の zip | 記載無し (NYC.gov の利用規約を指す)。再配布の許可は不明 |
 | [Meta の移動データ (HDX)](hdx-meta-movement/README.md) | Facebook の位置情報から出した行政区域ごとの 1 日の移動。Movement Range Maps (2020-03〜2022-05、終了) と Movement Distribution (家からの距離 4 区分、直近 90 日のみ) | Range Maps は 2021〜2022 年分で 695 万行、日本 679 区域。Distribution は 4 日分で 62 万行、日本 1,802 区域 | TSV の zip、CSV (署名付き S3、Range 可だが部分読みは不可) | CC BY |
-| [全国の人流オープンデータ](mlit-1km-fromto/README.md) | 国土交通省の 1km メッシュ別と市区町村単位発地別の滞在人口 (平日/休日 × 昼/深夜/終日)。元は Agoop の GPS | 2019-01〜2021-12 の月別、47 都道府県で zip 191.7MB。東京都のメッシュ別は 49 万行 | 入れ子の zip の CSV (署名付き S3)。ページはログインを求めるが API からは不要 | 政府標準利用規約 2.0 準拠 (CC BY 4.0 互換) |
+| [全国の人流オープンデータ](mlit-1km-fromto/README.md) | 国土交通省の 1km メッシュ別と市区町村単位発地別の滞在人口 (平日/休日 × 昼/深夜/終日)。元は Agoop の GPS | 2019-01〜2021-12 の月別、47 都道府県で zip 191.7MB。東京都のメッシュ別は 49 万行 | 入れ子の zip の CSV (署名付き S3)。ページはログインを求めるが API からは不要。z.yuiseki.net に Parquet のミラーあり | 政府標準利用規約 2.0 準拠 (CC BY 4.0 互換) |
 
 ## ハッカソン向けの候補
 

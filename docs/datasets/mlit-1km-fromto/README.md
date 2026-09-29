@@ -33,7 +33,7 @@
 | population | 滞在人口 |
 
 - 東京都は 36 か月で 494,246 行。2021-12 は、区分の組ごとに 1,404〜1,557 メッシュ。
-- 2021-12 の休日、昼に台東区 (13106) で最も多いのは 53394652 の 63,678 人。
+- 2021-12 の全日、昼に台東区 (13106) で最も多いのは 53394652 の 63,678 人 (休日の昼なら 53394653 の 51,346 人)。
 
 市区町村単位の発地別 (`monthly_fromto_city.csv`): 列は year、month、dayflag、timezone、prefcode、citycode (滞在先)、from_area、population。from_area は居住地の区分で、0 同じ市区町村、1 同じ都道府県の別の市区町村、2 同じ地方ブロックの別の都道府県、3 別の地方ブロック。発地の市区町村は分からない。
 
@@ -44,7 +44,25 @@
 
 - 「全国の人流オープンデータ利用規約」(令和 3 年 1 月 27 日)。政府標準利用規約 (第 2.0 版) に準拠し、CC BY 4.0 と互換。複製、公衆送信、翻案、商用利用ができる。
 - 出典の書き方: 「出典：「全国の人流オープンデータ」（国土交通省）（https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto）」。加工したときは「……を加工して作成」と書き足す。
-- 再配布できるので、z.yuiseki.net/static/ に Range で読める形 (Parquet) でミラーすることはライセンス上できる。
+- 再配布できるので、z.yuiseki.net/static/ に Parquet でミラーした (次の節)。
+
+## ミラー (z.yuiseki.net/static/mlit-1km-fromto/)
+
+2026-09-29 に `scripts/mirror_mlit_jinryu.py` で作った。99 リソースを CKAN の API から取り、入れ子の zip の CSV を種類ごとに 1 つの Parquet にまとめた。行数と population の合計が元の CSV と一致することを確かめてから置いている。
+
+| ファイル | 行数 | 大きさ |
+|---|---:|---:|
+| monthly_mdp_mesh1km.parquet | 38,079,507 | 111.9MB (380 行グループ) |
+| monthly_fromto_city.parquet | 2,340,980 | 5.5MB |
+| attribute_mesh1km.parquet | 775,000 (2019 年版と 2020 年版で 387,500 ずつ) | 7.1MB (GeoParquet 1.0.0、範囲の四角形) |
+| prefcode_citycode_master.parquet | 3,792 | 34KB |
+| regioncode_master.parquet | 94 | 2KB |
+
+- ほかに元の license.pdf と opendatadefinition.pdf、manifest.json (取得した各ファイルの URL、大きさ、sha256、Last-Modified)、README.md、LICENSE。
+- コードは元のとおりの文字列 (prefcode は `'01'`、month は `'01'`)。数値と比べると一致しないので、`where prefcode = '13'` のように文字列で絞る。
+- 属性とマスタには 2019 年版と 2020 年版があり、`version` 列で分けてある。属性は 70 行 (主に那珂川のコード)、市区町村マスタは 50 行 (東京 23 区の名前が 2019 年版では「東京２３区千代田区」) 違う。結合するときは `version = '2020'` などで片方に絞らないと行が倍になる。
+- メッシュ別は都道府県、年、月の順に並べてあるので、東京都 (494,246 行) の件数と合計は公開 URL から 0.4 秒で出た。Cloudflare は 3 回とも初回から 206 を返した。
+- 取得した zip は `/tmp/study-geoai-mirror-mlit-jinryu/raw/` に残る。もう一度流すと、大きさが同じ zip は取り直さない。
 
 ## 学習ステップとの対応 (案)
 

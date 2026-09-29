@@ -12,6 +12,7 @@
 | worldpop/ | WorldPop の日本の総人口 (100m、1km)、年齢性別 (1km)、都市化度の 2015〜2030 年を COG にしたミラー、1,024 ファイル 4.3GB (2026-09-28 に作成、CC BY 4.0) | [../stac/worldpop.md](../stac/worldpop.md) |
 | gtfs/ | 東京のバスの GTFS-JP 5 つ (都営バス、台東区、杉並区、荒川区、葛飾区) を版ごとにそのまま置いたもの (2026-09-28 に作成) | [../tokyo-gtfs/README.md](../tokyo-gtfs/README.md) |
 | ksj/ | 国土数値情報の東京都の P04 医療機関、P29 学校、A31a 洪水浸水想定、mesh500r6 将来推計人口を GeoParquet にしたミラー (2026-09-28 に作成、すべて CC BY 4.0) | [../stac/mlit-nlftp.md](../stac/mlit-nlftp.md) |
+| mlit-1km-fromto/ | 国土交通省「全国の人流オープンデータ」の 1km メッシュ別と市区町村単位発地別の滞在人口 (2019-01〜2021-12、全国) を Parquet にしたミラー (2026-09-29 に作成、政府標準利用規約 2.0 準拠) | [../mlit-1km-fromto/README.md](../mlit-1km-fromto/README.md) |
 | ookla/ | Ookla Speedtest の 2026 年第 2 四半期 (mobile、fixed) を Range 要求で読める GeoParquet にしたミラー (2026-09-28 に作成) | [../ookla-speedtest/README.md](../ookla-speedtest/README.md) |
 | overture/ | Overture の建物・交通・水域の全世界 PMTiles (60GB、2024-11 ビルド)。もう 1 つは 0 バイト | [overture.md](overture.md) |
 | cesg/ | 東京周辺の POI 検索一式 (Overture Places 45 万件、DuckDB FTS) と Valhalla 経路タイル | [cesg.md](cesg.md) |
