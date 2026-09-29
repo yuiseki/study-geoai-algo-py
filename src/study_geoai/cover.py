@@ -48,6 +48,27 @@ def greedy(sets, pop: np.ndarray, k: int):
     return chosen, float(pop[covered].sum())
 
 
+def merge_identical(sets, pop: np.ndarray):
+    """Merge demand points covered by exactly the same candidates into one row with
+    their summed weight, and drop points no candidate covers. The optimum is
+    unchanged; the model shrinks. Returns (sets, pop) over the merged rows."""
+    cand_of: list[list[int]] = [[] for _ in pop]
+    for j, st in enumerate(sets):
+        for i in st.tolist():
+            cand_of[i].append(j)
+    groups: dict[tuple, list[int]] = {}
+    for i, js in enumerate(cand_of):
+        if js:
+            groups.setdefault(tuple(js), []).append(i)
+    keys = list(groups)
+    merged: list[list[int]] = [[] for _ in sets]
+    for r, key in enumerate(keys):
+        for j in key:
+            merged[j].append(r)
+    weights = np.array([pop[groups[key]].sum() for key in keys], dtype=float)
+    return [np.array(m, dtype=np.int64) for m in merged], weights
+
+
 def _matrix(sets, n_demand):
     """Constraint rows: y_i - sum x_j <= 0 for each demand, then sum x_j = k.
     Columns: x_0..x_{m-1}, then y_0..y_{n-1}."""
@@ -66,9 +87,13 @@ def _matrix(sets, n_demand):
     return csc_matrix((vals, (rows, cols)), shape=(n_demand + 1, m + n_demand))
 
 
-def solve(sets, pop: np.ndarray, k: float, integer: bool, time_limit: float = 60.0) -> dict:
-    """Solve with HiGHS. Returns objective, x, y, seconds, and dual_k (LP only: the
-    extra covered demand per extra site) or mip_gap and nodes (MILP only)."""
+def solve(sets, pop: np.ndarray, k: float, integer: bool, time_limit: float = 60.0,
+          lp_solver: str = "choose") -> dict:  # fmt: skip
+    """Solve with HiGHS. Returns objective, x, y, seconds, status, and dual_k (LP only:
+    the extra covered demand per extra site) or mip_gap and nodes (MILP only).
+
+    lp_solver is HiGHS's solver option for the LP: "choose" (simplex here),
+    "simplex" or "ipm" (interior point, much faster on the large covering LPs)."""
     m, n = len(sets), len(pop)
     a = _matrix(sets, n)
     lp = highspy.HighsLp()
@@ -89,6 +114,8 @@ def solve(sets, pop: np.ndarray, k: float, integer: bool, time_limit: float = 60
     h = highspy.Highs()
     h.setOptionValue("output_flag", False)
     h.setOptionValue("time_limit", float(time_limit))
+    if not integer:
+        h.setOptionValue("solver", lp_solver)
     h.passModel(lp)
     t = time.perf_counter()
     h.run()

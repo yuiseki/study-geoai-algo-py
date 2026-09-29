@@ -59,3 +59,19 @@ def test_dijkstra_limit_stops_early():
     dist, _, settled = graph.dijkstra(g, [g.node((0.0, 0.0))], limit=250.0)
     assert settled == 3
     assert np.isfinite(dist[:3]).all() and dist[3] == pytest.approx(300.0)
+
+
+def test_merging_identical_rows_keeps_the_optimum():
+    # cells 0 and 1 are covered by A and B only, cells 2 and 3 by A and C only
+    sets, pop = cover.merge_identical(SETS, POP)
+    assert len(pop) == 4 and pop.sum() == pytest.approx(POP.sum())
+    for integer in (False, True):
+        a = cover.solve(sets, pop, 2, integer=integer)
+        b = cover.solve(SETS, POP, 2, integer=integer)
+        assert a["objective"] == pytest.approx(b["objective"])
+
+
+def test_interior_point_gives_the_same_lp():
+    a = cover.solve(SETS, POP, 1.5, integer=False, lp_solver="ipm")
+    b = cover.solve(SETS, POP, 1.5, integer=False, lp_solver="simplex")
+    assert a["objective"] == pytest.approx(b["objective"], rel=1e-6)
