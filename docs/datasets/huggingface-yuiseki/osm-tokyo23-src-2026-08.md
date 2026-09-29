@@ -63,6 +63,7 @@ point と roads と line (合わせて約 40MB) は全体をダウンロード�
 - `complete_ways` なので、区の外に伸びる way も丸ごと入っている。point の最大範囲が経度 134 から 142 まで広がっているのはそのためと思われる (71 点を個別には確かめていない)。
 - カードの「A question set built on this」節は、osm-tokyo23-questions を「131 questions」「90 of them were checked」と書いている。実物の osm-tokyo23-questions は 215 問、テンプレートから作ったものが 174 問で、数が古い。
 - roads 表は名前に反して道路網ではない (上記)。
+- line 表の行グループは 3 つ (122,880、122,880、101,975 行)。圧縮後の 9.29MB、8.99MB、7.53MB のうち、`way` の列が 8.36MB、8.00MB、6.58MB と 9 割を占める。`way` の統計 (min と max) は BLOB のバイト列の比較で、範囲の絞り込みには使えない。範囲で読むときの実測は [README](README.md) の「Parquet を URL から読むときの挙動」。
 
 ## 12 ステップでの使いどころ (案)
 

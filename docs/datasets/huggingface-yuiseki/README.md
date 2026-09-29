@@ -28,6 +28,23 @@
 | wikidata-gazetteer | 2026-09-21 | cc0-1.0 | 10M-100M | 位置を持つ Wikidata 項目 1,220 万件と 553 言語の名前 6,250 万件 (2026-08-31 ダンプ) | [wikidata-gazetteer.md](wikidata-gazetteer.md) |
 | un-docs | 2026-09-21 | other | 10K-100K | 国連の総会と安保理の英語文書 3.9 万件 (1945〜2023)。位置の列は無い | [un-docs.md](un-docs.md) |
 
+## Parquet を URL から読むときの挙動 (2026-09-29 に測った)
+
+`https://huggingface.co/datasets/<名前>/resolve/<コミット>/<パス>` は、Xet の CDN (`us.aws.cdn.hf.co/xet-bridge-us/...`) へ転送される。
+
+- Range 要求に 206 で応える。`curl -L -r -8` で末尾 8 バイトを求めると、Parquet の終わりの印 `PAR1` だけが返った。z.yuiseki.net の Cloudflare のような「初回だけ 200」は、2 回試して見られなかった。
+- DuckDB 1.5.5 も部分取得で読む。`call enable_logging('HTTP')` のあと `duckdb_logs_parsed('HTTP')` で、要求ごとの Range と応答の状態が見られる。HEAD が 1 回 (200) と、GET が列ごと・行グループごとに数回 (206)。
+- ただし、読み飛ばせるのは列と行グループの単位まで。osm-tokyo23-src の line 表 (25.95MB) では次のとおり。
+
+| クエリ | GET の数 | 取得量 |
+|---|---:|---:|
+| `count(*)` | 1 | 0.03MB (末尾のメタデータ) |
+| `highway` の列だけ | 4 | 0.19MB |
+| 道路網に要る列と形 (`way`) | 7 | 23.56MB |
+
+- 形の列がファイルの大部分を占めるうえ、bbox の列が無く、行が空間の順に並んでいないので、範囲で絞っても行グループを飛ばせない。形を読むなら全体を読むのとほぼ同じになる。この大きさなら、一度読んで範囲ごとに `/tmp/study-geoai/` にキャッシュする。
+- URL にはブランチ名でなくコミットのハッシュを入れて版を固定する (`/api/datasets/<名前>` の `sha`)。
+
 ## 地理と関係ないもの (調べていない)
 
 onomatopoeia-ja, onomatopoeia-ja-flat, sake_qa, scp-jp-plain, g-uc, open2ch-livejupiter-qa (どれも 2024-03〜04 の更新)。
