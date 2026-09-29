@@ -207,6 +207,33 @@ def place_kind(category: str | None) -> str:
     return "other"
 
 
+METRIC_CRS = "EPSG:6677"  # JGD2011 plane rectangular IX, which covers Tokyo
+
+
+def place_points(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation:
+    """Overture places as metres in METRIC_CRS, for distance-based clustering.
+
+    Columns: id, name, kind (one of KINDS), x, y, code5 and town (the census small
+    area's name; NULL for the few places outside every small area), lon, lat.
+    """
+    census.small_areas(con, area).create_view("_sa")
+    places = overture.read(con, area, "places", "place", ["id", "names", "basic_category"])
+    cats = places.aggregate("basic_category").fetchall()
+    con.execute("create or replace temp table _kind (basic_category varchar, kind varchar)")
+    con.executemany("insert into _kind values (?, ?)", [(c, place_kind(c)) for (c,) in cats])
+    places.create_view("_pp")
+    return con.sql(f"""
+        select p.id, p.names.primary as name, coalesce(k.kind, 'other') as kind,
+               st_x(m) as x, st_y(m) as y, sa.code5, sa.name as town,
+               st_x(p.geometry) as lon, st_y(p.geometry) as lat
+        from (select *, st_transform(geometry, 'EPSG:4326', '{METRIC_CRS}', always_xy := true) as m
+              from _pp) p
+        left join _kind k on k.basic_category is not distinct from p.basic_category
+        left join _sa sa on st_contains(sa.geometry, p.geometry)
+        order by p.id
+    """)
+
+
 def small_area_profiles(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation:
     """small_areas plus POI kind shares and michiyomi street averages per small area.
 

@@ -115,3 +115,22 @@ def test_tokyo23_grid_profiles():
     assert 1.0 < area_km2 < 1.1
     total = worldpop.grid(con, area, 2025).aggregate("sum(population)").fetchone()[0]
     assert 0.9 * total < pop < 1.1 * total  # edge squares count their centres only
+
+
+@pytest.mark.network
+def test_taito_place_points_in_metres():
+    con = connect()
+    area = aoi.load("taito", con)
+    features.place_points(con, area).create_view("pp")
+    n, xmin, xmax, ymin, ymax, kinds, wards, named = con.sql("""
+        select count(*), min(x), max(x), min(y), max(y), list(distinct kind), list(distinct code5),
+               avg((town is not null)::int)
+        from pp
+    """).fetchone()
+    assert n > 10_000
+    # Taito is about 4 km across; plane IX puts it west and south of its origin
+    assert 3_000 < xmax - xmin < 6_000 and 3_000 < ymax - ymin < 6_000
+    assert -10_000 < xmin < 0 and -40_000 < ymin < -25_000
+    assert set(kinds) <= set(features.KINDS) and "food" in kinds
+    assert set(wards) <= {"13106", None}
+    assert named > 0.95
