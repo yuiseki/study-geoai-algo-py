@@ -19,7 +19,7 @@ uv run python -u src/001-A-linear-regression/run.py
 
 ## TODO
 
-用語とアルゴリズムの達成度。チェックが付いているものは実験で動かしたもの (括弧の中がその実験)、付いていないものはまだ動かしていないもの。各系統の最初の行は、身につけたい感覚。53 項目のうち 47 項目が済み。
+用語とアルゴリズムの達成度。チェックが付いているものは実験で動かしたもの (括弧の中がその実験)、付いていないものはまだ動かしていないもの。各系統の最初の行は、身につけたい感覚。54 項目のうち 48 項目が済み。
 
 ### 回帰・分類
 
@@ -91,6 +91,7 @@ uv run python -u src/001-A-linear-regression/run.py
 
 - [x] ARIMA / ETS (過去の値と誤差の自己相関 (ARIMA) や、水準、傾向、季節の指数平滑 (ETS) で、時系列の先を予測する統計モデル。 [004-D](src/004-D-time-series/README.md))
 - [x] lag 特徴 + GBDT (過去の時点の値 (ラグ) を特徴量にして、時系列の予測を勾配ブースティングの回帰として解く方法。 [004-D](src/004-D-time-series/README.md), [011-C](src/011-C-prediction-interval/README.md))
+- [x] 時系列の基盤モデル (TimesFM) (大量の系列で事前学習したモデルに過去の値を読ませるだけで、その系列を学習せずに先を予測する。 [004-F](src/004-F-timesfm/README.md))
 
 ### 確率・不確実性
 
@@ -163,7 +164,7 @@ uv run python -u src/001-A-linear-regression/run.py
 - [003 その道は無電柱化されているか](case-studies/003-undergrounding/README.md): 001-B、002、003-B、004-A から 004-C、011。信号はあるが、答えの言い換え、近所の答えの漏れ、評価の分け方、確率の較正を順に確かめる。
 - [004 街の型を、正解の無いデータから見つける](case-studies/004-town-types/README.md): 005-A から 005-D、006-A、006-B。型の数はどの手法でも人が決めており、単位と特徴量と手法で見える型が変わる。
 - [005 コミュニティバスを回すのに、何台と何人が要るか](case-studies/005-bus-operations/README.md): 010-A、010-B。下限と一緒に答えを出し、手で組んだ解で「最適」のモデルの誤りを見つけた。
-- [006 日本の月ごとの天気](case-studies/006-japan-climate/README.md): 004-D、005-E、005-F、006-C、011-C。温暖化で、過去を基準にする手法 (平年値、較正、異常の基準) が系統的にずれる。
+- [006 日本の月ごとの天気](case-studies/006-japan-climate/README.md): 004-D、004-F、005-E、005-F、006-C、011-C。温暖化で、過去を基準にする手法 (平年値、較正、異常の基準) が系統的にずれる。
 
 ## ステップごとの記録
 
@@ -196,6 +197,7 @@ uv run python -u src/001-A-linear-regression/run.py
 - 004-C 範囲の小ささ ([README](src/004-C-small-areas/README.md), [run.py](src/004-C-small-areas/run.py)): 空間 CV で点数が下がるのはどの区でも同じで、ブロックの少ない区ほど大きい。
 - 004-D 時系列 ([README](src/004-D-time-series/README.md), [run.py](src/004-D-time-series/run.py)): 東京の月の気温は、温暖化で平年値が 1.3C 低く外れ、ETS が最も良い。月の雨はどの手法も平年値を超えない。混ぜた K-fold の甘さはこの系列では小さい。
 - 004-E 速度の評価のやり直し ([README](src/004-E-speed-evaluation/README.md), [run.py](src/004-E-speed-evaluation/run.py)): 区の平均は当たらず、縮めた前四半期がどのモデルとも同等以上。時間だけで分けると同じタイルの場所を覚えて点数が倍以上に見え、時間と空間で分けると元に戻る。
+- 004-F TimesFM ([README](src/004-F-timesfm/README.md), [run.py](src/004-F-timesfm/run.py)): 学習なしの TimesFM 2.5 が、東京の月の気温の 1 か月先で ETS と並び (0.94C と 0.96C)、平年値の偏りも拾った。月の雨は平年値とほぼ同じ。80% の区間は較正なしで 78% から 85%。
 
 ### 5. k-means / DBSCAN (と DPMM)
 
