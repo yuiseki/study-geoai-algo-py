@@ -1,24 +1,6 @@
-# study-geoai
+# study-geoai-algo-py
 
-Study environment for classical machine learning and mathematical optimisation, managed with uv.
-
-12 ステップのアルゴリズムを、台東区と東京 23 区の実データで一通り動かした記録。最初に立てた計画から、やりながら変えたところが多いので、このページは「実際に行ったこと」を正として書き直した (2026-09-29)。各ステップの数字と図は `src/NNN-X-*/README.md` にある。データは [docs/datasets/](docs/datasets/README.md) で確かめたもの。
-
-目的はアルゴリズムを一通り押さえることで、題材を掘り下げることではない。各ステップは、そのアルゴリズムの要点が見える 2 つほどの実験で終え、広げる案は「行わなかったこと」に残した。
-
-| Library | Use |
-| --- | --- |
-| scikit-learn | General ML |
-| xgboost | Gradient boosting |
-| lightgbm | Gradient boosting |
-| catboost | Gradient boosting |
-| statsmodels | Time series (ARIMA/ETS) and statistics |
-| shap | Model explanation |
-| verde | Spatial block cross-validation (BlockKFold) |
-| scipy (scipy.optimize) | Continuous optimisation |
-| networkx | Graphs and networks |
-| ortools | LP/MIP, CP-SAT, routing |
-| highspy | HiGHS LP/MIP solver |
+GeoAI のアルゴリズムを、台東区と東京 23 区の実データで一通り動かした記録。
 
 ## Study map
 
