@@ -3,8 +3,9 @@
 smartmaps/opencellid holds OpenCelliD's full export of 2024-06-14 as one
 PMTiles (4,835,586 points, CC BY-SA 4.0, credit OpenCelliD). It was made with
 tippecanoe without dropping points, so zoom 14 has every cell. The tiles are
-read by range requests with GDAL's PMTiles driver (anaconda's ogr2ogr; the
-GDAL inside rasterio does not expose vector drivers to Python), clipped to the
+read by range requests with GDAL's PMTiles driver (the ogr2ogr of a separate
+GDAL install, see study_geoai.gdal; the GDAL inside rasterio does not expose
+vector drivers to Python), clipped to the
 area and cached. Positions are OpenCelliD's estimates, not surveyed sites.
 """
 
@@ -12,19 +13,11 @@ import subprocess
 
 import duckdb
 
+from study_geoai import gdal
 from study_geoai.aoi import CACHE_DIR, Area, cache_path, writing
 
 PMTILES = "https://data.source.coop/smartmaps/opencellid/cellid.pmtiles"
-OGR2OGR = "/home/yuiseki/anaconda3/bin/ogr2ogr"
 VERSION = "2024-06-14"
-# anaconda's GDAL needs anaconda's PROJ and GDAL data, the very variables that
-# importing study_geoai drops for rasterio's bundled GDAL; give them to the child only.
-ANACONDA_ENV = {
-    "PATH": "/usr/bin:/bin",
-    "PROJ_DATA": "/home/yuiseki/anaconda3/share/proj",
-    "GDAL_DATA": "/home/yuiseki/anaconda3/share/gdal",
-    "GDAL_DISABLE_READDIR_ON_OPEN": "EMPTY_DIR",
-}
 
 
 def cells(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation:
@@ -34,11 +27,11 @@ def cells(con: duckdb.DuckDBPyConnection, area: Area) -> duckdb.DuckDBPyRelation
         raw = CACHE_DIR / f"opencellid-{VERSION}-{area.name}.geojsonl"
         west, south, east, north = area.bbox
         subprocess.run(
-            [OGR2OGR, "-f", "GeoJSONSeq", "-overwrite", str(raw), f"/vsicurl/{PMTILES}",
+            [gdal.tool("ogr2ogr"), "-f", "GeoJSONSeq", "-overwrite", str(raw), f"/vsicurl/{PMTILES}",
              "-oo", "ZOOM_LEVEL=14", "-spat", str(west), str(south), str(east), str(north),
              "-spat_srs", "EPSG:4326", "-t_srs", "EPSG:4326"],
             check=True, timeout=1800,
-            env=ANACONDA_ENV,
+            env=gdal.child_env(),
         )  # fmt: skip
         with writing(path) as tmp:
             con.execute(

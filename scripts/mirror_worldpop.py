@@ -34,7 +34,8 @@ and pass the zip CRC. The archive itself is not placed.
 manifest.json in the destination is the record of what is placed; README.md
 and LICENSE are rebuilt from it on every run. The GDAL command-line tools and
 the Python bindings (for the pixel comparison) come from --gdal-bin and
---gdal-python, since the uv environment has neither.
+--gdal-python, since the uv environment has neither; both default to the GDAL
+install that study_geoai.gdal finds (STUDY_GEOAI_GDAL_PREFIX, or ogr2ogr on PATH).
 
 ftp.worldpop.org refuses connections beyond a limit per address (421 There
 are too many connections). On 2026-09-28 it refused some of the 12 that
@@ -62,13 +63,13 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+from study_geoai import gdal
+
 STAC_SEARCH = "https://api.stac.worldpop.org/search"
 SOURCE_PREFIX = "https://data.worldpop.org/"
 PUBLIC_PREFIX = "https://z.yuiseki.net/static/worldpop/"
 DEST = Path("/www/html/static/worldpop")
 SCRATCH = Path(tempfile.gettempdir()) / "study-geoai-mirror-worldpop"
-GDAL_BIN = Path("/home/yuiseki/anaconda3/bin")
-GDAL_PYTHON = Path("/home/yuiseki/anaconda3/bin/python")
 # Cloudflare in front of z.yuiseki.net does not cache files above 512 MB and
 # then answers the first Range request with the whole body.
 MAX_BYTES = 512 * 1024 * 1024
@@ -985,8 +986,11 @@ def main() -> int:
     )
     ap.add_argument("--dest", type=Path, default=DEST)
     ap.add_argument("--scratch", type=Path, default=SCRATCH)
-    ap.add_argument("--gdal-bin", type=Path, default=GDAL_BIN)
-    ap.add_argument("--gdal-python", type=Path, default=GDAL_PYTHON)
+    gdal_root = gdal.prefix()
+    ap.add_argument("--gdal-bin", type=Path, default=gdal_root / "bin" if gdal_root else None)
+    ap.add_argument(
+        "--gdal-python", type=Path, default=gdal_root / "bin" / "python" if gdal_root else None
+    )
     ap.add_argument("--attempts", type=int, default=3, help="download attempts per file")
     ap.add_argument(
         "--via",
@@ -1019,6 +1023,10 @@ def main() -> int:
         "--rebuild", action="store_true", help="fetch and place again even if already placed"
     )
     args = ap.parse_args()
+    if args.gdal_bin is None or args.gdal_python is None:
+        ap.error(
+            f"no GDAL install found; pass --gdal-bin and --gdal-python or set {gdal.PREFIX_VAR}"
+        )
     years = parse_years(args.year)
     projects = [project_name(x) for x in args.project]
     resolutions = [x.lower() for x in args.resolution]

@@ -39,7 +39,7 @@
 - osm-tokyo23-src の `roads` 表は道路網ではない。`line` 表の highway がある行を使う。`line` 表には交差点の ID が無いので、道どうしが共有する頂点を交差点としてつなぎ直した (99% のノードが 1 つにつながった)。
 - みちよみの `analysis` は VLM の推定。`confidence` では絞らず、隔離 (quarantined) されたシーンだけを除いて使った。目的変数 (無電柱化) も同じ VLM の読みなので、「当たる」は「VLM の読みと合う」という意味。
 - みちよみの `cell_250m` の ID の作り方は説明に無い。「行 x 100000 + 列、南西の角が北緯 20 + 行 x 0.00225 度、東経 120 + 列 x 0.00275 度」と読み取った ([michiyomi.cell_bounds](../src/study_geoai/michiyomi.py))。
-- anaconda の `GDAL_DATA` などの環境変数が rasterio の GDAL を壊す。[study_geoai/\_\_init\_\_.py](../src/study_geoai/__init__.py) で外している。
+- 別に入れた GDAL (ここでは anaconda) の `GDAL_DATA` などの環境変数が rasterio の GDAL を壊す。[study_geoai/\_\_init\_\_.py](../src/study_geoai/__init__.py) で外している。
 - DuckDB は座標系の名前が違うジオメトリ (EPSG:4326 と OGC:CRS84) を比べられない。点は座標系なしで作る。
 - z.yuiseki.net の Cloudflare は、初回の Range 要求に 200 を返すことがあり、512MB を超えるファイルをキャッシュせず、Python-urllib の User-Agent を拒む。大きなファイルは 512MB 未満に分け、User-Agent を付ける。
 - ライセンスはデータごとに違う。Ookla は CC BY-NC-SA 4.0 (非営利)、みちよみは CC BY-SA 4.0 (Mapillary、国土数値情報、東京都建設局の出典が要る)、OSM と Overture の一部は ODbL。各ステップの README の末尾に出典を書いた。
@@ -59,7 +59,7 @@
 - 交差検証の点数は、分割ごとの点数を平均せず、分割の外の予測 (out of fold) をまとめて 1 回で測る。分割ごとの平均は、ばらつきの小さい 1 つの分割に振り回された (002-A)。
 - 通信速度のタイルは、測定回数で重み付けして採点する。分割の切り方 (乱数の種) を変えて、点数のばらつきも見る。モデルの間の差と同じくらい動く (003-E)。
 - 目的変数そのものの雑音の天井 (同じタイルの別の四半期との一致) を先に測る (003-C)。
-- 重い処理は `systemd-run --user --scope -p MemoryMax=8G -p MemorySwapMax=0` で囲む (母艦には swap が無く、メモリが尽きると機械ごと止まる)。DuckDB の上限 (4GB) は scikit-learn には効かない。
+- 重い処理は `systemd-run --user --scope -p MemoryMax=8G -p MemorySwapMax=0` で囲む (swap の無い機械では、メモリが尽きると OOM で落ちるのではなく機械ごと止まる)。DuckDB の上限 (4GB) は scikit-learn には効かない。
 - 数分以上かかる処理は `python -u` で裏で流し、Monitor で進み具合と終わりを確かめる。
 - ソルバーが「最適」と答えても、手で組める解や下限と突き合わせる (010-B でモデルの誤りを見つけた)。
 
@@ -74,7 +74,9 @@
 - [schedule](../src/study_geoai/schedule.py): GTFS の便、車両の最少台数、乗務員の勤務 (CP-SAT)
 - [plot](../src/study_geoai/plot.py): matplotlib だけで塗り分け地図
 
-z.yuiseki.net へのミラーを作るスクリプトは [scripts/](../scripts/) にある。
+- GDAL のコマンド (ogr2ogr など) は rasterio に入っていないので、別に入れた GDAL を使う ([gdal](../src/study_geoai/gdal.py))。場所は環境変数 `STUDY_GEOAI_GDAL_PREFIX` (bin/ を含むディレクトリ) で指定し、無ければ PATH の ogr2ogr から探す。使うのは OpenCelliD の読み込み (003-D、003-E) と WorldPop のミラーだけ。
+
+[scripts/](../scripts/) のスクリプトは z.yuiseki.net/static/ のミラーを作り直すためのもので、書き込み先はそのサーバーの `/www/html/static/`。実験を動かすだけなら要らない (実験は公開されたミラーを読む)。
 
 ## highspy は ortools の中の HiGHS に合わせて固定する
 

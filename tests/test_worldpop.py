@@ -6,7 +6,7 @@ import sys
 
 import pytest
 
-from study_geoai import aoi, worldpop
+from study_geoai import aoi, gdal, worldpop
 from study_geoai.db import connect
 
 
@@ -21,10 +21,13 @@ def test_url_comes_from_the_mirror_manifest():
 
 
 @pytest.mark.network
-def test_nodata_survives_anaconda_gdal_variables():
-    # This host's shell points GDAL_DRIVER_PATH at anaconda's GDAL 3.9 plugins, which
+def test_nodata_survives_another_gdals_variables():
+    # A shell that points GDAL_DRIVER_PATH at another GDAL's plugins (anaconda's 3.9 here)
     # made rasterio read the GeoTIFF nodata as None. Importing study_geoai must undo that.
-    env = dict(os.environ, GDAL_DRIVER_PATH="/home/yuiseki/anaconda3/lib/gdalplugins")
+    root = gdal.prefix()
+    if root is None or not (root / "lib" / "gdalplugins").is_dir():
+        pytest.skip("no separate GDAL with plugins on this machine")
+    env = dict(os.environ, GDAL_DRIVER_PATH=str(root / "lib" / "gdalplugins"))
     code = (
         "import study_geoai, rasterio\n"
         "from study_geoai import worldpop\n"

@@ -17,7 +17,7 @@
 
 ## レイヤー一覧: 60 秒以内に読めなかった
 
-- ogrinfo (`/home/yuiseki/anaconda3/bin/ogrinfo -ro -so -q /vsicurl/...`) は「Range downloading not supported by this server!」で開けなかった。3 回試して 3 回とも同じ。
+- ogrinfo (`ogrinfo -ro -so -q /vsicurl/...`) は「Range downloading not supported by this server!」で開けなかった。3 回試して 3 回とも同じ。
 - curl で確かめたこと (各 1 回):
   - `Range: bytes=0-16383` を `Accept-Encoding: gzip` 付きで送ると 200 (全体の送信) が返った。
   - 同じ Range を `Accept-Encoding: identity` で送ると 206 が返った。

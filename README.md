@@ -8,9 +8,12 @@ GeoAI のアルゴリズムを、台東区と東京 23 区の実データで一�
 
 ```sh
 uv sync
-uv run pytest
+uv run pytest -m "not network"   # ネットワークを使わないテストだけ
+uv run pytest                    # 出どころを実際に読むテストも含める
 uv run python -u src/001-A-linear-regression/run.py
 ```
+
+データは実行時に元の出どころと z.yuiseki.net/static/ のミラーから読み、`/tmp/study-geoai/` にキャッシュする。OpenCelliD を使う実験 (003-D、003-E) には、別に入れた GDAL が要る ([docs/setup.md](docs/setup.md))。
 
 重い実験は `systemd-run --user --scope -p MemoryMax=8G -p MemorySwapMax=0` で囲む ([docs/setup.md](docs/setup.md))。
 
@@ -220,3 +223,7 @@ uv run python -u src/001-A-linear-regression/run.py
 
 - 012-A 重み付き和 ([README](src/012-A-multi-objective-optimization/README.md), [run.py](src/012-A-multi-objective-optimization/run.py)): 最大被覆に拠点の数と浸水を足した。候補地の 89% が浸水区域にあり、重みを振っても中間の解がほとんど出ない。
 - 012-B ε 制約法 ([README](src/012-B-epsilon-constraint/README.md), [run.py](src/012-B-epsilon-constraint/run.py)): 34 のパレート解を出した。重み付き和はそのうち 11 しか出さない (凸包の上だけ)。
+
+## ライセンス
+
+コードと文書は [MIT License](LICENSE)。データはそれぞれの出どころのライセンスに従う (各実験の README の末尾と [docs/datasets/](docs/datasets/README.md))。
