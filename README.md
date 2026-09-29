@@ -153,6 +153,13 @@ uv run python -u src/001-A-linear-regression/run.py
 - [x] 重み付き和 (weighted sum) (複数の目的に重みを掛けて足し、1 つの目的にして解く多目的最適化の方法。 [012-A](src/012-A-multi-objective-optimization/README.md))
 - [x] パレートフロンティア、ε 制約法 (どの目的も同時には改善できない解 (パレート解) の集まり。ε 制約法は、1 つの目的だけを残し、ほかを上限の制約にして解くことを繰り返して、パレート解を並べる方法。 [012-B](src/012-B-epsilon-constraint/README.md))
 
+## ケーススタディ
+
+実験を、データサイエンティストの作業の順 (問題設定、データの確認、ベースライン、評価、モデル、誤差の分析、結論) に並べ直したもの。
+
+- [001 携帯の通信速度は、街の様子から予測できるか](case-stadies/001-mobile-speed/README.md): 003-A から 003-E。予測の信号が弱く、複雑なモデルを採用する根拠が無い。
+- [002 台東区の拠点の配置](case-stadies/002-shelter-planning/README.md): 007、008、009、012。単一の最適解ではなく、トレードオフを示す。
+
 ## ステップごとの記録
 
 `src/NNN-X-topic/` に、ステップ NNN の X 番目の実験を置く。A、B、C は実験の順番。各ディレクトリの `README.md` に数字と図の説明、`run.py` にコードがある。図と実行の記録は `output/` に書く (git には入れない)。
