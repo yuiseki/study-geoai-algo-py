@@ -27,11 +27,21 @@ PDL1.0 の原文 (`https://www.digital.go.jp/resources/open_data/public_data_lic
 
 なお PDL1.0 は「数値データ、簡単な表・グラフ等は著作権による保護の対象ではありませんので、これらについては本利用ルールの適用はなく、自由に利用できます」とも書いている。
 
-## 配布元が変わっている
+## 配布先は 2 つある
 
-**本家ページが案内するダウンロード先は `https://dataset.address-br.digital.go.jp/` で、ArcGIS Hub の Open Data サイトになっている** (2026-09-30 に確認、200 を返す)。
+ファイルの直接配布は `https://data.address-br.digital.go.jp` で、いまも動いている (2026-09-30 に確認)。URL の形は `{BASE}/{種類}/{ファイル名}.csv.zip`。
 
-`yuiseki/abr-src-2026-09` の `provenance.yaml` が記録している取得元は `https://data.address-br.digital.go.jp` で、こちらは今 404 を返す。2026-09-26 の取得時には生きていたので、その後に移ったか、パスが変わったことになる。ArcGIS Hub は JavaScript で描くので、ファイルへの直リンクは HTML に出てこない。**過去に書いた取得スクリプトはそのままでは動かない可能性が高い。**
+| 例 | 応答 | Last-Modified |
+|---|---|---|
+| `/mt_pref/mt_pref_all.csv.zip` | 200、1,238 バイト | 2024-03-12 07:09:33 GMT |
+| `/mt_town/mt_town_all.csv.zip` | 200、11,548,588 バイト | 2026-09-25 08:08:45 GMT |
+| `/mt_town_pos/pref/mt_town_pos_pref13.csv.zip` | 200、84,132 バイト | 2025-10-27 09:30:04 GMT |
+
+`mt_pref_all` の Last-Modified は `yuiseki/abr-src-2026-09` の `csv/MANIFEST.md5` が記録した値と秒まで一致する。取得スクリプト (`scripts/01_download.sh`) はそのまま動く。
+
+種類のディレクトリを省いた `{BASE}/mt_town_all.csv.zip` は 404 を返す。ここを飛ばして 404 を見ると「配布元が消えた」と誤読する。実際にこの誤読を一度した。
+
+本家ページが案内するもう 1 つの入口は `https://dataset.address-br.digital.go.jp/` で、こちらは ArcGIS Hub の Open Data サイト。人が探して選ぶための画面で、JavaScript で描くのでファイルへの直リンクは HTML に出てこない。機械で取るなら直接配布のほうを使う。
 
 ## 何があるか
 
