@@ -1,0 +1,31 @@
+database	indicators	indicator	licence	uri	has_rider
+WB_WDI	1499	WB_WDI_AG_CON_FERT_ZS	CC BY-4.0	https://creativecommons.org/licenses/by/4.0/	no
+IMF_BOP	5209	IMF_BOP_BACK_BP6_XDC	(この指標の記述が返らない)		
+WB_EDSTATS	35	WB_EDSTATS_HD_HCI_HLOS	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes
+WB_ES	585	WB_ES_M_BREADY_BUS3_MEDIAN	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes
+IMF_IFS	495	IMF_IFS_MFS_NSRF_47R	License Specified Externally	https://www.imf.org/external/terms.htm	yes
+WB_GS	363	WB_GS_FIN10_1B_S	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes
+WB_FINDEX	280	WB_FINDEX_ACCOUNT_T_D	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes
+IMF_GFS_SOO	218	IMF_GFS_F12_G33_L_T	License Specified Externally	https://www.imf.org/external/terms.htm	yes
+BS_SGI	193	BS_SGI_145	License Specified Externally	https://www.sgi-network.org/2022/Legal_Notice	yes
+WB_HNP	221	WB_HNP_HD_HCI_OVRL	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes
+IMF_FSIC	184	IMF_FSIC_AQ1	License Specified Externally	https://www.imf.org/external/terms.htm	yes
+WEF_GCI	169	WEF_GCI_EOSQ035	License Specified Externally	https://www.weforum.org/about/terms-of-use	yes
+WEF_TTDI	140	WEF_TTDI_SAFEWALK	CC BY-NC-ND	https://creativecommons.org/licenses/by-nc-nd/4.0/	no
+WB_HCP	133	WB_HCP_A_SEEKERS	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes
+IMF_QGFS	126	IMF_GFS_6M2_NETAL_SP_XDC	License Specified Externally	https://www.imf.org/external/terms.htm	yes
+GI_AII	114	GI_AII_7	License Specified Externally	https://www.africaintegrityindicators.org/	yes
+FAO_AS	112	FAO_AS_4100	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	no
+WB_IDS	102	WB_IDS_DT_PRVG	(記載無し)		
+WB_CLEAR	93	WB_CLEAR_AQUASTAT_4158	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes
+VDEM_CORE	84	VDEM_CORE_V2X_ACCOUNTABILITY	License Specified Externally	https://www.v-dem.net/about/faq/	yes
+OWID_CB	76	OWID_CB_CEMENT_CO2	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	no
+WB_ESG	71	WB_ESG_EG_ELC_COAL_ZS	None	https://www.iea.org/terms	no
+OECD_IDD	53	OECD_IDD_HSH_METH2011	License Specified Externally	https://www.oecd.org/termsandconditions/	yes
+IMF_WEO	44	IMF_WEO_BCA	License Specified Externally	https://www.imf.org/external/terms.htm	yes
+FH_FIW	42	FH_FIW_B1	License Specified Externally	https://freedomhouse.org/about-us/content-permissions	yes
+WB_CCKP	40	WB_CCKP_CDD	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes
+ITU_DH	40	ITU_DH_INT_CONN_BAND_MBIT	(この指標の記述が返らない)		
+WB_WITS	44	WB_WITS_HH_MKT_CNCNTRTN_NDX	CC BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes
+UNDRR_SFM	36	UNDRR_SFM_D3	License Specified Externally	https://sendaimonitor.undrr.org/terms-and-conditions	no
+WB_SPI	20	SPI_DIM1_5_INDEX	CC-BY 4.0	https://creativecommons.org/licenses/by/4.0/	yes

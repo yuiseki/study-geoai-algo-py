@@ -2,6 +2,8 @@
 
 2026-09-30 に読んで確かめた内容。大きさは 47 都道府県分を当日ダウンロードして数えたバイト数で、合計 322,733,398 バイト。規約の文面はこの日に e-Stat の利用規約ページとデジタル庁の政府標準利用規約 (第2.0版) 原文 PDF を読んだもの。配布物の中身は東京 (code=13) の zip を展開して直接読んだ。ここに書いていない全国の集計値は `yuiseki/estat-boundary-2020` の `provenance.yaml` の記述として引用する。
 
+同日の後刻に、この項目の三点を訂正した。機械可読の目録はある、`datum` という引数がある、分割は都道府県より細かい。経緯と実測は [estat/README.md](../estat/README.md) にあり、ここでは該当箇所を直した。
+
 - 総務省統計局が実施する国勢調査の小地域 (町丁・字等) の境界を、政府統計の総合窓口 (e-Stat) が配布しているもの。e-Stat の運用管理は独立行政法人統計センター。
 - 案内: `https://www.e-stat.go.jp/gis/statmap-search?type=2`
 - 規約: `https://www.e-stat.go.jp/terms-of-use`
@@ -25,10 +27,13 @@ https://www.e-stat.go.jp/gis/statmap-search/data
 | `coordSys=1&format=shape` | 200、5,682,172 バイト (東京) | `A002005212020DDSWC13.zip` |
 | `coordSys=2&format=shape` | 200、6,541,282 バイト | `A002005212020XYSWC13.zip` (平面直角座標系) |
 | `coordSys=1&format=kml` | 200、6,241,168 バイト | `A002005212020DDKWC13.zip` |
+| `coordSys=1&format=gml` | 200 | `A002005212020DDMWC13.zip` |
 | `format=geojson` | 404 | |
 | `downloadType=2` / `downloadType=4` | 404 | |
 
-人が探して選ぶ画面 (`/gis/statmap-search?type=2`) は JavaScript で描いていて、都道府県の一覧もダウンロードリンクも HTML には出てこない。機械で取るなら上の URL を組み立てる。
+人が探して選ぶ画面 (`/gis/statmap-search?type=2`) は JavaScript で描いていて、都道府県の一覧もダウンロードリンクも HTML には出てこない。ただしその画面が叩いている `/gis/statmap-search/search_detail` が JSON を返し、配布物の一覧を機械から読める ([estat/README.md](../estat/README.md))。URL を自分で組み立てる必要があるのは、目録を使わない場合の話。
+
+`datum` という引数がある。`datum=2011` を付けると JGD2011 版が返る (`A002005212020DDSWC13-JGD2011.zip`、5,679,981 バイト、md5 は別)。書かないと JGD2000 が返る。上の URL はすべてこの既定に乗っているので、取ったものが JGD2000 だという事実が URL からは読めない。測地系を記録するなら `datum=2000` を明示して残す。
 
 配布は今も安定している。47 件を当日引き直してバイト数を `yuiseki/estat-boundary-2020` の `shape/MANIFEST.md5` (2026-09-26 取得) と比べたところ、47 件すべて一致した。東京の md5 も `eef747abb85327d6b271b995916f570a` で一致する。URL の中身が黙って差し替わる類の配布ではない。
 
@@ -119,13 +124,13 @@ KEY_CODE は 1 行 1 キーではない。 東京 6,021 行のうち、異なる
 
 境界と統計表は別配布。 zip が持つ人口の属性は JINKO と SETAI の 2 つだけ。国勢調査の他の集計は統計表として別に公開されている (`provenance.yaml` の not_included)。
 
-他の統計の小地域は別の調査 ID。 基本単位区や経済センサスの小地域は別の `dlserveyId` で配布されている (`provenance.yaml` の not_included)。ここにあるのは 2020 年国勢調査の小地域だけ。
+他の統計の小地域は別の調査 ID。 基本単位区や経済センサスの小地域は別の `dlserveyId` で配布されている (`provenance.yaml` の not_included)。ここにあるのは 2020 年国勢調査の小地域だけ。境界データは全部で 54 件あり、その一覧は [estat/boundary-catalog.tsv](../estat/boundary-catalog.tsv)。
 
 住所データとは共通キーが無い。 ABR ([abr/README.md](../abr/README.md)) と結ぶとき、市区町村は PREF + CITY が lg_code の先頭 5 桁に一致するので正確に結べるが、町字は名前で照合するしかない。`provenance.yaml` の実測は 231,609 件中 178,290 件、77.0% (東京は 95.8%)。残りは表記ゆれではなく、合併後も国勢調査が旧市町村名を小地域名として残しているもの (福島町、象潟町、土庄、南外) が多い、としている。
 
 ## 取り出し方
 
-区分は split。47 都道府県に事前分割されていて、必要な県の zip だけを引ける。Range は効かない。
+区分は split。47 都道府県、さらにその下の市区町村に事前分割されていて、必要な単位の zip だけを引ける。目録があるので catalog の性質も併せ持つ。Range は効かない。
 
 2026-09-30 に東京 (code=13) の配布 URL で測った。
 
@@ -140,14 +145,17 @@ https://www.e-stat.go.jp/gis/statmap-search/data?dlserveyId=A002005212020&code=1
 
 `accept-ranges: bytes` と書いてあるのに、実際に Range を投げると 206 ではなく 200 でファイル全体を送ってくる。前段は ZENEDGE (`server: ZENEDGE`、`x-cache-status: NOTCACHED`) で、`Content-Length` を返さないのと同じ理由だと見られる。応答が動的に組み立てられているので、途中から返す仕組みが無い。ヘッダの申告を信じずに投げて確かめた結果が答えになる典型例なので、ここに残しておく。
 
-したがって分割の単位は 1 都道府県 1 zip で、それより細かくは取れない。
+分割の単位は 1 都道府県 1 zip より細かい。`code` に 5 桁の市区町村コードを渡せる。台東区 (`code=13106`) は 45,783 バイトで、東京都全体の 124 分の 1 だった。
+
+したがって Range が効かないことと、細かく取れないことは別の話になる。1 市区町村なら数十 KB で済む。
 
 | 単位 | 個数 | 最小単位の大きさ |
 |---|---:|---|
 | 都道府県 (`code` が 2 桁ゼロ詰め) | 47 | 東京で 5,682,172 バイト。47 件の合計で 322,733,398 バイト |
+| 市区町村 (`code` が 5 桁) | 東京都で 62 (目録から数えた) | 台東区 (`13106`) で 45,783 バイト |
 
 zip の中は Shapefile なので、1 県を取ったあとに市区町村や町丁で絞ることはできるが、それは落としてからの話になる。
 
-目録は無い。人が選ぶ画面 (`/gis/statmap-search?type=2`) は JavaScript で描いていて、機械から読める都道府県の一覧もダウンロードリンクも HTML に出てこない。catalog としては使えず、`code` を 01 から 47 まで自分で回す。
+目録はある。人が選ぶ画面 (`/gis/statmap-search?type=2`) は JavaScript で描いていて HTML には何も出てこないが、その画面が叩く `/gis/statmap-search/search_detail` が JSON で一覧を返す。認証は要らない。境界データ全体で 54 件を列挙でき、末端では 47 都道府県とその公開 (更新) 日、さらに市区町村ごとの配布 URL まで辿れる。詳しくは [estat/README.md](../estat/README.md)。
 
 全国分が要るなら 47 件で 322,733,398 バイト、約 308MB。1 県だけなら数 MB なので、県単位で足りる用途では split が効いている。
