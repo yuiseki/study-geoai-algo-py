@@ -38,6 +38,15 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [Ookla Speedtest](ookla-speedtest/README.md) | 固定回線と携帯の速度・遅延を約 610m タイルで平均したもの (四半期ごと) | 2019 年第 1 四半期から 30 四半期 × 2 種別、Parquet 15.13GB | Parquet, Shapefile | CC BY-NC-SA 4.0 |
 | [Mapterhorn](mapterhorn/README.md) | 全球の標高タイル。Copernicus GLO-30 を土台に各国の高精度 DEM 151 件で上書き。版 0.0.13 | planet.pmtiles (z0-12) 355.6GB と、z13 以上の地域別 458 個で合計約 9.58TB | PMTiles (Terrarium 符号化の 512px 可逆 WebP) | 元データごとに違う (約 30 種)。「© Mapterhorn」の表示が要る |
 | [NASA SRTM](nasa-srtm/README.md) | 全球の標高 (北緯 60 度〜南緯 56 度)。SRTM v3 と、それを処理し直した NASADEM | 1 度四方のタイル。SRTMGL1 は 14,297 枚、1 枚 3,601 x 3,601 画素 (約 30m) で約 10MB | HGT。NASADEM は Planetary Computer に COG | CC0 (NASA の一般方針)。配布元により表記が違い、CGIAR 版は再配布不可 |
+| [e-Stat 小地域境界](estat-boundary/README.md) | 国勢調査の町丁・字等別の境界と人口・世帯数。`yuiseki/estat-boundary-2020` の上流 | 47 都道府県で 322,733,398 バイト、全国 232,019 フィーチャ | Shapefile (zip、cp932、JGD2000) | 政府標準利用規約2.0。CC BY に従う利用も可 |
+| [GeoNames](geonames/README.md) | 全世界の地名と別名。Wikidata の Q id と結べる | 13,465,076 件 / 252 国。allCountries.zip 422,001,054 バイト | タブ区切りテキスト (zip)、API | CC BY 4.0。表示が要る。商用可、share-alike 無し |
+| [OSM Wiki](osm-wiki/README.md) | OSM のタグの説明。`yuiseki/osm-wiki` の上流 | 記事 86,510、Key: 6,720、Tag: 8,538 | MediaWiki API、全履歴ダンプ 6.89GB | CC BY-SA 2.0。地図データのライセンスとは別 |
+| [taginfo](taginfo/README.md) | OSM のタグの実使用回数。`yuiseki/osm-tag-corpus` の上流 | キー 115,209。DB の bz2 で 2.62GB | JSON API、SQLite ほか | ODbL。ただし wiki 由来の説明文の扱いは未確認 |
+| [OurAirports](ourairports/README.md) | 全世界の空港と滑走路。IATA/ICAO コードつき | 86,153 行、19 列。7 ファイルで 24.7MB | CSV | public domain と明記。ただし LICENSE は The Unlicense で software としか書かない |
+| [Wikipedia](wikipedia/README.md) | 座標つき記事。`yuiseki/wikipedia-geotagged` の上流 | ja 1,520,723 記事 / en 7,245,970 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
+| [Wikivoyage](wikivoyage/README.md) | 旅行先の記事。`yuiseki/wikivoyage-geotagged` の上流 | en 34,710 記事 / ja 1,808 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
+| [国連文書 (ODS)](un-docs-source/README.md) | 総会と安保理の公式文書。`yuiseki/un-docs` の上流 | 未確認 (派生側で 39,363 件) | PDF (API 経由)、一部はスキャン | 許諾の文言が無い。1987 年の内部方針とサイト規約が矛盾する |
+| [GHSL](ghsl/README.md) | 全球の人口・建物・都市化度の格子。1975 年から 2030 年まで 5 年刻みで、2025 と 2030 は推計 | GHS-POP 1km で 1 エポック約 320MB、12 エポック | GeoTIFF (zip)、モルワイデ図法 | CC BY 4.0 (欧州委員会の法的通知による)。EU 所有でない部分は別 |
 | [アドレス・ベース・レジストリ](abr/README.md) | 日本の住所の基本台帳。都道府県・市区町村・町字のマスターと代表点。`yuiseki/abr-src-2026-09` の上流 | 町字 727,429 行、座標 337,641 行 | CSV (zip)。直接配布と ArcGIS Hub の 2 経路 | PDL1.0。原文が CC BY に従う利用を許諾。出典と加工の明示が要る |
 | [Wikidata](wikidata/README.md) | 全世界の構造化データ。座標を持つ項目が 1,243 万件。`yuiseki/wikidata-gazetteer` の上流 | 項目 1 億 2,351 万件。truthy ダンプで 43.5GB | JSON / TTL / NT のダンプ、SPARQL | 構造化データは CC0。main と property 以外の名前空間の文章は CC BY-SA |
 | [Natural Earth](natural-earth/README.md) | 全世界の行政区域、地名、自然地物を 3 縮尺で。`yuiseki/ne-admin0-10m` の上流 | 実データ 215 レイヤー。10m の国 4.93MB、州 14.91MB | Shapefile (zip)、GitHub に版管理された本体 | public domain。帰属表示も不要と明記 |
