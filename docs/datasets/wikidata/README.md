@@ -13,7 +13,7 @@ API (`action=query&meta=siteinfo&siprop=rightsinfo`) が返した本文。
 
 > All structured data from the main and property namespace is available under the Creative Commons CC0 License; text in the other namespaces is available under the Creative Commons Attribution-ShareAlike License; additional terms may apply.
 
-構造化データは CC0。地理データとしてはこれ以上緩いものがほとんど無い。ただし **main と property の名前空間だけ** で、それ以外 (Wikidata:、Help: など) の文章は CC BY-SA。取り込むのが項目のステートメントなら CC0、解説文を混ぜると share-alike が付いてくる。
+構造化データは CC0。地理データとしてはこれ以上緩いものがほとんど無い。ただし main と property の名前空間だけ で、それ以外 (Wikidata:、Help: など) の文章は CC BY-SA。取り込むのが項目のステートメントなら CC0、解説文を混ぜると share-alike が付いてくる。
 
 ## 規模
 
@@ -40,10 +40,10 @@ API (`action=query&meta=siteinfo&siprop=rightsinfo`) が返した本文。
 
 `yuiseki/wikidata-gazetteer` を作るときに踏んだ罠は [huggingface-yuiseki/wikidata-gazetteer.md](../huggingface-yuiseki/wikidata-gazetteer.md) 側に書いてある。上流の性質として繰り返しておく。
 
-**ラベルと別名が混ざる。** `names` には `kind` が `label` と `alias` の両方あり、絞らないと大阪府の日本語名が「おおさかふ」(読み仮名) になる。
+ラベルと別名が混ざる。 `names` には `kind` が `label` と `alias` の両方あり、絞らないと大阪府の日本語名が「おおさかふ」(読み仮名) になる。
 
-**`instance_of` は時制を持たない。** `Q50337` (都道府県) で引くと 47 でなく 50 件返る。余分は堺県 (1881 年廃止)、樺太庁、東京府。廃止 (P576) を除くか、件数を既知の値と突き合わせる。
+`instance_of` は時制を持たない。 `Q50337` (都道府県) で引くと 47 でなく 50 件返る。余分は堺県 (1881 年廃止)、樺太庁、東京府。廃止 (P576) を除くか、件数を既知の値と突き合わせる。
 
-**数値は出典付きでも間違っている。** 富士山 (Q39231) の標高は 3777.24m (normal rank、出典 1 件) だが、国土地理院は 3776m。CC0 で機械可読という利点の裏側。
+数値は出典付きでも間違っている。 富士山 (Q39231) の標高は 3777.24m (normal rank、出典 1 件) だが、国土地理院は 3776m。CC0 で機械可読という利点の裏側。
 
-**点しか無い。** P625 は代表点で、境界は持たない。「富士山は山梨県と静岡県にまたがる」は点と境界からは計算できない (実測: 富士山の点は静岡県の内側 278m、山梨県から 379m)。境界が要るなら [geoBoundaries](../geoboundaries/README.md) か国土数値情報。
+点しか無い。 P625 は代表点で、境界は持たない。「富士山は山梨県と静岡県にまたがる」は点と境界からは計算できない (実測: 富士山の点は静岡県の内側 278m、山梨県から 379m)。境界が要るなら [geoBoundaries](../geoboundaries/README.md) か国土数値情報。

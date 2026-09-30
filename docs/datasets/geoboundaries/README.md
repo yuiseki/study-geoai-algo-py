@@ -48,13 +48,13 @@ share-alike (ODbL か CC BY-SA) は 715 件中 270 件。ADM2 に限ると 180 �
 
 ## 気をつけること
 
-**日本の ADM2 の canonical が Subprefectures なのに件数は 1,745。** 支庁は北海道の 14 だけなので、名前と中身が合っていない。市区町村 (1,741、`yuiseki/jp-admin-2026-09`) に近い。`boundaryCanonical` は出どころが自称した呼び名で、階層の意味は国ごとに違う。ADM2 を「同じ粒度」として国をまたいで比べてはいけない。
+日本の ADM2 の canonical が Subprefectures なのに件数は 1,745。 支庁は北海道の 14 だけなので、名前と中身が合っていない。市区町村 (1,741、`yuiseki/jp-admin-2026-09`) に近い。`boundaryCanonical` は出どころが自称した呼び名で、階層の意味は国ごとに違う。ADM2 を「同じ粒度」として国をまたいで比べてはいけない。
 
-**年が揃っていない。** `boundaryYearRepresented` は 1995 から 2022 まで散らばり、`09-09-2017 to 24-08-2020` のような期間を書いた行もある。日本は ADM0 が 2022 で ADM1/ADM2 が 2017。同じ国の中でも階層によって時点が違う。
+年が揃っていない。 `boundaryYearRepresented` は 1995 から 2022 まで散らばり、`09-09-2017 to 24-08-2020` のような期間を書いた行もある。日本は ADM0 が 2022 で ADM1/ADM2 が 2017。同じ国の中でも階層によって時点が違う。
 
-**出どころがデータでないものが混じっている。** 台湾の ADM0 は `boundarySource` が `geoBoundaries, Pixabay`、`licenseSource` が `pixabay.com/vectors/taiwan-map-roc-republic-of-china-33713/`。ストックのクリップアートから起こした国境。ポーランドの ADM0 は `Wiki Commons Media`。国境が政治的に難しい地域では、測量ではなく絵が入っていることがある。
+出どころがデータでないものが混じっている。 台湾の ADM0 は `boundarySource` が `geoBoundaries, Pixabay`、`licenseSource` が `pixabay.com/vectors/taiwan-map-roc-republic-of-china-33713/`。ストックのクリップアートから起こした国境。ポーランドの ADM0 は `Wiki Commons Media`。国境が政治的に難しい地域では、測量ではなく絵が入っていることがある。
 
-**日本に ADM3 は無い。** API は 404 を返す。町丁・字の粒度が要るなら国勢調査の小地域境界 (`yuiseki/estat-boundary-2020`) を使う。
+日本に ADM3 は無い。 API は 404 を返す。町丁・字の粒度が要るなら国勢調査の小地域境界 (`yuiseki/estat-boundary-2020`) を使う。
 
 ## ファイルの形
 
