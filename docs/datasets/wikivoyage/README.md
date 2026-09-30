@@ -76,3 +76,24 @@ en 版と ja 版で規模が 19 倍違う。 en が 34,710 記事に対し ja �
 新しい版は月初にしか出ない。 2026-09-30 に見て最新は 20260901。最新の座標が要るなら API を使う。
 
 Wikipedia 用に書いた本文抽出の処理をそのまま当てない。 Wikivoyage の記事は listing テンプレートに店名や住所を入れる。テンプレートを削る処理だと中身ごと消える。派生データではテンプレートを展開する側に倒している。
+
+## 取り出し方
+
+区分は range と catalog。2026-09-30 に curl で確かめた。
+
+Wikipedia と同じ multistream の仕組みが使える。索引と本体が対になっていて、両方が Range を受ける。
+
+| ファイル | 大きさ (バイト) | Accept-Ranges | `-r 0-1023` |
+|---|---:|---|---|
+| `https://dumps.wikimedia.org/jawikivoyage/20260901/jawikivoyage-20260901-pages-articles-multistream.xml.bz2` | 6,357,035 | bytes | 206 / 1,024 バイト |
+| `https://dumps.wikimedia.org/jawikivoyage/20260901/jawikivoyage-20260901-pages-articles-multistream-index.txt.bz2` | 38,977 | bytes | (この大きさなら丸ごと落とす) |
+| `https://dumps.wikimedia.org/enwikivoyage/20260901/enwikivoyage-20260901-pages-articles-multistream.xml.bz2` | 134,029,357 | bytes | 206 / 1,024 バイト |
+| `https://dumps.wikimedia.org/enwikivoyage/20260901/enwikivoyage-20260901-pages-articles-multistream-index.txt.bz2` | 632,936 | bytes | 206 / 1,024 バイト |
+
+ja で 1 記事だけを取る手順を実際に通した。索引 38,977 バイトを落として展開すると 5,148 行あり、1 行が `オフセット:ページID:記事名` になっている。`東京` の行は `1180601:1417:東京` で、索引の中で次に現れるオフセットは 1306894 だった。そこで本体に `Range: bytes=1180601-1306893` を投げると 206 と 126,293 バイトが返り、その断片を単体で bzip2 展開すると 650,996 バイトの XML になって、`<title>東京</title>` と `<id>1417</id>` を含む 100 ページが入っていた。本体 6,357,035 バイトのうち 2.0% しか読んでいない。
+
+つまり multistream は 100 ページごとに独立した bz2 ストリームになっており、索引がそのストリームの開始バイト位置を全記事分持っている。クライアントは索引を引いて記事名からオフセットを求め、そのオフセットから次のオフセットの直前までを Range で取り、その断片だけを展開する。全体を伸長する必要は無い。
+
+API は catalog として使える。`https://en.wikivoyage.org/w/api.php?action=query&list=geosearch&gscoord=35.6812|139.7671&gsradius=10000&gslimit=5&format=json` は 200 で 561 バイトを返し、`Tokyo (prefecture)`, `Tokyo/Chuo`, `Tokyo/Ginza`, `Tokyo/Shinbashi`, `Tokyo/Chiyoda` の 5 件を距離つきで列挙した。
+
+ただし ja は全体で 6.4 MB、en でも 134 MB しかない。この規模なら丸ごと落として手元で処理するほうが速い。Range が効くことに実用上の意味があるのは、同じ仕組みを持つ [Wikipedia](../wikipedia/README.md) のほう (ja で 4.85 GB、en で 26.8 GB) である。ここは仕組みを安く検証する場として使える。

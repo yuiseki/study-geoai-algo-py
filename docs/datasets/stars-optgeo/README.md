@@ -32,3 +32,19 @@
 - タイルそのものの出どころは、国土地理院の最適化ベクトルタイル (<https://github.com/gsi-cyberjapan/optimal_bvmap>) と考えられる (縮尺ごとの 4 つの MBTiles という構成が同じ)。国土地理院が PMTiles を Range で読める形で配っているので、分析にはそちらを使う。詳しくは [gsi-optimal-bvmap](../gsi-optimal-bvmap/README.md)
 
 使い道の案: A (台東区) の結果を地図で目で確かめるときの下地。建物や道路を分析に使うなら、国土地理院の最適化ベクトルタイルの PMTiles を直接読む ([gsi-optimal-bvmap](../gsi-optimal-bvmap/README.md))。
+
+## 取り出し方
+
+split。タイルサーバーなので、Range で 1 本のファイルの途中を読むのではなく、タイル 1 枚につき 1 要求になる。2026-09-30 に実測した。
+
+`https://stars.optgeo.org/catalog` は 200 で 23,716 バイトを返す。JSON のキーは tiles、sprites、fonts、styles、settings で、tiles は 43 個。どのレイヤーがあるかを推測せずに列挙できる。
+
+レイヤーごとの TileJSON もある。`https://stars.optgeo.org/bvmap` は 200 で 15,158 バイト。`tilejson` は 3.0.0、`tiles` は `https://stars.optgeo.org/bvmap/{z}/{x}/{y}`、`vector_layers` に 24 レイヤーがそれぞれ minzoom と maxzoom つきで並ぶ。クライアントは範囲を当てずに済む。
+
+タイル 1 枚の実測。台東区付近の `https://stars.optgeo.org/bvmap/14/14552/6451` は 200 で 76,046 バイト、`Content-Type: application/x-protobuf` を返した。範囲外の `18/232832/103216` は 404 なので、空振りは 404 で分かる。
+
+1 枚のタイルに `curl -s -r 0-1023` を投げると 206 と `Content-Range: bytes 0-1023/31028` が返る。Range 自体は通るが、これはタイル 1 枚の中の部分読みでしかなく、必要な範囲だけを引く手段にはならない。しかも 200 のときの実測 76,046 バイトと Content-Range の全体 31,028 が合わない。間の Cloudflare が要求ごとに違う圧縮をしていると考えると説明できるが、確かめていない。いずれにせよタイルの部分読みには意味が無いので、この不一致は使い方に影響しない。
+
+`Content-Length` は 200 の応答に付かず、`Accept-Ranges` も返らない。`Cache-Control: max-age=14400` と `cf-cache-status` が付くので、Cloudflare のキャッシュ越しの配信になる。
+
+分析に使うなら、ここではなく元の PMTiles を Range で読む。bvmap なら [gsi-optimal-bvmap](../gsi-optimal-bvmap/README.md)、OSM なら [openstreetmap-japan-pmtiles](../openstreetmap-japan-pmtiles/README.md)、標高なら [mapterhorn](../mapterhorn/README.md)。

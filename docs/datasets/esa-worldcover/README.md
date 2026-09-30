@@ -7,7 +7,9 @@
 - 配布: `https://esa-worldcover.s3.eu-central-1.amazonaws.com/` (AWS Open Data)
 - 版は v100 (2020 年) と v200 (2021 年)。どちらもタイル 2,651 枚。
 
-## ログイン不要で Cloud Native に読める
+## 取り出し方
+
+range。ログインもトークンも要らない。
 
 これがこの出典の一番の利点なので先に書く。認証もトークンも要らない。
 

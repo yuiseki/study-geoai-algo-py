@@ -54,3 +54,24 @@ admin-2 は米国だけ。 `ne_10m_admin_2_counties` は 3,224 件で、全部�
 州の列が 2 通り混ざる。 admin-2 で郡を州に結ぶのは `REGION` (`WA`)。`ISO_3166_2` は `US-53` の形と `US-WA` の形が混在していて、結合キーには使えない。
 
 国境には見方が複数ある。 既定の配布は de facto (実効支配) の見方。Natural Earth は 33 の「国ごとの見方」も公開していて、`boundaryView` 列がそれを区別する。既定だけを使うなら、そう書いておくべき。
+
+## 取り出し方
+
+split。レイヤーごとに 1 ファイルに分かれていて、必要なレイヤーの zip だけ引ける。ファイルの中を部分読みすることはできない。2026-09-30 に実測した。
+
+分割の単位はレイヤーで、10m / 50m / 110m の 3 縮尺と cultural / physical の別に分かれて実データ 215 レイヤー。1 レイヤーが 1 つの zip になっている。
+
+`https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_countries.zip` で確かめた。
+
+| 項目 | 値 |
+|---|---|
+| 応答 | HTTP/2 200、`content-type: application/zip` |
+| 大きさ | 4,930,492 バイト、`accept-ranges: bytes` |
+| Range 要求 | `curl -r 0-1023` が 206 と 1,024 バイト |
+| 先頭 | `PK\x03\x04`、最初のエントリ名は `ne_10m_admin_0_countries.README.html` |
+
+Range 自体は 206 を返すが、zip の目録は末尾にある。4,930,460 から 4,930,491 の 32 バイトを読むと `PK\x05\x06` (End of Central Directory) が 4,930,470 から始まり、エントリ数 7、中央ディレクトリはオフセット 4,929,768 から 702 バイトと書いてあった。つまり中身を選ぼうとすれば末尾と先頭で 2 回読むことになり、しかも取り出せるのは deflate された Shapefile の塊なので、空間的に絞ることはできない。
+
+目録も無い。`https://naciscdn.org/naturalearth/10m/cultural/` は 200 を返すが本文が空で、ファイルの一覧は出ない。レイヤー名は GitHub の `nvkelso/natural-earth-vector` のツリーから得るしかない。
+
+もっとも、10m の国が 4.93MB、州が 14.9MB で、最大でもこの程度なので、必要なレイヤーを丸ごと落とすことに実用上の困りは無い。

@@ -112,3 +112,34 @@ FAQ も「Images you are uploading are available under the Creative Commons Attr
 | 8〜9 LP / MILP、facility location | 電柱・街灯の検出点を基地局の設置候補地として、需要 (WorldPop の人口など) に対する配置を解く。候補地の出どころとして使う |
 | 4 Cross Validation とデータリーク | 同じ撮影列の連続写真は数 m 間隔で似ているので、写真単位でランダムに分けるとリークする。sequence_id で GroupKFold する例になる |
 | 1〜3 回帰・分類 | 未確認。検出点の密度をメッシュ特徴量にする程度 |
+
+## 取り出し方
+
+区分は catalog。API で場所を指定して写真を絞り、選んだ 1 枚だけを引ける。画像そのものは Range が効かないので、1 枚は whole になる。一括ダウンロードの経路は 2026-09-30 の時点で塞がっている。
+
+目録として使える口:
+
+| 要求 | 応答 |
+|---|---|
+| `POST https://api.openstreetcam.org/1.0/list/nearby-photos/` (`lat=35.6812&lng=139.7671&radius=200`) | 200、79,504 バイトの JSON。`currentPageItems` 115 件、`totalFilteredItems` 115。認証不要 |
+
+返る 1 件には `id`、`sequence_id`、`sequence_index`、`lat`、`lng`、`date_added`、`timestamp`、`username` と、画像のパス 3 種 (`name` が本体、`lth_name` と `th_name` がサムネイル) が入る。緯度経度と半径で絞れて、選んだものの URL がそのまま得られるので、目録として成立している。ただし 1 回の応答は 1,000 件が上限で、bbox ではなく中心と半径でしか指定できない。日時で絞る口は見つけていない (未確認)。
+
+画像の Range は効かない。東京駅付近の写真 (id 1248011617、`storage13/files/photo/2021/3/4/proc/3442397_48108_60412cebefb7d.jpg`) で測った。
+
+| 要求 | 応答 |
+|---|---|
+| `curl -sI https://storage13.openstreetcam.org/files/photo/2021/3/4/proc/3442397_48108_60412cebefb7d.jpg` | 200、`Content-Length: 2774809`、`accept-ranges: bytes`、`Content-Type: image/jpeg` |
+| `curl -r 0-1023` 同じ URL | 200、2,774,809 バイト。206 ではなく全体が返った |
+
+`accept-ranges: bytes` と申告しているのに、Range を投げると 200 でファイル全体を送ってくる。ヘッダを信じると 1KB のつもりが 2.8MB 落ちる。JPEG なので途中まで読んでも意味が無く、いずれにせよ 1 枚は丸ごと取ることになるが、「Accept-Ranges があるから部分読みできる」という前提で組むと転送量の見積もりが桁で外れる。
+
+一括ダウンロードは取れない。
+
+| 要求 | 応答 |
+|---|---|
+| `GET https://kartaimagestorage.blob.core.windows.net/grab2cmntmini?restype=container&comp=list` | 409、`<Code>PublicAccessNotPermitted</Code>`「Public access is not permitted on this storage account.」 |
+
+2026-09-28 には SAS の期限切れ (403 AuthenticationFailed) だったものが、今日は SAS 無しの要求に対して 409 を返している。どちらにせよ、公開サンプル (mini dataset) の一覧は取れない。全量 30.79 TiB を落とす公開の手段は見つけていない (未確認)。
+
+まとめると、使える形はこうなる。地点を決めて `nearby-photos` を叩き、返ってきたメタデータ (位置、撮影日時、向き、撮影列) だけで済む用途なら、画像を 1 枚も落とさずに済む。画像が要るなら 1 枚 3MB から 37MB を丸ごと、必要な枚数ぶん取る。1 都市ぶんをまとめて取る道は無い。

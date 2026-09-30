@@ -110,3 +110,30 @@ Disallow: /api
 スキャン文書がある。 テキスト層を持たない PDF が一定数ある (`yuiseki/un-docs` では 39,363 件中 1,864 件)。上流から取っただけでは本文が取れず、OCR が要る。`ST/AI/189/Add.9/Rev.2` 自体がその例で、pdftotext は 0 行を返した。
 
 地理の列は無い。 文書記号、日付、本文があるだけで、座標も国コードも無い。地名は本文中の文字列としてしか存在しない。
+
+## 取り出し方
+
+区分は split。目録が無いので catalog にはならない。2026-09-30 に curl で確かめた。
+
+API は文書記号 1 件ずつを返す。ここが唯一の取り口である。
+
+| 要求 | 応答 |
+|---|---|
+| `https://documents.un.org/api/symbol/access?s=A/RES/55/1&l=en&t=pdf` | 200、application/pdf、18,671 バイト |
+| `https://documents.un.org/api/symbol/access?s=A/RES/55/2&l=en&t=pdf` | 200、application/pdf、63,788 バイト |
+| `https://documents.un.org/api/symbol/access?s=A/RES/55/3&l=en&t=pdf` | 200、application/pdf、26,672 バイト |
+| `https://documents.un.org/api/symbol/access?s=A/RES/99/999&l=en&t=pdf` | 200、text/html、1,303 バイト (存在しない) |
+
+`ST/AI/189/Add.9/Rev.2` は 200 で 437,237 バイトの PDF (version 1.3、7 ページ) が返り、302 で `https://documents.un.org/doc/undoc/gen/ns0/000/81/img/ns000081.pdf` へ転送されていた。既存の記述は `Referer` が無いと `/error` を返すとしているが、当日 `Referer` を付けずに投げても同じ 437,237 バイトが返った。挙動が変わったのか、転送を追ったことで結果的に通ったのかは切り分けていない (未確認)。付けておくほうが安全である。
+
+1 文書が 1 ファイルとして分かれているので split に当たる。必要な文書だけを取れる点は満たしているが、条件は「記号を既に知っていること」である。
+
+目録は無い。`https://documents.un.org/api/symbol/search?s=A/RES/55` と `https://documents.un.org/api/documents?q=test` はどちらも 404 で 29 バイトの JSON を返した。日付や主題や発行機関で絞って記号の一覧を得る手段を、当日この API 上に見つけられなかった。したがって「探してから選ぶ」という catalog の条件は満たさない。実際の取得は `A/RES/{会期}/{番号}` のような記号の規則から候補を組み立てて総当たりする形になり、`yuiseki/undocs` もそうしている。
+
+存在しない記号が 404 でなく 200 で返るのは罠である。上の `A/RES/99/999` は 200 の 1,303 バイトで、HTTP の状態符号だけを見ていると成功に見える。総当たりする以上、content-type が application/pdf であることと本文の先頭が `%PDF` であることを毎回確かめないと、HTML のかけらが文書として積み上がる。
+
+個々の PDF は Range を受ける。転送先の `https://documents.un.org/doc/undoc/gen/ns0/000/81/img/ns000081.pdf` は content-length 437,237、accept-ranges: bytes で、`-r 0-1023` が 206 と 1,024 バイトを返した。ただし 1 文書が数十 KB から数百 KB しかないので、部分読みに実用上の意味は無い。
+
+全体の件数は未確認。`yuiseki/un-docs` 側の 39,363 件は派生データの数であって、ODS に何件あるかではない。国連側で数えるには、記号の一覧を返す仕組みか ODS の検索インターフェースの機械可読な出口が要る。当日はどちらも見つからなかった。
+
+`robots.txt` が `Disallow: /api` を含むことは変わらない。総当たりで叩く以上、`yuiseki/undocs` の既定である 2.5 秒間隔と並列 4 を緩めないこと。

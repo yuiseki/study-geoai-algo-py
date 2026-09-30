@@ -163,3 +163,20 @@ feature code の一覧の数が公称と合わない。 about ページは 645 �
 毎日置き換わる。 URL は固定で中身が差し替わる。版番号もチェックサムも索引に無い。再現性が要るなら落とした日の `Last-Modified` とバイト数を記録する。日次で追随するなら `modifications-<date>.txt` と `deletes-<date>.txt`、別名は `alternateNamesModifications-<date>.txt` と `alternateNamesDeletes-<date>.txt` が使える。
 
 境界は簡略版しかない。 readme が挙げる `shapes_simplified_low` と `shapes_simplified_low.json` は国の境界の簡略形で、zip で 1,302,545 バイトしかない。面が要るなら [geoboundaries](../geoboundaries/README.md) や国土数値情報を使う。GeoNames は点の辞書として扱う。
+
+## 取り出し方
+
+split。国ごとに zip が分かれていて、必要な国だけ引ける。全世界が要るときだけ whole の `allCountries.zip` になる。2026-09-30 に実測した。
+
+分割の単位は国で、索引ページ `https://download.geonames.org/export/dump/` から `XX.zip` の形の項目を数えると 253 個あった。別名も同じ単位で `alternatenames/XX.zip` に分かれている。索引は Apache の自動生成一覧なので、bbox でも日時でも絞れない。国コードで選ぶだけ。
+
+| 要求した URL | 応答 | 大きさ | Range 要求 |
+|---|---|---:|---|
+| `.../export/dump/JP.zip` | 200、`Accept-Ranges: bytes` | 4,959,038 | 206 と 1,024 バイト |
+| `.../export/dump/allCountries.zip` | 200、`Accept-Ranges: bytes` | 422,001,054 | 206 と 1,024 バイト |
+
+どちらも Range 要求は通るが、中身を選ぶことはできない。JP.zip の先頭 256 バイトは `PK\x03\x04` に続いて最初のエントリ `readme.txt` で、zip の目録は末尾にある。しかも中身は deflate されたタブ区切りテキストで、行や地域の索引を持たない。部分読みでできるのはヘッダの確認までで、地物を取り出すには 1 国分を丸ごと展開することになる。
+
+日本は 4.96MB、全世界は 422MB。国単位なら十分小さい。全世界が要る場合は whole として扱う。
+
+毎日同じ URL の中身が差し替わるので、版を固定して引く手段は無い。落とした日の `Last-Modified` とバイト数を控えるしかない。

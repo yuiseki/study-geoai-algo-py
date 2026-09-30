@@ -71,3 +71,23 @@ API の 1 件が返す配布先は 5 つ。日本の ADM2 の例。
 URL には commit hash が入る (日本の ADM2 は `9469f09`)。版を固定して引ける。
 
 メタデータには形の統計も入っていて、そのまま使える。日本の ADM2 なら頂点数の平均 218、最小 5、最大 1,553。面積の平均 213.59 km2、最小 0.0012 km2、最大 2,177.56 km2。
+
+## 取り出し方
+
+split。国と階層の組でファイルが分かれていて、必要な 1 件だけ引ける。API が目録の役をするが、bbox や日時では絞れないので catalog とは呼ばない。2026-09-30 に実測した。
+
+目録は `https://www.geoboundaries.org/api/current/gbOpen/ALL/ALL/` で、200 と 1,274,935 バイト、JSON の配列で 715 件が返った。絞り込みは URL の ISO コードと ADM 階層だけで、`.../gbOpen/JPN/ADM2/` は 200 と 1,700 バイトを返す。空間や時間での検索は無い。認証は不要。
+
+分割の単位は 国 x 行政階層 で 715 件。日本の ADM2 の実体で確かめた。
+
+| 項目 | 値 |
+|---|---|
+| API が返した URL | `https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/JPN/ADM2/geoBoundaries-JPN-ADM2.geojson` |
+| 応答 | 302 で `media.githubusercontent.com` へ、追って 200 |
+| 大きさ | 10,897,321 バイト、`accept-ranges: bytes` |
+| Range 要求 | `curl -r 0-1023` が 206 と 1,024 バイト |
+| 先頭 | `{ "type": "FeatureCollection", "crs": ... "CRS84" ...` |
+
+Range は 206 を返すが、中身は素の GeoJSON で索引を持たない。先頭から順に読む以外に取り出す道が無いので、1 件を丸ごと落とすことになる。FlatGeobuf や GeoParquet の配布は無く、API が返す 5 つの配布先は一式 zip、GeoJSON、簡略化 GeoJSON、TopoJSON、プレビュー画像だけ。
+
+URL に commit hash が入るので、版を固定したまま引き直せる。日本の ADM2 なら 10.9MB で、1 国 1 階層の単位ならどれも落として構わない大きさ。

@@ -55,37 +55,37 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 
 | 出どころ | 中身 | 規模 | データの形 | ライセンス |
 |---|---|---|---|---|
-| [Ookla Speedtest](ookla-speedtest/README.md) | 固定回線と携帯の速度・遅延を約 610m タイルで平均したもの (四半期ごと) | 2019 年第 1 四半期から 30 四半期 × 2 種別、Parquet 15.13GB | Parquet, Shapefile | CC BY-NC-SA 4.0 |
-| [Mapterhorn](mapterhorn/README.md) | 全球の標高タイル。Copernicus GLO-30 を土台に各国の高精度 DEM 151 件で上書き。版 0.0.13 | planet.pmtiles (z0-12) 355.6GB と、z13 以上の地域別 458 個で合計約 9.58TB | PMTiles (Terrarium 符号化の 512px 可逆 WebP) | 元データごとに違う (約 30 種)。「© Mapterhorn」の表示が要る |
-| [NASA SRTM](nasa-srtm/README.md) | 全球の標高 (北緯 60 度〜南緯 56 度)。SRTM v3 と、それを処理し直した NASADEM | 1 度四方のタイル。SRTMGL1 は 14,297 枚、1 枚 3,601 x 3,601 画素 (約 30m) で約 10MB | HGT。NASADEM は Planetary Computer に COG | CC0 (NASA の一般方針)。配布元により表記が違い、CGIAR 版は再配布不可 |
-| [e-Stat 小地域境界](estat-boundary/README.md) | 国勢調査の町丁・字等別の境界と人口・世帯数。`yuiseki/estat-boundary-2020` の上流 | 47 都道府県で 322,733,398 バイト、全国 232,019 フィーチャ | Shapefile (zip、cp932、JGD2000) | 政府標準利用規約2.0。CC BY に従う利用も可 |
-| [GeoNames](geonames/README.md) | 全世界の地名と別名。Wikidata の Q id と結べる | 13,465,076 件 / 252 国。allCountries.zip 422,001,054 バイト | タブ区切りテキスト (zip)、API | CC BY 4.0。表示が要る。商用可、share-alike 無し |
-| [OSM Wiki](osm-wiki/README.md) | OSM のタグの説明。`yuiseki/osm-wiki` の上流 | 記事 86,510、Key: 6,720、Tag: 8,538 | MediaWiki API、全履歴ダンプ 6.89GB | CC BY-SA 2.0。地図データのライセンスとは別 |
-| [taginfo](taginfo/README.md) | OSM のタグの実使用回数。`yuiseki/osm-tag-corpus` の上流 | キー 115,209。DB の bz2 で 2.62GB | JSON API、SQLite ほか | ODbL。ただし wiki 由来の説明文の扱いは未確認 |
-| [OurAirports](ourairports/README.md) | 全世界の空港と滑走路。IATA/ICAO コードつき | 86,153 行、19 列。7 ファイルで 24.7MB | CSV | public domain と明記。ただし LICENSE は The Unlicense で software としか書かない |
-| [Wikipedia](wikipedia/README.md) | 座標つき記事。`yuiseki/wikipedia-geotagged` の上流 | ja 1,520,723 記事 / en 7,245,970 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
-| [Wikivoyage](wikivoyage/README.md) | 旅行先の記事。`yuiseki/wikivoyage-geotagged` の上流 | en 34,710 記事 / ja 1,808 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
-| [国連文書 (ODS)](un-docs-source/README.md) | 総会と安保理の公式文書。`yuiseki/un-docs` の上流 | 未確認 (派生側で 39,363 件) | PDF (API 経由)、一部はスキャン | 許諾の文言が無い。1987 年の内部方針とサイト規約が矛盾する |
-| [ESA WorldCover](esa-worldcover/README.md) | 全球 10m の土地被覆 11 区分。2020 年版と 2021 年版 | タイル 2,651 枚、Map だけで約 117GB | COG (EPSG:4326)。認証不要で Range が効く。格子は GeoJSON と FlatGeobuf | CC BY 4.0。表示文が指定されている |
-| [GHSL](ghsl/README.md) | 全球の人口・建物・都市化度の格子。1975 年から 2030 年まで 5 年刻みで、2025 と 2030 は推計 | GHS-POP 1km で 1 エポック約 320MB、12 エポック | GeoTIFF (zip)、モルワイデ図法 | CC BY 4.0 (欧州委員会の法的通知による)。EU 所有でない部分は別 |
-| [アドレス・ベース・レジストリ](abr/README.md) | 日本の住所の基本台帳。都道府県・市区町村・町字のマスターと代表点。`yuiseki/abr-src-2026-09` の上流 | 町字 727,429 行、座標 337,641 行 | CSV (zip)。直接配布と ArcGIS Hub の 2 経路 | PDL1.0。原文が CC BY に従う利用を許諾。出典と加工の明示が要る |
-| [Wikidata](wikidata/README.md) | 全世界の構造化データ。座標を持つ項目が 1,243 万件。`yuiseki/wikidata-gazetteer` の上流 | 項目 1 億 2,351 万件。truthy ダンプで 43.5GB | JSON / TTL / NT のダンプ、SPARQL | 構造化データは CC0。main と property 以外の名前空間の文章は CC BY-SA |
-| [Natural Earth](natural-earth/README.md) | 全世界の行政区域、地名、自然地物を 3 縮尺で。`yuiseki/ne-admin0-10m` の上流 | 実データ 215 レイヤー。10m の国 4.93MB、州 14.91MB | Shapefile (zip)、GitHub に版管理された本体 | public domain。帰属表示も不要と明記 |
-| [geoBoundaries](geoboundaries/README.md) | 全世界の行政区域 ADM0〜ADM5。Natural Earth に無い ADM2 が 180 の国と地域にある | 715 件 / 232 の ISO コード。ADM2 だけで 49,363 単位 | GeoJSON, TopoJSON, Shapefile | 国ごと・階層ごとに違う (25 種類)。ADM2 の 135 件は share-alike でない |
-| [Geofabrik](geofabrik/README.md) | OSM の地域抽出 (大陸、国、日本は 8 地方)。毎日更新 | 555 地域。日本全体の PBF が 2.54GB | .osm.pbf、地方は .shp.zip と .gpkg.zip も | ODbL 1.0 |
-| [OpenStreetMap Japan PMTiles](openstreetmap-japan-pmtiles/README.md) | 全世界のベクトルタイル (データ基準日 2026-09-21) | 1 本 84.3GB、z0-14、16 レイヤー | PMTiles、MVT、OpenMapTiles 3.16.0 スキーマ | ODbL 1.0 と OpenMapTiles (CC-BY 4.0) |
-| [東京 23 区のバスの GTFS](tokyo-gtfs/README.md) | 都営バス、荒川区、葛飾区、杉並区の時刻表。どれも block_id が空 | 都営バスは 150 路線、55,846 便 | GTFS-JP | CC BY 4.0 |
-| [台東区めぐりん GTFS](odpt-taito-megurin/README.md) | 台東区コミュニティバスの時刻表 (4 路線、128 停留所、290 便)。有効期間 2025-08-10〜2026-12-31 | zip 1 つ 78KB | GTFS-JP | CC BY 4.0 |
-| [KartaView / GrabMaps 360 Imagery](kartaview-grabmaps-imagery/README.md) | 道路沿いの写真 (通常と 360 度)。GrabMaps 分は Yogyakarta、Langkawi、Krabi の 3 都市 | GrabMaps の公開分はサイト記載で 1,738,676 枚、30.79TiB。全体の規模は未確認 | JPEG と JSON API (位置、撮影日時、向き) | CC BY-SA 4.0 (KartaView の画像全体に一律) |
-| [みちよみ](michiyomi/README.md) | 東京都の街路画像 (Mapillary) を VLM で構造化したもの。歩道、電柱、街灯、路面など | 1,914,451 シーン、一括版は Parquet 1.97GB | Parquet (Hugging Face) と API | CC BY-SA 4.0 (Mapillary のロゴ表示が要る) |
-| [Google Open Buildings](google-open-buildings/README.md) | 衛星画像から推定した建物ポリゴン (v1〜v3) と、建物の有無・高さのラスタ (2.5D Temporal、2016〜2023 年)。アフリカ、南アジア、東南アジア、中南米で、日本は含まない | v3 ポリゴン約 18.5 億件、CSV.gz 333 本で 178.26GB | CSV.gz、GeoTIFF、ミラーに GeoParquet | CC BY 4.0 と ODbL 1.0 から選ぶ二重ライセンス |
-| [PLATEAU](plateau/README.md) | 国土交通省の 3D 都市モデル。この学習では深追いしない (理由はリンク先) | 約 300 都市 (2025 年度末の予定) | CityGML ほか | データセットごとに確かめる (未確認) |
-| [stars.optgeo.org](stars-optgeo/README.md) | Martin のタイルサーバー。空中写真、標高、Overture、OSM、国土地理院の最適化ベクトルタイル (bvmap) など 43 レイヤー | 表示用のタイル | MVT、PNG、JPEG、WebP | レイヤーごと (bvmap は国土地理院コンテンツ利用規約) |
-| [国土地理院 最適化ベクトルタイル](gsi-optimal-bvmap/README.md) | 数値地図 (国土基本情報) の道路中心線、建物、等高線など 24 レイヤー。全国、2026-07-01 時点 | 地物 (MVT、タイル境界で切られる) | PMTiles 16.9GB (Range 可) | 国土地理院コンテンツ利用規約 (出典の明示) |
-| [OpenCelliD](opencellid/README.md) | 携帯基地局の推定位置 (直近 18 か月に観測されたもの) | 未確認 (取得に API トークンが要る) | CSV | CC BY-SA 4.0 |
-| [NYC TLC Trip Record Data](nyc-tlc/README.md) | ニューヨーク市のタクシーと配車の乗車記録 (乗降のゾーン ID と時刻、料金) と、263 のゾーン境界 | 2009 年から毎月。2026-07 は yellow 353 万行 61.7MB、fhvhv 2,092 万行 511MB | Parquet (CloudFront、Range 可)、境界は Shapefile の zip | 記載無し (NYC.gov の利用規約を指す)。再配布の許可は不明 |
-| [Meta の移動データ (HDX)](hdx-meta-movement/README.md) | Facebook の位置情報から出した行政区域ごとの 1 日の移動。Movement Range Maps (2020-03〜2022-05、終了) と Movement Distribution (家からの距離 4 区分、直近 90 日のみ) | Range Maps は 2021〜2022 年分で 695 万行、日本 679 区域。Distribution は 4 日分で 62 万行、日本 1,802 区域 | TSV の zip、CSV (署名付き S3、Range 可だが部分読みは不可)。z.yuiseki.net に元のファイルと Parquet のミラーあり (Commuting Zones、Business Activity Trends も) | CC BY |
-| [全国の人流オープンデータ](mlit-1km-fromto/README.md) | 国土交通省の 1km メッシュ別と市区町村単位発地別の滞在人口 (平日/休日 × 昼/深夜/終日)。元は Agoop の GPS | 2019-01〜2021-12 の月別、47 都道府県で zip 191.7MB。東京都のメッシュ別は 49 万行 | 入れ子の zip の CSV (署名付き S3)。ページはログインを求めるが API からは不要。z.yuiseki.net に Parquet のミラーあり | 政府標準利用規約 2.0 準拠 (CC BY 4.0 互換) |
+| [Ookla Speedtest](ookla-speedtest/README.md)  `range` | 固定回線と携帯の速度・遅延を約 610m タイルで平均したもの (四半期ごと) | 2019 年第 1 四半期から 30 四半期 × 2 種別、Parquet 15.13GB | Parquet, Shapefile | CC BY-NC-SA 4.0 |
+| [Mapterhorn](mapterhorn/README.md)  `range` | 全球の標高タイル。Copernicus GLO-30 を土台に各国の高精度 DEM 151 件で上書き。版 0.0.13 | planet.pmtiles (z0-12) 355.6GB と、z13 以上の地域別 458 個で合計約 9.58TB | PMTiles (Terrarium 符号化の 512px 可逆 WebP) | 元データごとに違う (約 30 種)。「© Mapterhorn」の表示が要る |
+| [NASA SRTM](nasa-srtm/README.md)  `split` | 全球の標高 (北緯 60 度〜南緯 56 度)。SRTM v3 と、それを処理し直した NASADEM | 1 度四方のタイル。SRTMGL1 は 14,297 枚、1 枚 3,601 x 3,601 画素 (約 30m) で約 10MB | HGT。NASADEM は Planetary Computer に COG | CC0 (NASA の一般方針)。配布元により表記が違い、CGIAR 版は再配布不可 |
+| [e-Stat 小地域境界](estat-boundary/README.md)  `split` | 国勢調査の町丁・字等別の境界と人口・世帯数。`yuiseki/estat-boundary-2020` の上流 | 47 都道府県で 322,733,398 バイト、全国 232,019 フィーチャ | Shapefile (zip、cp932、JGD2000) | 政府標準利用規約2.0。CC BY に従う利用も可 |
+| [GeoNames](geonames/README.md)  `split` | 全世界の地名と別名。Wikidata の Q id と結べる | 13,465,076 件 / 252 国。allCountries.zip 422,001,054 バイト | タブ区切りテキスト (zip)、API | CC BY 4.0。表示が要る。商用可、share-alike 無し |
+| [OSM Wiki](osm-wiki/README.md)  `catalog` | OSM のタグの説明。`yuiseki/osm-wiki` の上流 | 記事 86,510、Key: 6,720、Tag: 8,538 | MediaWiki API、全履歴ダンプ 6.89GB | CC BY-SA 2.0。地図データのライセンスとは別 |
+| [taginfo](taginfo/README.md)  `catalog` | OSM のタグの実使用回数。`yuiseki/osm-tag-corpus` の上流 | キー 115,209。DB の bz2 で 2.62GB | JSON API、SQLite ほか | ODbL。ただし wiki 由来の説明文の扱いは未確認 |
+| [OurAirports](ourairports/README.md)  `whole` | 全世界の空港と滑走路。IATA/ICAO コードつき | 86,153 行、19 列。7 ファイルで 24.7MB | CSV | public domain と明記。ただし LICENSE は The Unlicense で software としか書かない |
+| [Wikipedia](wikipedia/README.md)  `range` | 座標つき記事。`yuiseki/wikipedia-geotagged` の上流 | ja 1,520,723 記事 / en 7,245,970 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
+| [Wikivoyage](wikivoyage/README.md)  `range` | 旅行先の記事。`yuiseki/wikivoyage-geotagged` の上流 | en 34,710 記事 / ja 1,808 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
+| [国連文書 (ODS)](un-docs-source/README.md)  `split` | 総会と安保理の公式文書。`yuiseki/un-docs` の上流 | 未確認 (派生側で 39,363 件) | PDF (API 経由)、一部はスキャン | 許諾の文言が無い。1987 年の内部方針とサイト規約が矛盾する |
+| [ESA WorldCover](esa-worldcover/README.md)  `range` | 全球 10m の土地被覆 11 区分。2020 年版と 2021 年版 | タイル 2,651 枚、Map だけで約 117GB | COG (EPSG:4326)。認証不要で Range が効く。格子は GeoJSON と FlatGeobuf | CC BY 4.0。表示文が指定されている |
+| [GHSL](ghsl/README.md)  `split` | 全球の人口・建物・都市化度の格子。1975 年から 2030 年まで 5 年刻みで、2025 と 2030 は推計 | GHS-POP 1km で 1 エポック約 320MB、12 エポック | GeoTIFF (zip)、モルワイデ図法 | CC BY 4.0 (欧州委員会の法的通知による)。EU 所有でない部分は別 |
+| [アドレス・ベース・レジストリ](abr/README.md)  `split` | 日本の住所の基本台帳。都道府県・市区町村・町字のマスターと代表点。`yuiseki/abr-src-2026-09` の上流 | 町字 727,429 行、座標 337,641 行 | CSV (zip)。直接配布と ArcGIS Hub の 2 経路 | PDL1.0。原文が CC BY に従う利用を許諾。出典と加工の明示が要る |
+| [Wikidata](wikidata/README.md)  `catalog` | 全世界の構造化データ。座標を持つ項目が 1,243 万件。`yuiseki/wikidata-gazetteer` の上流 | 項目 1 億 2,351 万件。truthy ダンプで 43.5GB | JSON / TTL / NT のダンプ、SPARQL | 構造化データは CC0。main と property 以外の名前空間の文章は CC BY-SA |
+| [Natural Earth](natural-earth/README.md)  `split` | 全世界の行政区域、地名、自然地物を 3 縮尺で。`yuiseki/ne-admin0-10m` の上流 | 実データ 215 レイヤー。10m の国 4.93MB、州 14.91MB | Shapefile (zip)、GitHub に版管理された本体 | public domain。帰属表示も不要と明記 |
+| [geoBoundaries](geoboundaries/README.md)  `split` | 全世界の行政区域 ADM0〜ADM5。Natural Earth に無い ADM2 が 180 の国と地域にある | 715 件 / 232 の ISO コード。ADM2 だけで 49,363 単位 | GeoJSON, TopoJSON, Shapefile | 国ごと・階層ごとに違う (25 種類)。ADM2 の 135 件は share-alike でない |
+| [Geofabrik](geofabrik/README.md)  `split` | OSM の地域抽出 (大陸、国、日本は 8 地方)。毎日更新 | 555 地域。日本全体の PBF が 2.54GB | .osm.pbf、地方は .shp.zip と .gpkg.zip も | ODbL 1.0 |
+| [OpenStreetMap Japan PMTiles](openstreetmap-japan-pmtiles/README.md)  `range` | 全世界のベクトルタイル (データ基準日 2026-09-21) | 1 本 84.3GB、z0-14、16 レイヤー | PMTiles、MVT、OpenMapTiles 3.16.0 スキーマ | ODbL 1.0 と OpenMapTiles (CC-BY 4.0) |
+| [東京 23 区のバスの GTFS](tokyo-gtfs/README.md)  `split` | 都営バス、荒川区、葛飾区、杉並区の時刻表。どれも block_id が空 | 都営バスは 150 路線、55,846 便 | GTFS-JP | CC BY 4.0 |
+| [台東区めぐりん GTFS](odpt-taito-megurin/README.md)  `whole` | 台東区コミュニティバスの時刻表 (4 路線、128 停留所、290 便)。有効期間 2025-08-10〜2026-12-31 | zip 1 つ 78KB | GTFS-JP | CC BY 4.0 |
+| [KartaView / GrabMaps 360 Imagery](kartaview-grabmaps-imagery/README.md)  `catalog` | 道路沿いの写真 (通常と 360 度)。GrabMaps 分は Yogyakarta、Langkawi、Krabi の 3 都市 | GrabMaps の公開分はサイト記載で 1,738,676 枚、30.79TiB。全体の規模は未確認 | JPEG と JSON API (位置、撮影日時、向き) | CC BY-SA 4.0 (KartaView の画像全体に一律) |
+| [みちよみ](michiyomi/README.md)  `range` | 東京都の街路画像 (Mapillary) を VLM で構造化したもの。歩道、電柱、街灯、路面など | 1,914,451 シーン、一括版は Parquet 1.97GB | Parquet (Hugging Face) と API | CC BY-SA 4.0 (Mapillary のロゴ表示が要る) |
+| [Google Open Buildings](google-open-buildings/README.md)  `split` | 衛星画像から推定した建物ポリゴン (v1〜v3) と、建物の有無・高さのラスタ (2.5D Temporal、2016〜2023 年)。アフリカ、南アジア、東南アジア、中南米で、日本は含まない | v3 ポリゴン約 18.5 億件、CSV.gz 333 本で 178.26GB | CSV.gz、GeoTIFF、ミラーに GeoParquet | CC BY 4.0 と ODbL 1.0 から選ぶ二重ライセンス |
+| [PLATEAU](plateau/README.md)  `catalog` | 国土交通省の 3D 都市モデル。この学習では深追いしない (理由はリンク先) | 約 300 都市 (2025 年度末の予定) | CityGML ほか | データセットごとに確かめる (未確認) |
+| [stars.optgeo.org](stars-optgeo/README.md)  `split` | Martin のタイルサーバー。空中写真、標高、Overture、OSM、国土地理院の最適化ベクトルタイル (bvmap) など 43 レイヤー | 表示用のタイル | MVT、PNG、JPEG、WebP | レイヤーごと (bvmap は国土地理院コンテンツ利用規約) |
+| [国土地理院 最適化ベクトルタイル](gsi-optimal-bvmap/README.md)  `range` | 数値地図 (国土基本情報) の道路中心線、建物、等高線など 24 レイヤー。全国、2026-07-01 時点 | 地物 (MVT、タイル境界で切られる) | PMTiles 16.9GB (Range 可) | 国土地理院コンテンツ利用規約 (出典の明示) |
+| [OpenCelliD](opencellid/README.md)  `未確認` | 携帯基地局の推定位置 (直近 18 か月に観測されたもの) | 未確認 (取得に API トークンが要る) | CSV | CC BY-SA 4.0 |
+| [NYC TLC Trip Record Data](nyc-tlc/README.md)  `range` | ニューヨーク市のタクシーと配車の乗車記録 (乗降のゾーン ID と時刻、料金) と、263 のゾーン境界 | 2009 年から毎月。2026-07 は yellow 353 万行 61.7MB、fhvhv 2,092 万行 511MB | Parquet (CloudFront、Range 可)、境界は Shapefile の zip | 記載無し (NYC.gov の利用規約を指す)。再配布の許可は不明 |
+| [Meta の移動データ (HDX)](hdx-meta-movement/README.md)  `whole` | Facebook の位置情報から出した行政区域ごとの 1 日の移動。Movement Range Maps (2020-03〜2022-05、終了) と Movement Distribution (家からの距離 4 区分、直近 90 日のみ) | Range Maps は 2021〜2022 年分で 695 万行、日本 679 区域。Distribution は 4 日分で 62 万行、日本 1,802 区域 | TSV の zip、CSV (署名付き S3、Range 可だが部分読みは不可)。z.yuiseki.net に元のファイルと Parquet のミラーあり (Commuting Zones、Business Activity Trends も) | CC BY |
+| [全国の人流オープンデータ](mlit-1km-fromto/README.md)  `range` | 国土交通省の 1km メッシュ別と市区町村単位発地別の滞在人口 (平日/休日 × 昼/深夜/終日)。元は Agoop の GPS | 2019-01〜2021-12 の月別、47 都道府県で zip 191.7MB。東京都のメッシュ別は 49 万行 | 入れ子の zip の CSV (署名付き S3)。ページはログインを求めるが API からは不要。z.yuiseki.net に Parquet のミラーあり | 政府標準利用規約 2.0 準拠 (CC BY 4.0 互換) |
 
 ## 新しい出どころを足すとき
 

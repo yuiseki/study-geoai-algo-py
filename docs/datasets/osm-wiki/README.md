@@ -114,3 +114,24 @@ wikitext は平文ではない。 テンプレート展開、表、言語間リ�
 - 地物の特徴量にはならない。座標が本文に無い。
 - タグの意味を引く辞書として使う。`Key:` 6,720 と `Tag:` 8,538 のページが対象。日本語が要るなら JA 名前空間の 2,879 ページ。
 - 数値が欲しいなら wiki を直接読むより taginfo ([../taginfo/README.md](../taginfo/README.md)) を使う。wiki は説明文、taginfo は使用回数という分担になっている。
+
+## 取り出し方
+
+区分は catalog。ダンプは whole。2026-09-30 に curl で確かめた。
+
+ダンプは丸ごとしかない。`https://wiki.openstreetmap.org/dump/dump.xml.gz` は 6,887,110,913 バイト (Last-Modified 2026-09-01 06:23:39 GMT)、accept-ranges: bytes を返し `-r 0-1023` は 206 で 1,024 バイトが返る。ただし gzip の単一ストリームで索引が無いので、途中のバイト列を取っても展開できない。しかも中身は全リビジョンである。最新版の 1 ページだけが欲しくても 6.9 GB を頭から通す必要がある。Range が 206 を返すことをここで根拠にしてはいけない。
+
+同じ索引の `https://wiki.openstreetmap.org/dump/wikibase-rdf.ttl.gz` は 11,109,080 バイト (Last-Modified 2026-09-30 04:01:30 GMT) で、こちらは丸ごと落としても 11 MB で済み、しかも当日更新されている。Wikibase の Item と Property だけが要るならこの 1 本が最小単位になる。
+
+API は catalog として使える。目録として引く側と、1 件だけ取る側の両方が動いた。
+
+| 要求 | 応答 |
+|---|---|
+| `https://wiki.openstreetmap.org/w/api.php?action=query&list=allpages&apprefix=Key:amen&aplimit=10&format=json&formatversion=2` | 200、379 バイト。`Key:amenity` など 6 件のページ名とページ ID |
+| `https://wiki.openstreetmap.org/w/api.php?action=query&prop=revisions&rvprop=content&rvslots=main&titles=Key:amenity&format=json&formatversion=2` | 200、4,161 バイト。`{{KeyDescription` から始まる最新版の wikitext がそのまま入る |
+
+つまり接頭辞で `Key:` や `Tag:` を列挙してから、必要なページの本文だけを 1 件ずつ取れる。全部を通さずに一部を取るという意味では、ここが唯一まともに動く経路である。
+
+ただし規模との折り合いがある。`Key:` は 6,720、`Tag:` は 8,538 で合わせて 15,258 ページある。1 回 4 KB として全部で 60 MB 程度だが、要求は 15,258 回になる。`robots.txt` が `Disallow: /w/` と `Disallow: /api/` を含むことを踏まえると、この回数を叩くのは本家の想定から外れる。一部だけが要るときは API、全部が要るときはダンプ、と使い分けるのが筋である。
+
+`aplimit` の実際の上限は未確認。API のヘルプは多値パラメータ 50、結果 500 と書くが、この wiki で `aplimit=500` が通るかは当日投げていない。確かめるには段階的に上げて応答が切り詰められる点を見る必要がある。

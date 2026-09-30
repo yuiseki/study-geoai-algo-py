@@ -127,3 +127,31 @@ wiki 由来の部分は ODbL だけで説明できない。 説明文の元は C
 - OSM のタグを特徴量にするとき、`count_all` で希少タグを切る閾値の根拠として使える。四分位は `yuiseki/osm-tag-corpus` 側に集計がある。
 - `keys/wiki_pages` (6,811) と `keys/all` (115,209) の差は、そのまま「文書化されているか」というラベルになる。説明の有無を当てる分類の題材。
 - 1 件ずつ API を叩くのではなく、`taginfo-db.db.bz2` と `taginfo-wiki.db.bz2` を落として SQLite で引くほうが速く、本家の方針にも合う。
+
+## 取り出し方
+
+区分は catalog。ダンプは whole。2026-09-30 に curl で確かめた。
+
+API は 1 キーだけを返せる。これがこの出典の分かれ目なので先に書く。
+
+| 要求 | 応答 |
+|---|---|
+| `https://taginfo.openstreetmap.org/api/4/key/stats?key=amenity` | 200、412 バイト。`amenity` の all / nodes / ways / relations の使用回数だけ |
+| `https://taginfo.openstreetmap.org/api/4/tag/stats?key=amenity&value=restaurant` | 200、368 バイト |
+| `https://taginfo.openstreetmap.org/api/4/key/wiki_pages?key=amenity` | 200、22,863 バイト。そのキーの wiki 説明文 |
+| `https://taginfo.openstreetmap.org/api/4/keys/all?page=1&rp=3&sortname=count_all&sortorder=desc` | 200、1,076 バイト。`"total":115209` と先頭 3 件 (`building` 709,892,745、`source` 313,413,112 ほか) |
+
+`keys/all` が `page` と `rp` でページ分割でき、`total` で全体の件数を返すので、目録として使ってから必要なキーだけを `key/stats` で引ける。全体を取らずに一部を取るという条件を満たしている。どの応答にも `data_until` (2026-09-29T00:59:51Z) が入るので、基準時刻を一緒に記録できる。
+
+ダンプは丸ごとしかない。
+
+| ファイル | 大きさ (バイト) | Last-Modified | accept-ranges | `-r 0-1023` |
+|---|---:|---|---|---|
+| `https://taginfo.openstreetmap.org/download/taginfo-db.db.bz2` | 2,623,225,085 | 2026-09-29 07:55:51 GMT | bytes | 206 / 1,024 バイト |
+| `https://taginfo.openstreetmap.org/download/taginfo-wiki.db.bz2` | 25,852,280 | 2026-09-29 07:54:11 GMT | bytes | 206 / 1,024 バイト |
+
+どちらも 206 を返すが、bzip2 の単一ストリームなので途中を取っても展開できない。中身は SQLite なので展開さえすれば索引で引けるが、そこに至るには全部落として全部伸長する必要がある。Range が効くことを部分読みの根拠にしてはいけない。
+
+境目は件数で決まる。キーは 115,209 ある。数十件なら API、全部なら 2.6 GB のダンプ、というのが自然な線である。wiki の説明文だけなら `taginfo-wiki.db.bz2` が 25.9 MB しかないので、こちらは丸ごと落としても安い。`yuiseki/osm-tag-corpus` はこの経路で作られている。
+
+1 秒あたりの要求数の上限は未確認。about ページにも API ドキュメントにも数値が書かれておらず、`robots.txt` は `Disallow: /api` と `Disallow: /download` を含む。実際の閾値を知るには本家の管理者に問い合わせるしかない。

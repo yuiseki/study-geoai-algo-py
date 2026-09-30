@@ -50,3 +50,22 @@ GTFS-JP の zip 1 つ (78,030 バイト)。版は `20250801_MEG001`、有効期�
 - 9 facility location: 停留所の徒歩圏 (300〜500m) で人口メッシュをどれだけ覆えているかを測り、停留所を足す場所を選ぶ。
 
 再現できるように、この zip を中身を変えずに <https://z.yuiseki.net/static/gtfs/odpt/TokyoTaitoCity/megurinCCBY40/20251028/megurinCCBY40.zip> に置いた。詳しくは [東京 23 区のバスの GTFS](../tokyo-gtfs/README.md)。
+
+## 取り出し方
+
+区分は whole。zip 1 本が最小単位で、78,030 バイト。これ以上分けようが無いし、分ける意味も無い。
+
+2026-09-30 に測った。対象は `https://api-public.odpt.org/api/v4/files/odpt/TokyoTaitoCity/megurinCCBY40.zip?date=20251028`。
+
+| 要求 | 応答 |
+|---|---|
+| `curl -L -r 0-1023` | 302 で `https://dataodpt.blob.core.windows.net/files-open/odpt/TokyoTaitoCity/megurinCCBY40-20251028.zip?...` へ。そのあと 206、`Content-Range: bytes 0-1023/78030` |
+| `curl -L -r -1024` (末尾 1,024 バイト) | 200、78,030 バイト。2 回試して 2 回とも同じ |
+
+先頭からの Range には 206 で答えるのに、末尾からの Range には 200 でファイル全体を送ってくる。実体は Azure Blob で、SAS のバージョンは `sv=2018-03-28`、有効期間は 2 分。suffix range に対応していないためと見られる (理由は未確認)。
+
+これは zip にとっては決定的で、中央ディレクトリは末尾にあるから、末尾だけ読んで「この zip に何が入っているか」を知ることができない。中身の一覧が要るなら全部落とすしかない。もっとも 78,030 バイトなので、末尾 1,024 バイトを取ろうとして全体が返ってきても損は無い。落とした本体の末尾には `PK\x05\x06` (EOCD) が位置 78,008 にあり、zip としては正常である。
+
+HEAD は使えない。ODPT の公開 URL は HEAD 要求に 404 を返す (`server: kong/0.11.2`)。大きさを知りたければ GET の Range で `Content-Range` の分母を読む。
+
+上位の [東京 23 区のバスの GTFS](../tokyo-gtfs/README.md) は、フィードが事業者ごとに分かれているという意味で split になる。この項目はその 1 フィードなので、フィードの中を見れば whole になる。

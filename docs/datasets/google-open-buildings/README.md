@@ -163,3 +163,62 @@ Overture の attribution ページは、buildings の出どころの 1 つに Go
 | 8〜9 LP / MILP、facility location | 建物の点を需要点にして、基地局や施設の配置と割当を解く (Global South の国で) |
 | 11 SHAP / calibration | confidence は較正されていない (本家の記載)。閾値表のセルごとの精度 80/85/90% の閾値を使って、較正曲線を考える題材になる |
 | 12 多目的最適化 | 8〜9 の配置に、覆う建物数と設置数やコストを同時に目的として与える |
+
+## 取り出し方
+
+区分は split。本家の配布物 1 本の中は whole で、2.5D の GeoTIFF と source.coop のミラーだけが range。
+2026-09-30 に実測した。
+
+### 本家のポリゴン (CSV.gz) は split で、中は whole
+
+GCS は Range を受ける。小さい `v3/polygons_s2_level_4_gzip/32b_buildings.csv.gz` (12,230 バイト) も、
+最大の `39f_buildings.csv.gz` (8,423,792,523 バイト) も、`curl -sI` が 200 と `Accept-Ranges: bytes` を返し、
+`curl -r 0-1023` に 206 と 1,024 バイト、`curl -r -8` に 206 と 8 バイトが返る。
+
+ただし 206 が返ることと、必要な範囲だけ取れることは別だった。`39f_buildings.csv.gz` で確かめた。
+
+- 先頭 65,536 バイトを引いて gzip として展開すると 167,388 バイトになり、1 行目が
+  `latitude,longitude,area_in_meters,confidence,geometry,full_plus_code` と読めた。先頭からなら途中まで展開できる。
+- 同じファイルの `bytes=4000000000-4000065535` を引いて展開しようとすると
+  `Error -3 while decompressing data: incorrect header check` で失敗する。gzip は 1 本の連続した流れなので、途中から展開できない。
+
+つまり、ある建物を探すには、その建物が現れるところまで先頭から順に流すしかない。
+索引の役目を果たすのは分割のほうで、S2 レベル 4 で 333 本、レベル 6 で 3,330 本に切ってある。
+どのセルを引くかは `tiles.geojson` (250KB、333 地物) で決められる。これが split の実体。
+
+### 2.5D Temporal の GeoTIFF は range
+
+`https://storage.googleapis.com/open-buildings-temporal-data/v1/geotiffs/00824_2023_06_30/tile_3R_Zv1Dd-Gc.tif`
+は 25,409,708 バイトで `Accept-Ranges: bytes`。`curl -r 0-3` が 206 と 4 バイトを返し、中身は `49 49 2a 00` (`II*\0`)。
+TIFF のヘッダが先頭にあるので、上の「1 ファイルを読んだ結果」で GDAL が読めたとおり、
+512 x 512 のブロックとオーバービューを部分読みできる。ESA WorldCover と同じ形。
+
+### source.coop のミラー (GeoParquet) は range
+
+Parquet のフッターはファイルの末尾にあるので、末尾を引いて長さを知り、そこから戻ってフッターを読む往復が要る。
+
+| ファイル | 大きさ | `curl -r -8` の 8 バイト | フッターの長さ | フッター本体の Range |
+|---|---:|---|---:|---|
+| `https://data.source.coop/cholmes/google-open-buildings/geoparquet-by-country/country_iso=SG/SG.parquet` | 39,533,047 | `b6 89 00 00 50 41 52 31` | 35,254 | `bytes=39497785-39533038` に 206、35,254 バイト |
+| `https://data.source.coop/vida/google-microsoft-open-buildings/geoparquet/by_country/country_iso=SGP/SGP.parquet` | 55,605,555 | `65 1a 03 00 50 41 52 31` | 203,365 | `bytes=55402182-55605546` に 206、203,365 バイト |
+
+どちらも末尾 4 バイトは `PAR1`。
+
+pyarrow 20.0.0 に Range 要求だけを出す読み取り器を渡して、要求の回数を数えた。
+cholmes 版の SG から `area_in_meters` と `confidence` の 2 列を最初の行グループ分だけ読むと、
+要求は合計 3 回 (末尾 65,536 バイトが 1 回、列の塊が 2 回)、流れたのは 383,685 バイト、2.2 秒だった。
+ファイル全体の 1.0% で済む。13 行グループのうちの 1 つで 30,000 行。
+
+本家の CSV.gz と比べると、同じ建物を国単位で引くのに桁が 2 つ違う。
+本家で国を絞るには S2 セルのファイルを丸ごと流す必要があり、ミラーなら列と行グループで刻める。
+
+### まとめ
+
+| 経路 | 区分 | 根拠 |
+|---|---|---|
+| GCS のポリゴン、点 (CSV.gz) | split (333 / 3,330 本)、1 本は whole | Range は 206 だが、途中からの gzip 展開が失敗する |
+| GCS の閾値表 `v3/score_thresholds_s2_level_4.csv` (75,976 バイト) | whole | 非圧縮の CSV で索引が無い。小さいので問題にならない |
+| GCS の 2.5D GeoTIFF | range | 先頭 4 バイトが `II*\0`、タイル化とオーバービューあり |
+| source.coop の GeoParquet | range | 末尾 4 バイトが `PAR1`、2 列 1 行グループを 3 回の要求、383,685 バイトで読めた |
+| Earth Engine | 未確認 | ログインが要る。確かめるには Google アカウントと EE の登録が要る |
+| HDX の 20 か国分 | 未確認 | 本家に案内があるだけで、URL を追っていない |

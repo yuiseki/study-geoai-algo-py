@@ -117,3 +117,72 @@ systemd-run --user --scope -p MemoryMax=8G -p MemorySwapMax=0 \
 - 1〜3 回帰: 区市町村の人口密度や駅の数から、家から動かない人の割合を予測する。
 - 4 Cross Validation: 日付で分けるか、都道府県でまとめて分けるか。
 - Movement Range Maps は、2020 年の緊急事態宣言の前後で、変化率がどう動いたかの時系列に使える。
+
+## 取り出し方
+
+区分は whole。元のファイルはどれも必要な範囲だけを引けない。
+z.yuiseki.net のミラー (Parquet) だけが range。2026-09-30 に実測した。
+
+### 署名付き S3 は Range を受ける
+
+HDX の resource URL は署名付きの S3 (`hdx-production-filestore`) へ 302 で飛ぶ。
+API を叩くときと同じく、User-Agent を付ける必要がある。
+
+- `movement-range-data-2022-05-22.zip`: 転送を追うと 200、Content-Length 73,054,975、`Accept-Ranges: bytes`。`curl -L -r 0-1023` に 206 と 1,024 バイト、`curl -L -r -64` に 206 と 64 バイト。
+- `Movement Distribution Maps_2026-07-13_to_2026-07-16.csv`: 転送を追うと 200、Content-Length 48,830,570、`Accept-Ranges: bytes`。`curl -L -r 0-1023` に 206、`curl -L -r -64` に 206。末尾 64 バイトの中身は `"KNA","1","0","0.4019950687407667","2026-07-16"` で、CSV の最後の行が読めた。
+
+206 は返る。返るだけで、引けるものが無い。
+
+### Movement Range Maps の zip は中に大きな塊が 1 つだけ
+
+zip の中央ディレクトリは Range で読める。末尾 64 バイトに `PK\x05\x06` があり、
+エントリ 2 個、中央ディレクトリの大きさ 131 バイト、位置 73,054,822 と読めた。
+そこを `curl -r 73054819-73054949` で引く (206、131 バイト) と、中身は次の 2 つだった。
+
+| 名前 | 圧縮方式 | 圧縮後 | 展開後 | 位置 |
+|---|---:|---:|---:|---:|
+| `movement-range-2022-05-22.txt` | 8 (deflate) | 73,054,214 | 598,707,347 | 0 |
+| `README.` | 8 (deflate) | 509 | 961 | 73,054,273 |
+
+TSV が 1 本の deflate の流れとして 73MB 入っている。deflate は途中から展開できないので、
+日本の 199,928 行だけが欲しくても、73,054,214 バイトを引いて 598,707,347 バイトに展開するしかない。
+一覧と先頭の行だけを見るなら 2 回の Range 要求 (64 バイトと 131 バイト) で済むが、行は 1 行も取れない。
+
+mlit-1km-fromto の zip は月ごとにメンバーが分かれていたので月単位で引けたが、こちらはメンバーが 1 つなので何も選べない。
+
+### Movement Distribution の CSV は索引が無い
+
+48,830,570 バイトの素の CSV で、圧縮もされていない。
+Range で任意のバイト範囲は引けるが、どの区域の行がどのバイト位置にあるかを知る手立てが無い。
+先頭の 1,024 バイトを引けば列名と最初の数行は見えるし、末尾 64 バイトを引けば最後の行は見えるが、
+その間を探すには全体を流すことになる。上の本文のとおり、48.8MB で約 80 秒だった。
+
+Commuting Zones (16.5MB の CSV 1 本) と Business Activity Trends (5 本で 154MB の CSV) も同じで、whole。
+
+### ミラー (Parquet) は range
+
+| ファイル | 大きさ | `curl -r -8` の 8 バイト | フッターの長さ | フッター本体の Range |
+|---|---:|---|---:|---|
+| `https://z.yuiseki.net/static/hdx-meta/movement-range-maps/movement_range_2021.parquet` | 38,566,824 | `2a ee 00 00 50 41 52 31` | 60,970 | `bytes=38505846-38566815` に 206、60,970 バイト |
+| `https://z.yuiseki.net/static/hdx-meta/movement-distribution/movement_distribution_2026.parquet` | 89,222,790 | `e8 cb 01 00 50 41 52 31` | 117,736 | `bytes=89105046-89222781` に 206、117,736 バイト |
+
+どちらも末尾 4 バイトは `PAR1`、`curl -r 0-1023` は 206 と 1,024 バイト。
+Parquet のフッターはファイルの末尾にあるので、末尾を引いて長さを知り、そこから戻ってフッターを読む往復が要る。
+
+pyarrow 20.0.0 に Range 要求だけを出す読み取り器を渡して数えた。
+`movement_range_2021.parquet` から `polygon_id` と `ds` の 2 列を最初の行グループ分だけ読むと、
+要求は合計 3 回 (末尾 65,536 バイトが 1 回、列の塊が 2 回)、流れたのは 75,278 バイト、0.2 秒。
+53 行グループ、1 つ 100,352 行。ファイル全体の 0.2% で済む。
+
+元の zip で 73MB を流して 599MB に展開していたものが、7 万バイトの往復 3 回になる。
+ミラーを作った意味はここにある。
+
+### まとめ
+
+| 経路 | 区分 | 根拠 |
+|---|---|---|
+| HDX の CKAN API | catalog に近い | `package_show` が 200。resource の一覧と license_id が取れる。bbox や日時では絞れない |
+| Movement Range Maps の zip | whole | 中央ディレクトリは Range で読めるが、中身は 598,707,347 バイトに展開される deflate の塊が 1 つ |
+| Movement Distribution の CSV | whole | 206 は返るが、行の位置を知る索引が無い |
+| Commuting Zones、Business Activity Trends の CSV | whole | 同上 |
+| z.yuiseki.net の Parquet | range | 末尾 4 バイトが `PAR1`、2 列 1 行グループを 3 回の要求、75,278 バイトで読めた |

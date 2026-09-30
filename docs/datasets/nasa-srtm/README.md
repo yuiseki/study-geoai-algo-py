@@ -122,3 +122,25 @@
 | 12 多目的最適化 | 被覆人口と基地局数 (費用) を 2 つの目的にしてパレート解を並べる |
 
 - NASADEM の COG (約 10MB/タイル) なら東京周辺は 1 枚で足り、GDAL か rasterio で読める。rasterio がこのリポジトリの環境に入っているかは確かめていない (今回は GDAL の CLI と NumPy だけを使った)。
+
+## 取り出し方
+
+split。1 度四方のタイルに事前分割されていて、必要な枚数だけ引けばよい。1 枚が約 10MB なので、タイルの中まで部分読みする必要はほとんど無い。ただし公開されている 3 経路はどれも Range が効くので、経路によっては range も併用できる。2026-09-30 に実測した。
+
+分割の単位と個数は、1 度四方のタイルで SRTMGL1 が 14,297 枚、NASADEM_HGT が 14,520 枚 (上の CMR の値)。ファイル名が南西隅の緯度経度なので、欲しい場所からファイル名を直接組み立てられる。目録を引かずに済むのが、この出典の実務上の利点になる。
+
+| 経路 | HEAD | Range 0-1023 |
+|---|---|---|
+| OpenTopography `https://opentopography.s3.sdsc.edu/raster/SRTM_GL1/SRTM_GL1_srtm/N35E139.tif` | 200、`Content-Length` 10,623,899、`Accept-Ranges: bytes`、`Server: MinIO` | 206、1,024 バイト |
+| Planetary Computer `https://nasademeuwest.blob.core.windows.net/nasadem-cog/v001/NASADEM_HGT_n35e139.tif` (SAS トークン付き) | 200、`Content-Length` 10,517,920、`Accept-Ranges: bytes` | 206、1,024 バイト |
+| Terrain Tiles `https://s3.amazonaws.com/elevation-tiles-prod/skadi/N35/N35E139.hgt.gz` | 200、`Content-Length` 10,294,039、`Accept-Ranges: bytes`、`Last-Modified` Tue, 26 Apr 2016 23:47:27 GMT | 206、1,024 バイト |
+
+OpenTopography と Planetary Computer は GeoTIFF なので、引いた先頭 1,024 バイトから索引の位置が読める。どちらも先頭 4 バイトが `II*\0` (リトルエンディアンの古典 TIFF) で、5 バイト目からの uint32 が最初の IFD の位置。OpenTopography は 8、Planetary Computer は 192。どちらも先頭付近にあり、ヘッダだけ読んで必要なタイルを選べる。
+
+Planetary Computer はトークンが要る。トークン無しで blob を GET すると 409 が返った。`https://planetarycomputer.microsoft.com/api/sas/v1/token/nasademeuwest/nasadem-cog` はログイン無しで 200 とトークン (296 文字) を返し、これを query string に付ければ読める。有効期限は取得から約 45 分。
+
+Planetary Computer だけは catalog も使える。`https://planetarycomputer.microsoft.com/api/stac/v1/search?collections=nasadem&bbox=139.6,35.6,139.8,35.8` は 200 で 2,579 バイトを返し、bbox で該当するアイテムに絞れる。ファイル名を自分で組み立てずに済ませたいならこちら。
+
+skadi は gzip なので、Range で 206 が返っても途中から解凍できない。事実上 1 タイル丸ごと引くことになる。1 枚 10,294,039 バイトなので問題にならないが、部分読みの手段としては数えない。
+
+NASA Earthdata (LP DAAC) の直接取得は未確認。GET が `urs.earthdata.nasa.gov` へ 302 で飛ばされて 401 になるので、Range 以前に取得ができていない。確かめるには Earthdata Login のアカウントと、そのトークンを付けた要求が要る。CGIAR-CSI 版も未確認で、そもそもライセンスが再配布を禁じているので試していない。

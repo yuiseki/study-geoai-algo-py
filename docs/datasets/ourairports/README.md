@@ -129,3 +129,35 @@ OurAirports を避ける理由は、古さではなく質のばらつきにあ�
 - 9 facility location: 既存の空港の位置を所与として、ヘリポートの配置を問う。日本は 3,040 件あるので国内だけで完結する。
 - 11 SHAP: 上の分類器で、標高と国と `type` のどれが効いているかを見る。
 - ほかの出どころと繋ぐ鍵として使いやすい。`iso_country` は ISO 3166-1 alpha-2 で、[Natural Earth](../natural-earth/README.md) や [geoBoundaries](../geoboundaries/README.md) と突き合わせられる。`wikipedia_link` を持つ 16,757 件は [Wikidata](../wikidata/README.md) に繋げられる。
+
+## 取り出し方
+
+区分は whole。ただし Range 要求そのものは効く。全部落としても 24,718,201 バイトなので、部分取得を考える理由が無い。
+
+2026-09-30 に GitHub Pages で測った。
+
+| 要求 | 応答 |
+|---|---|
+| `curl -sI https://davidmegginson.github.io/ourairports-data/airports.csv` | 200、`accept-ranges: bytes`、`etag: "6abc6bb6-c24d07"` (c24d07 は 12,733,703 バイト)、`server: GitHub.com` |
+| `curl -r 0-1023 .../airports.csv` | 206、1,024 バイト。返ってきたのは CSV の見出し行 (`"id","ident","type","name",...`) |
+| `curl -r 0-1023 .../countries.csv` | 206、1,024 バイト |
+| `curl -sI https://ourairports.com/data/airports.csv` | 301、`location` は上の GitHub Pages。`server: nginx/1.27.5` |
+
+GitHub Pages は Range に本当に 206 で答える。ヘッダの申告どおりだった。
+
+それでも range に分類しないのは、CSV に索引が無いからである。先頭 1,024 バイトを取っても見出し行と最初の数行が返るだけで、「日本の空港だけ」や「定期便のある空港だけ」を引くことはできない。区分の表が range の条件として「索引がファイルの先頭付近にあること」を挙げているのは、まさにこの違いを指している。バイト位置は選べるが、意味のある部分集合は選べない。
+
+split でもない。7 ファイルは地域で割ったものではなく、空港・滑走路・周波数・航法援助施設・国・一級行政区分・コメントという種類で分かれている。必要な種類だけを取るという意味では 7 つから選べるが、地理で絞る分割ではない。
+
+| ファイル | バイト数 |
+|---|---:|
+| airports.csv | 12,733,703 |
+| runways.csv | 3,966,684 |
+| navaids.csv | 1,524,946 |
+| countries.csv | 24,583 |
+| regions.csv | 485,265 |
+| airport-frequencies.csv | 1,301,981 |
+| airport-comments.csv | 4,681,039 |
+| 合計 | 24,718,201 |
+
+最小単位は 1 ファイル。空港だけなら 12,733,703 バイト、全部でも 25MB 弱。これは落としきってから DuckDB なり pandas なりで絞るほうが、範囲要求を組み立てるより速いし確実である。whole がここでは正しい答えになる。
