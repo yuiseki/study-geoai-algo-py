@@ -51,6 +51,16 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 <https://huggingface.co/yuiseki/datasets> の地理に関わる 20 個。一覧は [huggingface-yuiseki/README.md](huggingface-yuiseki/README.md)、データセットごとの中身はその下の各ファイル。
 12 ステップに直接使えるのは、凍結した OSM (osm-tokyo23-src-2026-08、osm-japan-src-2026-08) と、国勢調査の小地域境界 (estat-boundary-2020)、市区町村 (jp-admin-2026-09)。
 
+## uedayou.net
+
+<https://uedayou.net/> の 22 プロジェクト。日本の公的データを Linked Open Data にしたものが中心。
+一覧と全体の注意は [uedayou-net/README.md](uedayou-net/README.md)、SPARQL を持つ 2 つはその下の各ファイル。
+
+| データ | 中身 | 規模 | データの形 | ライセンス |
+|---|---|---|---|---|
+| [鉄道駅LOD](uedayou-net/jrslod.md) `catalog` | 日本の鉄道駅。Wikidata と owl:sameAs で結べる | 1,152,137 トリプル / 駅 10,145 | SPARQL、個別 IRI は内容交渉で Turtle | CC BY-SA 4.0 |
+| [住所LOD](uedayou-net/loa.md) `catalog` | 日本の住所の階層。IMI コア語彙 | 39,458,434 トリプル / 住所型 147,407 | SPARQL、個別 IRI は内容交渉で Turtle | CC BY-SA 4.0 |
+
 ## その他
 
 | 出どころ | 中身 | 規模 | データの形 | ライセンス |
