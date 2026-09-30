@@ -2,6 +2,26 @@
 
 学習に使うデータの候補。出どころ 1 つにつき 1 ファイル。
 
+## 取り出し方の区分
+
+各項目に「取り出し方」の節がある。必要な範囲だけを引けるかどうかで、次の 4 つに分ける。
+`cng-data-antigravity` (`https://github.com/yuiseki/cng-data-antigravity`) が実装している
+仕組みの分類に合わせてある。
+
+| 区分 | 意味 | 確かめ方 |
+|---|---|---|
+| range | HTTP Range で必要なバイトだけ引ける。COG、PMTiles、FlatGeobuf、行グループを持つ Parquet | `curl -r 0-1023` が 206 を返し、索引がファイルの先頭付近にあること |
+| catalog | STAC などの目録で必要な資産を選んでから引ける | 目録が bbox や日時で絞れること。認証が要るならそう書く |
+| split | 地域や単位ごとに事前分割されていて、必要なファイルだけ引ける | 分割の単位と個数 |
+| whole | 全部落とすしかない | 最小単位の大きさ |
+
+1 つの出典が複数に当たることがある。Geofabrik は split で、その中の PBF は whole。
+Wikidata はダンプが whole で、SPARQL エンドポイントは catalog に近い使い方ができる。
+その場合は主な使い方を先に書き、併記する。
+
+区分は実測に基づく。「COG だと書いてある」ではなく「Range を投げて 206 が返った」を根拠にする。
+確かめていないものは 未確認 と書く。
+
 ## STAC カタログ
 
 | カタログ | 中身 | 規模 | データの形 | ライセンス |
@@ -46,6 +66,7 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [Wikipedia](wikipedia/README.md) | 座標つき記事。`yuiseki/wikipedia-geotagged` の上流 | ja 1,520,723 記事 / en 7,245,970 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
 | [Wikivoyage](wikivoyage/README.md) | 旅行先の記事。`yuiseki/wikivoyage-geotagged` の上流 | en 34,710 記事 / ja 1,808 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
 | [国連文書 (ODS)](un-docs-source/README.md) | 総会と安保理の公式文書。`yuiseki/un-docs` の上流 | 未確認 (派生側で 39,363 件) | PDF (API 経由)、一部はスキャン | 許諾の文言が無い。1987 年の内部方針とサイト規約が矛盾する |
+| [ESA WorldCover](esa-worldcover/README.md) | 全球 10m の土地被覆 11 区分。2020 年版と 2021 年版 | タイル 2,651 枚、Map だけで約 117GB | COG (EPSG:4326)。認証不要で Range が効く。格子は GeoJSON と FlatGeobuf | CC BY 4.0。表示文が指定されている |
 | [GHSL](ghsl/README.md) | 全球の人口・建物・都市化度の格子。1975 年から 2030 年まで 5 年刻みで、2025 と 2030 は推計 | GHS-POP 1km で 1 エポック約 320MB、12 エポック | GeoTIFF (zip)、モルワイデ図法 | CC BY 4.0 (欧州委員会の法的通知による)。EU 所有でない部分は別 |
 | [アドレス・ベース・レジストリ](abr/README.md) | 日本の住所の基本台帳。都道府県・市区町村・町字のマスターと代表点。`yuiseki/abr-src-2026-09` の上流 | 町字 727,429 行、座標 337,641 行 | CSV (zip)。直接配布と ArcGIS Hub の 2 経路 | PDL1.0。原文が CC BY に従う利用を許諾。出典と加工の明示が要る |
 | [Wikidata](wikidata/README.md) | 全世界の構造化データ。座標を持つ項目が 1,243 万件。`yuiseki/wikidata-gazetteer` の上流 | 項目 1 億 2,351 万件。truthy ダンプで 43.5GB | JSON / TTL / NT のダンプ、SPARQL | 構造化データは CC0。main と property 以外の名前空間の文章は CC BY-SA |
