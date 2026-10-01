@@ -16,6 +16,7 @@
 | osm-wiki | 2026-09-17 | (なし) | (なし) | OSM Wiki 8 言語 78,178 ページの平文 (2026-01-30 ダンプ) | [osm-wiki.md](osm-wiki.md) |
 | osm-tag-corpus | 2026-09-07 | odbl | 10K-100K | OSM タグ 9,803 種の多言語説明と世界での使用回数 | [osm-tag-corpus.md](osm-tag-corpus.md) |
 | text2geoql | 2026-08-29 | odbl | 1K-10K | TRIDENT 中間言語から Overpass QL への合成対 4,897 件 | [text2geoql.md](text2geoql.md) |
+| ourairports-2026-08 | 2026-10-02 | other (public domain) | 10K-100K | OurAirports の 2026-08-31 の commit の 7 つの CSV と型付きの Parquet (空港 86,002 件) | [../ourairports/README.md](../ourairports/README.md) |
 | estat-boundary-2020 | 2026-09-26 | cc-by-4.0 | 100K-1M | 2020 年国勢調査の小地域ポリゴン 23 万件と人口・世帯 | [estat-boundary-2020.md](estat-boundary-2020.md) |
 | jp-admin-2026-09 | 2026-09-26 | cc-by-4.0 | 1K-10K | 都道府県 47 と市区町村 1,918 のコード・読み・ポリゴン・人口 | [jp-admin-2026-09.md](jp-admin-2026-09.md) |
 | abr-src-2026-09 | 2026-09-26 | cc-by-4.0 | 1M-10M | アドレス・ベース・レジストリの町字 72.7 万件と代表点 (境界なし) | [abr-src-2026-09.md](abr-src-2026-09.md) |

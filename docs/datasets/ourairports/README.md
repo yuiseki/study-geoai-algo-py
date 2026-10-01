@@ -174,3 +174,12 @@ split でもない。7 ファイルは地域で割ったものではなく、空
 - 整数の列に整数でない値があると止まる。DuckDB の cast は `'12.5'` を INTEGER にするときエラーにせず 13 に丸めるので、cast の前に正規表現で形を確かめている。
 - `airport-comments.csv` の見出しは `"id", "threadRef", ...` のようにカンマの後に空白がある。Parquet の列名では空白を落とした。
 - 公開 URL への `curl -r -8` は 3 回とも 206。DuckDB の httpfs で `airports.parquet` から日本の定期便あり (85 件) と全件数を数えるのに 0.12 秒。
+
+## Hugging Face の凍結版
+
+2026-08 の最後の commit (`9e51f134`、2026-08-31T01:53:13Z) を <https://huggingface.co/datasets/yuiseki/ourairports-2026-08> に置いた。取得と検査と変換のコードは <https://github.com/yuiseki/ourairports-2026-08>。z.yuiseki.net の日付ごとのスナップショットとは別物で、こちらは版を 1 つに固定したもの。
+
+- 名前の年月は、取った月ではなく版の月。
+- airports は 86,002 行で、2026-10-01 の 86,154 行より 152 行少ない。
+- 検査 (`scripts/02_verify.py`) は Python の csv モジュールだけで、行数、id の一意性、runways と airport-frequencies と airport-comments の参照先、navaids の associated_airport、国と地域が一覧にあることを確かめる。2026-08-31 の版では参照切れが 0 件だった。
+- airport-comments.csv の見出しはカンマの後に空白があり、Python の csv モジュールは引用符ごと名前にしてしまう (`' "threadRef"'`)。DuckDB の read_csv はこれを正しく読む。
