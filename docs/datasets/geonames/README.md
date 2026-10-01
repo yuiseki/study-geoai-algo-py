@@ -207,7 +207,7 @@ split。国ごとに zip が分かれていて、必要な国だけ引ける。�
 
 - 型は readme.txt の列のとおり。ID、population、elevation、dem は整数、緯度経度は DOUBLE、modification_date は DATE、それ以外は文字列 (admin1_code の `01` のような先頭のゼロは残る)。整数の列は cast の前に正規表現で形を確かめる。DuckDB の cast は `'12.5'` を丸めて通してしまうため。
 - 別名の 4 つの旗 (is_preferred_name など) は、元の `'1'` か空を真偽値にした。それ以外の値が来たら止まる。
-- ファイルは引用符を使わないタブ区切りで、名前に `"` を含む行がある。read_csv には `quote = ''` と `escape = ''` を渡している。
+- ファイルは引用符を使わないタブ区切りで、名前に `"` を含む行がある (2026-10-01 版で name 列の 623 行。例は `Schronisko "Nad Śnieżnymi Kotłami"`)。read_csv には `quote = ''` と `escape = ''` を渡している。
 - alternateNamesV2.zip には iso-languagecodes.txt の写しも入っている。zip と同じ名前のファイルを取り出す。
 - 配布元はとても遅い。2026-10-01 は 1 秒に 70〜140KB で、allCountries.zip だけで約 50 分かかった。途中で切れたら If-Range 付きの Range 要求で続きから取る。版が変わっていれば 200 で全体が返るので、混ざらない。取り終わったら全ファイルの Last-Modified をもう一度取り、取り始めと違えば止まる。
 
