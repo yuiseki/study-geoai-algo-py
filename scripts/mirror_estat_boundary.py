@@ -241,7 +241,8 @@ def build(rawdir: Path, metas: dict[str, dict], datum: str, work: Path) -> dict[
     if single.stat().st_size <= MAX_BYTES:
         out[single.name] = {"rows": total, "bytes": single.stat().st_size}
     else:
-        parts = -(-single.stat().st_size // (400 * 1024 * 1024))
+        # aim below the limit: prefectures differ in how well they compress
+        parts = -(-single.stat().st_size // (MAX_BYTES * 3 // 4))
         single.unlink()
         counts = con.sql("select prefcode, count(*) from whole group by 1 order by 1").fetchall()
         limit = -(-total // parts)

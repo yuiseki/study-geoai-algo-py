@@ -121,3 +121,49 @@ def test_decode_leaves_the_wkb_geometry_alone():
     got = m.decode_cp932(pa.table({"S_NAME": [b"\x93\x8c"], "geometry": [wkb]}))
     assert got.column("geometry").to_pylist() == [wkb]
     assert got.column("S_NAME").to_pylist() == ["東"]
+
+
+def _shapefile_zip(tmp_path, code: str, n: int) -> Path:
+    """A zip of a small polygon shapefile, written by GDAL, with a JGD2000 .prj."""
+    import duckdb
+
+    d = tmp_path / f"shp{code}"
+    d.mkdir()
+    con = duckdb.connect()
+    con.execute("install spatial; load spatial")
+    con.execute(
+        f"copy (select 'K' || i::varchar as KEY_CODE, i as JINKO, "
+        f"st_buffer(st_point(139 + i * 0.01, 35), 0.004, 4) as geom from range({n}) t(i)) "
+        f"to '{d}/b{code}.shp' (format gdal, driver 'ESRI Shapefile')"
+    )
+    (d / f"b{code}.prj").write_bytes(PRJ_2000)
+    z = tmp_path / f"B{code}.zip"
+    with zipfile.ZipFile(z, "w") as zf:
+        for f in sorted(d.iterdir()):
+            if f.suffix in (".shp", ".shx", ".dbf", ".prj"):
+                zf.write(f, f.name)
+    return z
+
+
+def test_build_splits_between_prefectures_when_one_file_is_too_big(tmp_path, monkeypatch):
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    metas = {c: {"missing": "html"} for c in m.PREFS}
+    for code, n in [("01", 300), ("13", 300), ("47", 300)]:
+        z = _shapefile_zip(tmp_path, code, n)
+        z.rename(raw / z.name)
+        metas[code] = {"file": z.name}
+    work = tmp_path / "X-jgd2000"
+    work.mkdir()
+    one = m.build(raw, metas, "2000", work)
+    assert list(one) == ["X-jgd2000.parquet"] and one["X-jgd2000.parquet"]["rows"] == 900
+
+    size = one["X-jgd2000.parquet"]["bytes"]
+    monkeypatch.setattr(m, "MAX_BYTES", size * 2 // 3)
+    (work / "X-jgd2000.parquet").unlink()
+    parts = m.build(raw, metas, "2000", work)
+    assert len(parts) >= 2 and all(k.startswith("part-") for k in parts)
+    assert sum(v["rows"] for v in parts.values()) == 900
+    assert all(v["bytes"] <= size * 2 // 3 for v in parts.values())
+    firsts = [v["prefcodes"][0] for v in parts.values()]
+    assert firsts == sorted(firsts) and firsts[0] == "01"
