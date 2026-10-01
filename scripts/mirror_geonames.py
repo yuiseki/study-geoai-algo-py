@@ -201,12 +201,16 @@ def sha256(path: Path) -> str:
 
 
 def unzip_one(path: Path, out: Path) -> Path:
-    """Extract the one data file of a GeoNames zip (beside its readme)."""
+    """Extract the data file of a GeoNames zip, the one named after the zip.
+
+    Beside it a zip may hold readme.txt or, in alternateNamesV2.zip, a copy of
+    iso-languagecodes.txt.
+    """
+    want = path.stem + ".txt"
     with zipfile.ZipFile(path) as z:
-        names = [n for n in z.namelist() if n != "readme.txt"]
-        if len(names) != 1:
-            raise ValueError(f"{path.name} holds {names}, not one data file")
-        return Path(z.extract(names[0], out))
+        if want not in z.namelist():
+            raise ValueError(f"{path.name} has no {want}: {z.namelist()}")
+        return Path(z.extract(want, out))
 
 
 # --- building ----------------------------------------------------------------

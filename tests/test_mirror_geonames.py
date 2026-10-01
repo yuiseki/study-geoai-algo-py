@@ -101,14 +101,24 @@ def _zip(path: Path, name: str, text: str) -> None:
         z.writestr(name, text)
 
 
-def test_unzip_one_rejects_a_zip_with_two_data_files(tmp_path):
+def test_unzip_one_takes_the_file_named_after_the_zip(tmp_path):
+    import zipfile
+
+    p = tmp_path / "alternateNamesV2.zip"
+    with zipfile.ZipFile(p, "w") as z:
+        z.writestr("iso-languagecodes.txt", "codes")
+        z.writestr("alternateNamesV2.txt", "names")
+    assert m.unzip_one(p, tmp_path / "out").read_text() == "names"
+
+
+def test_unzip_one_rejects_a_zip_without_the_named_file(tmp_path):
     import zipfile
 
     p = tmp_path / "x.zip"
     with zipfile.ZipFile(p, "w") as z:
         z.writestr("a.txt", "1")
         z.writestr("b.txt", "2")
-    with pytest.raises(ValueError, match="not one data file"):
+    with pytest.raises(ValueError, match="has no x.txt"):
         m.unzip_one(p, tmp_path)
 
 
