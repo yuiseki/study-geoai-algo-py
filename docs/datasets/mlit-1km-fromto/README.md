@@ -137,3 +137,10 @@ pyarrow 20.0.0 に Range 要求だけを出す読み取り器を渡し、`mesh1k
 | 署名付き S3 の zip | range (月単位)、split (47 都道府県 x 2 種類) | 末尾 64 バイトから中央ディレクトリを辿り、4 回の要求 78,892 バイトで 1 か月の CSV を取り出せた |
 | zip の中の 1 か月の CSV | whole | deflate の連続した流れなので、途中の行だけは引けない |
 | z.yuiseki.net の Parquet | range | 末尾 4 バイトが `PAR1`、2 列 1 行グループを 4 回の要求、636,036 バイトで読めた |
+
+## Hugging Face の凍結版
+
+<https://huggingface.co/datasets/yuiseki/mlit-1km-fromto-2022-01> に、元の zip と PDF 99 本と Parquet 5 本を置いた。コードは <https://github.com/yuiseki/mlit-1km-fromto-2022-01>。名前の年月は、ファイルの中身が最後に変わった月。
+
+- 2026-10-02 に取り直すと、99 本すべての Last-Modified が 2026-09-30 になっていた。中身は 2026-09-29 に取ったものとバイト単位で同じで、置き直されただけだった。版の確認は日付ではなく、9-29 の sha256 との照合で行う。
+- Parquet はブルームフィルタ無しで書いた。DuckDB は、統計で除外できた行グループについても、絞り込みに使った列のブルームフィルタを読みにいく。dayflag と timezone はどの行グループにも 0〜2 があるので、台東区の 1 か月を引くクエリが HF から 1,114 回の要求と 32 秒になった。無しで書くと 12 回と 7 秒。z.yuiseki.net の Parquet (この節より上のミラー) はブルームフィルタ付きのまま。
