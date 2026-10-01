@@ -13,6 +13,7 @@
 | gtfs/ | 東京のバスの GTFS-JP 5 つ (都営バス、台東区、杉並区、荒川区、葛飾区) を版ごとにそのまま置いたもの (2026-09-28 に作成) | [../tokyo-gtfs/README.md](../tokyo-gtfs/README.md) |
 | ksj/ | 国土数値情報の東京都の P04 医療機関、P29 学校、A31a 洪水浸水想定、mesh500r6 将来推計人口を GeoParquet にしたミラー (2026-09-28 に作成、すべて CC BY 4.0) | [../stac/mlit-nlftp.md](../stac/mlit-nlftp.md) |
 | mlit-1km-fromto/ | 国土交通省「全国の人流オープンデータ」の 1km メッシュ別と市区町村単位発地別の滞在人口 (2019-01〜2021-12、全国) を Parquet にしたミラー (2026-09-29 に作成、政府標準利用規約 2.0 準拠) | [../mlit-1km-fromto/README.md](../mlit-1km-fromto/README.md) |
+| ourairports/ | OurAirports の 7 つの CSV を、上流の commit の日付ごとのディレクトリに元のまま残し、Parquet (airports と navaids は GeoParquet) を添えたもの (2026-10-01 から、public domain) | [../ourairports/README.md](../ourairports/README.md) |
 | hdx-meta/ | AI for Good at Meta が HDX で配る Movement Distribution (2026-06〜、直近 90 日を超えて貯める)、Movement Range Maps (2020-03〜2022-05)、Commuting Zones、Business Activity Trends during Crisis の元のファイル 22 本 (1.25GB) と Parquet (203MB) のミラー (2026-09-29 に作成、CC BY) | [../hdx-meta-movement/README.md](../hdx-meta-movement/README.md) |
 | ookla/ | Ookla Speedtest の 2026 年第 2 四半期 (mobile、fixed) を Range 要求で読める GeoParquet にしたミラー (2026-09-28 に作成) | [../ookla-speedtest/README.md](../ookla-speedtest/README.md) |
 | overture/ | Overture の建物・交通・水域の全世界 PMTiles (60GB、2024-11 ビルド)。もう 1 つは 0 バイト | [overture.md](overture.md) |

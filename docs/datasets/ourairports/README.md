@@ -161,3 +161,15 @@ split でもない。7 ファイルは地域で割ったものではなく、空
 | 合計 | 24,718,201 |
 
 最小単位は 1 ファイル。空港だけなら 12,733,703 バイト、全部でも 25MB 弱。これは落としきってから DuckDB なり pandas なりで絞るほうが、範囲要求を組み立てるより速いし確実である。whole がここでは正しい答えになる。
+
+## z.yuiseki.net のスナップショット
+
+上流は毎晩同じ URL の中身を差し替え、行に更新日の列が無い。分析を再現するにはその日のファイルを自分で残すしかないので、<https://z.yuiseki.net/static/ourairports/> に日付ごとのディレクトリで置いた。取得スクリプトは [scripts/mirror_ourairports.py](../../../scripts/mirror_ourairports.py)、テストは [tests/test_mirror_ourairports.py](../../../tests/test_mirror_ourairports.py)。定期実行はしていない。取りたい日に手で流す。
+
+- 取るのは GitHub の最新 commit で、ファイルは `raw.githubusercontent.com/<sha>/` から引く。GitHub Pages の URL は中身が差し替わるので使わない。落としたファイルは、その commit の tree にある git blob の SHA-1 と大きさで照合してから置く。
+- ディレクトリ名は commit の UTC の日付。最初の 1 本は 2026-10-01 (commit `b6268327`、airports は 86,154 行で、9-30 の 86,153 行から 1 行増えた)。
+- 中身は `csv/` (元の 7 ファイルをそのまま)、7 つの Parquet、`manifest.json`。airports と navaids は `geometry` 列 (点) を足した GeoParquet 1.0.0。合わせて 32MB。
+- 列の型は名前で決める。`id` と `*ref` は BIGINT、`*_ft`、`*_khz`、`lighted`、`closed` は INTEGER、`*_deg`、`*_mhz` は DOUBLE、それ以外は文字列。`regions.local_code` の `02` は引用符なしで書かれているので、型を推論させると先頭のゼロが落ちる。
+- 整数の列に整数でない値があると止まる。DuckDB の cast は `'12.5'` を INTEGER にするときエラーにせず 13 に丸めるので、cast の前に正規表現で形を確かめている。
+- `airport-comments.csv` の見出しは `"id", "threadRef", ...` のようにカンマの後に空白がある。Parquet の列名では空白を落とした。
+- 公開 URL への `curl -r -8` は 3 回とも 206。DuckDB の httpfs で `airports.parquet` から日本の定期便あり (85 件) と全件数を数えるのに 0.12 秒。
