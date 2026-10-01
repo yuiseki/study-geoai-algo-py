@@ -180,3 +180,40 @@ split。国ごとに zip が分かれていて、必要な国だけ引ける。�
 日本は 4.96MB、全世界は 422MB。国単位なら十分小さい。全世界が要る場合は whole として扱う。
 
 毎日同じ URL の中身が差し替わるので、版を固定して引く手段は無い。落とした日の `Last-Modified` とバイト数を控えるしかない。
+
+## z.yuiseki.net のスナップショット
+
+上流は毎日同じ URL の中身を差し替え、過去の版は有料の購読でしか残らない。CC BY 4.0 なので、その日のダンプを元のまま残し、Parquet を添えて <https://z.yuiseki.net/static/geonames/> に日付ごとのディレクトリで置いた。取得スクリプトは [scripts/mirror_geonames.py](../../../scripts/mirror_geonames.py)、テストは [tests/test_mirror_geonames.py](../../../tests/test_mirror_geonames.py)。定期実行はしていない。取りたい日に手で流す。
+
+- 置き場は yuisekin-z の `/www/html/static/geonames/` で、nginx がこれを `https://z.yuiseki.net/static/geonames/` として配る。
+- ディレクトリ名は allCountries.zip の Last-Modified の UTC の日付。最初の 1 本は 2026-10-01 (Last-Modified は `Thu, 01 Oct 2026 02:08:51 GMT`)。
+- 置いたのは allCountries.zip、alternateNamesV2.zip、hierarchy.zip、adminCode5.zip と小さい表 6 つ、readme.txt。国別の zip と cities は allCountries の部分集合なので置いていない。旧版の alternateNames.zip も置いていない。
+- Parquet は `geoname/part-00〜03.parquet` (地名辞書、GeoParquet 1.0.0、`geometry` は点)、`alternate_names.parquet`、`hierarchy.parquet`、`admin_code5.parquet`。合わせて 1.3GB (raw を含む)。
+- 地名辞書は country_code、geonameid の順に並べ、国の途中では切らずに 4 つに分けた。いちばん大きい part-01 で 178MB。どの国がどのファイルにあるかは manifest.json の `countries` にある。
+
+| ファイル | 行数 | 国 |
+|---|---:|---|
+| geoname/part-00.parquet | 3,936,115 | 国コード無し (7,112 行) から FO まで |
+| geoname/part-01.parquet | 3,987,139 | FR から NL まで (JP はここ) |
+| geoname/part-02.parquet | 2,874,228 | NO から UM まで |
+| geoname/part-03.parquet | 2,674,735 | US から ZW まで |
+| alternate_names.parquet | 19,219,062 | |
+| hierarchy.parquet | 519,183 | |
+| admin_code5.parquet | 78,514 | |
+
+地名辞書は合計 13,472,217 行で、allCountries.txt の行数と一致することを確かめてから置いた。統計ページの 13,465,076 件 (9-30 に読んだ値) とは 7,141 違う。
+
+作るときに分かったこと:
+
+- 型は readme.txt の列のとおり。ID、population、elevation、dem は整数、緯度経度は DOUBLE、modification_date は DATE、それ以外は文字列 (admin1_code の `01` のような先頭のゼロは残る)。整数の列は cast の前に正規表現で形を確かめる。DuckDB の cast は `'12.5'` を丸めて通してしまうため。
+- 別名の 4 つの旗 (is_preferred_name など) は、元の `'1'` か空を真偽値にした。それ以外の値が来たら止まる。
+- ファイルは引用符を使わないタブ区切りで、名前に `"` を含む行がある。read_csv には `quote = ''` と `escape = ''` を渡している。
+- alternateNamesV2.zip には iso-languagecodes.txt の写しも入っている。zip と同じ名前のファイルを取り出す。
+- 配布元はとても遅い。2026-10-01 は 1 秒に 70〜140KB で、allCountries.zip だけで約 50 分かかった。途中で切れたら If-Range 付きの Range 要求で続きから取る。版が変わっていれば 200 で全体が返るので、混ざらない。取り終わったら全ファイルの Last-Modified をもう一度取り、取り始めと違えば止まる。
+
+照合 (2026-10-01 版、上の「日本の名前」の節は 9-30 版で数えたもの):
+
+- 日本は 103,761 件。9-30 は 103,760 件で、feature class の内訳は L が 1 件増えた (1,911 から 1,912) ほかは同じ。
+- 日本の別名は 341,783 行 (9-30 は 341,777 行)。公式/優先 3,852、短縮 1,035、俗称 1,790、歴史 1,113。
+- 京都市 (1857910) の ja の別名は `京都市` (is_preferred_name が真)、`Kyōto-shi`、`きょうとし`、`京都`、`キョウト` の 5 つで、上の節と同じ。
+- 公開 URL への最初の Range 要求は 10 秒で切れ、そのあと 3 回は 206 だった (Cloudflare がキャッシュを埋める初回だけ遅い)。DuckDB の httpfs で part-01 から日本の件数を数えるのに 0.17 秒、2 回目は 0.06 秒。
