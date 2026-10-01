@@ -48,7 +48,10 @@
 
 ## ミラー (z.yuiseki.net/static/mlit-1km-fromto/)
 
-2026-09-29 に `scripts/mirror_mlit_jinryu.py` で作った。99 リソースを CKAN の API から取り、入れ子の zip の CSV を種類ごとに 1 つの Parquet にまとめた。行数と population の合計が元の CSV と一致することを確かめてから置いている。
+2026-09-29 に作った。取得スクリプトは [scripts/mirror_mlit_jinryu.py](../../../scripts/mirror_mlit_jinryu.py)、テストは [tests/test_mirror_mlit_jinryu.py](../../../tests/test_mirror_mlit_jinryu.py)。99 リソースを CKAN の API から取り、入れ子の zip の CSV を種類ごとに 1 つの Parquet にまとめた。行数と population の合計が元の CSV と一致することを確かめてから置いている。
+
+- 置き場は yuisekin-z の `/www/html/static/mlit-1km-fromto/` で、nginx がこれを `https://z.yuiseki.net/static/mlit-1km-fromto/` として配る。
+- 定期実行はしていない。上流は 2024-10 から更新されていないので、取り直す理由が無い。
 
 | ファイル | 行数 | 大きさ |
 |---|---:|---:|
