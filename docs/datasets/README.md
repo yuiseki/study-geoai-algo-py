@@ -106,6 +106,11 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [東北地方太平洋沿岸地域 自然環境調査](env-tohoku-coastal-survey/README.md)  `split` | 震災後の植生図、藻場、海岸、重要湿地、生態系監視 (平成 24〜26 年度) | GIS 456 本 約 283MB、報告書 PDF 約 690MB | KMZ、Shapefile (JGD2000、cp932) | PDL1.0 (生物多様性センター)。個人名と「取扱い注意」のレイヤを含む |
 | [環境省レッドリスト](env-redlist/README.md)  `split` | 初版から第 5 次までの種の一覧と、維管束植物の 2 次メッシュの分布情報 | CSV 130 本と zip 1 本、約 4.3MB | CSV (cp932 と UTF-8 が混在) | 第 5 次は CC BY 4.0。それより前は配布元に記載なし (未確認) |
 | [気象庁 予報区等のコードと GIS](jma-forecast-area-codes/README.md)  `split` | 府県予報区、一次細分区域、市町村等、地震・津波の区域のコード表と区域の形 | コード表 1.7MB、GIS 19 本 約 2.8GB | xlsx、Shapefile (JGD2011) | PDL1.0 (気象庁サイト)。GIS に測量法の承認番号の注記。過去版は 3 年分だけ |
+| [医療情報ネットのオープンデータ](mhlw-iryou-net/README.md)  `split` | 病院、診療所、歯科、助産所、薬局の施設票と診療科・診療時間票。住所と緯度経度 (0,0 の行あり) | 1 時点 ZIP 8 本 約 28MB、展開 376MB。2024-08 から 2026-06 の 5 時点 | CSV (UTF-8 BOM) | PDL1.0 (厚生労働省) |
+| [法人番号公表サイトの法人情報](nta-houjin-bangou/README.md)  `split` | 法人の名称、所在地 (都道府県、市区町村、丁目番地、郵便番号)、法人番号。緯度経度は無い | 全国 CSV 約 256MB (UTF-8)、公表 572 万件。全件は月末に作り直し、差分は 40 日分 | CSV (見出しなし)、XML。POST でしか取れない | PDL1.0 (国税庁) |
+| [金融庁 免許・許可・登録等を受けている業者一覧](fsa-licensed-firms/README.md)  `split` | 業態ごとの業者一覧。本店所在地、郵便番号、法人番号。個人の業者を含む | xlsx 76 本、約 8MB。上書き更新 | xlsx と PDF | PDL1.0 (金融庁) |
+| [国際観光ホテル整備法の登録ホテル・旅館](mlit-registered-hotels/README.md)  `split` | 登録ホテル 926、旅館 1,359 の名称と住所。旧サイトの CSV (2018 年末) は緯度経度つき | PDF 約 1MB、CSV 4 本 約 0.8MB | PDF (観光庁)、CSV (hokoukukan、cp932) | PDL1.0 |
+| [信書便事業者一覧](soumu-shinshobin/README.md)  `whole` | 特定信書便事業者 656 者の住所、役務、提供区域 | xlsx 1 本 約 140KB。年 3、4 回の更新で旧版は消える | xlsx と PDF | PDL1.0 (総務省) |
 | [e-Stat](estat/README.md)  `catalog` | 日本の政府統計の窓口。統計 GIS の機械可読目録、統計データ API 3.0、統計 LOD の三経路 | 境界データ 54 件で全国およそ 10.8GiB。LOD は 20.9 億トリプル | Shapefile / KML / GML の zip、JSON API、SPARQL | e-Stat 利用規約 (政府標準利用規約2.0 準拠)。LOD だけは別扱い |
 | [e-Stat 統計 LOD](estat/lod.md)  `catalog` | 政府統計を RDF Data Cube で。メッシュは GeoSPARQL のポリゴンつき | 2,086,445,173 トリプル / データセット 87 件。2010〜2019 年で止まっている | SPARQL (ダンプ無し) | CC BY 4.0 (VoID で機械可読に宣言) |
 | [World Bank](worldbank/README.md)  `range` | 世界銀行の開発指標 (WDI ほか)。`z.yuiseki.net/static/worldbank/` の上流 | データベース 71、指標 29,544。WDI_CSV.zip 282,845,220 バイト | CSV の zip (Range 可、中身は非圧縮)、JSON API | CC BY 4.0 に紛争解決の追加条項。一部は ODbL や再配布不可 |
