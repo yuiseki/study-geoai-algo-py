@@ -113,7 +113,7 @@ DuckDB の既定の型推定では読めない。 既定の `read_csv` は `gwno
 
 位置と日付の精度が行ごとに違う。 `where_prec` が 4 以上の 58,116 行は州や国の代表点で、点の位置に意味が無い。`date_prec` が大きい行は期間の幅を持つ。空間や時間で集計する前に精度で絞る。
 
-25.1 は旧版。 2026-10-02 の時点で現行は 26.1 (`https://ucdp.uu.se/downloads/ged/ged261-csv.zip`、39,122,522 バイト、Last-Modified 2026-06-08 19:54:24 GMT)。現行ページには月ごとの候補版 (`downloads/candidateged/GEDEvent_v26_0_7.csv` など) も並ぶ。codebook は分析に版番号を必ず書くよう求めている。25.1 と 26.1 の違いは確かめていない (未確認)。
+25.1 は旧版。 2026-10-02 の時点で現行は 26.1 (`https://ucdp.uu.se/downloads/ged/ged261-csv.zip`、39,122,522 バイト、Last-Modified 2026-06-08 19:54:24 GMT)。現行ページには月ごとの候補版 (`downloads/candidateged/GEDEvent_v26_0_7.csv` など) も並ぶ。codebook は分析に版番号を必ず書くよう求めている。26.1 は 417,968 行、期間は 1989-01-01 から 2025-12-31 で、25.1 より 32,050 行多く 1 年長い。列は 49 で、名前も並びも 25.1 と同じ (2026-10-02 に見出し行を比べた)。値の型や意味が変わったかは確かめていない (未確認)。codebook 26.1 には「5.8. Variables present in previous versions of GED not used in version 26.1」という節がある。
 
 題材の性質。 紛争の死者、加害者と被害者の区分、村の単位の位置を含む。個人名の列は無い (列名からの判断で、値の中の人名は未確認)。
 
@@ -141,6 +141,21 @@ DuckDB の既定の型推定では読めない。 既定の `read_csv` は `gwno
 - zip は正本、手元、公開 URL の 3 つで大きさ (29,307,888 バイト) と Last-Modified (2025-06-11 09:43:52 GMT) が一致する。手元の zip の sha256 は `e256f1fb20a579d8b2f910e5bae212f486d3002adaa2e4359ace740c737da05d`。
 - UCDP はチェックサムを公開していない。正本を丸ごと落としての照合はしていないので、バイト単位の一致は未確認。
 - 手元の `GEDEvent_v25_1.csv` は zip の中のメンバーと大きさ (250,393,383 バイト)、時刻、CRC-32 (`b9cb2d26`)、sha256 (`3f286de84cc0cb9152403f53e6aea2ac604d623f156e61079338596e09e8b550`) が一致した。zip を展開したものと同じ。単体の CSV は UCDP の配布には無い。
+
+### 26.1
+
+2026-10-02 に 26.1 を取り、25.1 の隣に置いた。
+
+| ファイル | 大きさ (バイト) | Last-Modified | sha256 |
+|---|---:|---|---|
+| `ged261-csv.zip` | 39,122,522 | 2026-06-08 19:54:24 GMT | `8c941d84954e555ee2e54f40fa04d9203bf1e2f962203d0a9930966c4947c667` |
+| `ged261.pdf` (codebook) | 917,038 | 2026-05-20 09:54:52 GMT | `f767380ebbf365aec7586f98b6d100cafb69fb54010a908604d53bd9ad655972` |
+| `GEDEvent_v26_1.csv` (zip を展開したもの) | 273,992,720 | 2026-03-30 (zip の中の時刻) | |
+
+- 大きさと Last-Modified は、正本 `https://ucdp.uu.se/downloads/ged/ged261-csv.zip` の応答と一致した。zip は `unzip -t` で壊れていない。中身は `GEDEvent_v26_1.csv` の 1 本で、展開のときに CRC を照合した。
+- 公開の日付はページにも codebook にも書かれていない (未確認)。codebook には「Data extracted from UCDP systems on 2026-03-30」とある。
+- 26.1 についてダウンロードのページが引用を求めるのは、Davies, Pettersson, Öberg (2026)「Organized violence 1989–2025, and violent political protests」Journal of Peace Research (https://doi.org/10.1093/jopres/xjag046) と Sundberg, Melander (2013)。codebook 26.1 の表紙は Sundberg, Melander (2013) と、場合によって codebook 自体 (Högbladh 2026) の引用を求める。DOI が解決するかは確かめていない (未確認)。
+- ライセンスは同じダウンロードのページの CC BY 4.0 (上のライセンスの節の文)。codebook 26.1 の本文にはライセンスの語が無い。
 
 ## 学習ステップとの対応 (案)
 

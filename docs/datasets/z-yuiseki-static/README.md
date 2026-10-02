@@ -26,7 +26,7 @@
 | worldbank/ | WDI の国別年次指標 (縦持ち)。217 か国、1990〜2024 年、16 指標。うち CO2 の指標は壊れている | [worldbank.md](worldbank.md) |
 | natural-earth/ | Natural Earth の国 (110m/50m) と州 (10m) の GeoParquet。列を絞り name_ja 付き | [natural-earth.md](natural-earth.md) |
 | gpkg/ | Natural Earth をまとめた GeoPackage (885MB)。レイヤー一覧は読めていない | [gpkg.md](gpkg.md) |
-| ucdp/ | UCDP GED 25.1 の紛争イベント 385,918 件 (1989〜2024)。CSV とその zip | [ucdp.md](ucdp.md) |
+| ucdp/ | UCDP GED の紛争イベント。25.1 (385,918 件、1989〜2024) と 26.1 (417,968 件、1989〜2025、2026-10-02 に追加) の CSV とその zip、26.1 の codebook | [ucdp.md](ucdp.md) |
 | csv/ | Geo-PKO 2.3 の国連 PKO 展開地点 21,243 行 (1994〜2024、52 ミッション) | [csv.md](csv.md) |
 | geojson/ | 海底ケーブル、プレート境界 PB2002、USGS の M4.5 以上の地震。ほかにスタイル JSON 1 つ | [geojson.md](geojson.md) |
 | wikimedia/ | Wikipedia 記事の重要度表 (gzip した TSV、Wikidata ID 付き)。先頭だけ読んだ | [wikimedia.md](wikimedia.md) |

@@ -102,7 +102,7 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [World Bank](worldbank/README.md)  `range` | 世界銀行の開発指標 (WDI ほか)。`z.yuiseki.net/static/worldbank/` の上流 | データベース 71、指標 29,544。WDI_CSV.zip 282,845,220 バイト | CSV の zip (Range 可、中身は非圧縮)、JSON API | CC BY 4.0 に紛争解決の追加条項。一部は ODbL や再配布不可 |
 | [World Bank Data360](worldbank/data360.md)  `catalog` | 世界銀行が IMF、OECD、FAO、V-Dem などの指標をまとめて配信する基盤 | 指標 12,510 / データベース 170 | JSON API (SDMX に近い形)。一括配布は無い | データベースごとに違う。上位 30 で CC BY 13、外部指定 12 |
 | [Kontur Population](kontur/README.md)  `whole` | 全世界の人口を H3 の六角形 (解像度 8、約 400m) で。2023-11-01 版 | 32,957,699 六角形、合計 8,031,924,024 人。gzip で 2,436,991,241 バイト | GeoPackage (gzip)、EPSG:3857。HDX に国別の版もある | CC BY (HDX の license_id。版番号の明記なし) |
-| [UCDP GED](ucdp-ged/README.md)  `whole` | 組織的暴力の出来事 1 件 1 行。場所、日付、死者数。25.1 は 1989〜2024 年 | 385,918 件。zip で 29,307,888 バイト | CSV (zip)。最新は 26.1 | CC BY 4.0 (ダウンロードのページ)。論文の引用が要る |
+| [UCDP GED](ucdp-ged/README.md)  `whole` | 組織的暴力の出来事 1 件 1 行。場所、日付、死者数。25.1 は 1989〜2024 年 | 25.1 は 385,918 件、26.1 は 417,968 件 (1989〜2025)。zip で 29,307,888 と 39,122,522 バイト | CSV (zip)。最新は 26.1 | CC BY 4.0 (ダウンロードのページ)。論文の引用が要る |
 | [Geo-PKO](geo-pko/README.md)  `whole` | 国連 PKO の展開地点。2.3 版、1994〜2024 年 | 21,243 行、114 列。12,500,418 バイト | CSV | 明記なし。作成者は論文の引用を求める |
 | [TeleGeography 海底ケーブル](telegeography-submarine-cables/README.md)  `whole` | 海底通信ケーブルの経路 | z の写しは 681 地物、2026-09-30 の現行版は 733 | GeoJSON (API) | 再配布を許す記述なし。元データは有料の購読者向け |
 | [PB2002 プレート境界](pb2002-plates/README.md)  `whole` | Bird (2003) のプレート境界モデルを GeoJSON にしたもの | 241 地物、226,378 バイト | GeoJSON (GitHub) | 変換したものは ODC-By 1.0。元のモデルは明記なし |
