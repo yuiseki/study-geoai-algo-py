@@ -16,7 +16,7 @@
 ## 中身 (DuckDB 1.5.5 で集計)
 
 - 21,243 行。完全に同じ行はない。
-- 列は 122 個。主なもの:
+- 列は 114 個 (2026-10-02 に Python の csv モジュールと DuckDB で数え直した。以前ここには 122 と書いていた)。主なもの:
   - 出典と時間: `source`, `mission`, `year`, `month` (整数), `date` (DATE。月初日)
   - 場所: `location`, `geosplit`, `country`, `latitude`, `longitude` (実数), `old_xy`, `geocomment`, `zone.de.confidence`, `adm1.id`, `adm1.name`, `prioid`
   - 部隊の規模: `battalion`, `company`, `platoon` (実数), `other.size`, `no.troops` (文字列。`unknown` が 537 行ある)
@@ -49,7 +49,7 @@
 - `no.troops` や `notroopspertcc_*` は数値でなく文字列として読まれる (`unknown` などが混ざるため)。数値にするなら変換と欠損の扱いを決める。
 - 部隊人数 150 や 650 が多いのは、配置図の部隊記号 (中隊や大隊) を標準の人数に置き換えている可能性がある。確かめていない。
 - 同じ地点が月ごとに繰り返し現れるので、行を無作為に分けると同じ地点が学習と検証の両方に入る。
-- ライセンス: 未確認 (ファイルにも置き場にも記載はない)。
+- ライセンス: データ本体のライセンスは配布元のどこにも明記が無い (2026-10-02 に調べた)。作成者は論文の引用を求めている。詳しくは [../geo-pko/README.md](../geo-pko/README.md)。
 
 ## 12 ステップでの使い道 (案)
 

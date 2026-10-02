@@ -31,7 +31,7 @@
 - 264MB あるので、丸ごと落とすかは用途で決める。行数を数えるだけでも全体の展開が要る。
 - 同じ `wikidata_id` が複数の `title` (記事とそのリダイレクト) に出てくる (例: `고공` と `고대` はどちらも `Q39997`、`importance` も同じ値)。Wikidata ID で結合すると行が増える。
 - `importance` がどう計算されたかはファイルにない。未確認。
-- ライセンス: 未確認。
+- ライセンス: データのライセンスは配布元のどこにも明記が無い。入力は Wikipedia (CC BY-SA 4.0) と Wikidata (CC0) (2026-10-02 に調べた)。この写しは nominatim.org が配っていた 2024-08 版と同じもの。詳しくは [../nominatim-wikimedia-importance/README.md](../nominatim-wikimedia-importance/README.md)。
 
 ## 12 ステップでの使い道 (案)
 

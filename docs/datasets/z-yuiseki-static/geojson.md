@@ -22,7 +22,7 @@
 - 属性は `id`, `name`, `color`, `feature_id`, `coordinates` の 5 つ。`coordinates` は属性の中の 1 点 (ラベル位置と思われる。未確認)。
 - 範囲: 経度 -180.00 から 180.00、緯度 -55.01 から 78.22。
 - 出どころはファイルの中に書かれていない。ファイル名と属性の形は TeleGeography の Submarine Cable Map の配布物に似ているが、未確認。
-- ライセンス: 未確認。
+- ライセンス: この版のデータの再配布を許す記述は見つからなかった。TeleGeography は元データを有料の購読者向けとしている (2026-10-02 に調べた)。詳しくは [../telegeography-submarine-cables/README.md](../telegeography-submarine-cables/README.md)。
 
 ## tectonicplates_GeoJSON_PB2002_boundaries.json
 
@@ -32,7 +32,7 @@
 - `PlateA` と `PlateB` に出てくるプレートは 52 通り。
 - `Source` の上位: `Mueller et al. [1987]` 31 / `by Peter Bird, September 2001` 24 / `by Peter Bird, 1999` 21 / `by Peter Bird, October 2001` 16。ファイル名の PB2002 と合わせ、Peter Bird (2002) のプレート境界モデルを GeoJSON にしたものと読める。
 - 範囲: 経度 -180 から 180、緯度 -66.16 から 86.80。
-- ライセンス: 未確認。
+- ライセンス: GeoJSON に変換したもの (fraxen/tectonicplates) は ODC-By 1.0。元の Bird (2003) のモデルは明記が無い (2026-10-02 に調べた)。詳しくは [../pb2002-plates/README.md](../pb2002-plates/README.md)。
 
 ## usgs_m45_month.geojson
 
@@ -45,7 +45,7 @@
 - 深さは 7.466 から 639.511 km。`status` は全件 `reviewed`、`type` は全件 `earthquake`。`tsunami` が 1 の地物は 13。
 - `alert` は空が 547 / green 49 / orange 3 / yellow 1 / red 1。
 - 範囲 (`bbox`): 経度 -179.369 から 179.8605、緯度 -61.8842 から 83.8394。
-- ライセンス: 未確認。
+- ライセンス: USGS が作ったデータはパブリックドメイン。他の観測網が提供した値の扱いは未確認 (2026-10-02 に調べた)。詳しくは [../usgs-earthquakes/README.md](../usgs-earthquakes/README.md)。
 
 ## conflicts.json (異常)
 

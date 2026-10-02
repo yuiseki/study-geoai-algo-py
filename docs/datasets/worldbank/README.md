@@ -175,3 +175,89 @@ split と catalog の性質も併せ持つ。
 
 全部を手元に置く場合。上に挙げた 12 のデータベースの CSV で 765.0MiB。
 71 全部ではないので、これは下限。
+
+## z.yuiseki.net の WDI の抜き出しのライセンス
+
+2026-10-02 に調べた内容。対象は `https://z.yuiseki.net/static/worldbank/` の 2 ファイル
+([z-yuiseki-static/worldbank.md](../z-yuiseki-static/worldbank.md))。
+既定のライセンスと調停・仲裁の追加条項は上の「ライセンス」の節のとおりで、ここでは繰り返さない。
+
+### どう作られたか
+
+- 作成者は yuiseki。リポジトリは `repos/__yuiseki/_hf_data/wdi-to-parquet` で、コミットは 4 件、
+  すべて 2026-05-31 16:38〜16:51 JST。リモートに公開されているか、スクリプト自体のライセンスは未確認。
+- 取得元は指標ごとの zip。`https://api.worldbank.org/v2/en/indicator/<コード>?downloadformat=csv`
+  から 2026-05-31 に取得し、`~/.cache/wdi-to-parquet/` に置いてある (zip の mtime は 16:42〜16:51)。
+- 変換は zip 内の `API_*.csv` を読み、`Metadata_Country_*.csv` の Region が空の行 (集計地域) を落とし、
+  指定した年を縦持ちにして値の無い行を捨てるだけ。単位変換や補完はしていない。
+- 版。15 指標は zip 内 CSV の見出しが `"Data Source","World Development Indicators"`,
+  `"Last Updated Date","2026-04-08"` で、2026-04-08 更新の WDI。
+  EN.ATM.CO2E.PC だけは `"WDI Database Archives"` (source 57), `"Last Updated Date","2025-10-29"`。
+- より新しい WDI がある。API の `https://api.worldbank.org/v2/source/2?format=json` は
+  lastupdated 2026-07-13、データカタログの WDI ページは 2026-07-15 版。抜き出しは 1 世代古い。
+- キャッシュの zip から同じ関数で作り直すと値が再現した。
+  wdi_basic_annual.parquet は 16 指標 × 1990〜2024 年で完全一致。
+  wdi_indicators.parquet は初回コミットの既定値 (6 指標 × 8 時点) で作り直して全 10,205 行のキーと値が一致した。
+  ただし md5 は再生成物と一致せず、その理由は未確認。
+
+### 16 指標のライセンス
+
+`https://api.worldbank.org/v2/sources/{2|57}/series/<コード>/metadata?format=json` の
+`License_Type` を 2026-10-02 に引いた。source 2 と 57 で同じ値だった。
+出典組織は zip 内 Metadata_Indicator の SOURCE_ORGANIZATION の要約。
+収録の min は wdi_indicators.parquet にも入っている 6 指標。
+
+| コード | 名前 | ライセンス | 出典組織 | 収録 |
+|---|---|---|---|---|
+| SP.POP.TOTL | Population, total | CC BY 4.0 | UN Population Division (WPP), 各国統計局, Eurostat, UN Statistics Division | min, basic |
+| SP.POP.GROW | Population growth (annual %) | CC BY 4.0 | 同上から導出 | min, basic |
+| NY.GDP.MKTP.CD | GDP (current US$) | CC BY 4.0 | 各国公式統計, OECD, World Bank staff estimates | min, basic |
+| NY.GDP.PCAP.CD | GDP per capita (current US$) | CC BY 4.0 | 同上 | min, basic |
+| AG.SRF.TOTL.K2 | Surface area (sq. km) | CC BY 4.0 | FAO | min, basic |
+| SP.URB.TOTL.IN.ZS | Urban population (% of total population) | CC BY 4.0 | UN Population Division (World Urbanization Prospects) | min, basic |
+| SP.DYN.LE00.IN | Life expectancy at birth, total (years) | CC BY 4.0 | UN WPP, 各国統計局, Eurostat | basic |
+| SP.DYN.TFRT.IN | Fertility rate, total (births per woman) | CC BY 4.0 | UN WPP, 各国統計局, Eurostat | basic |
+| SH.DYN.MORT | Mortality rate, under-5 (per 1,000 live births) | CC BY 4.0 | UN IGME (UNICEF, WHO, World Bank, UN Population Division) | basic |
+| SE.ADT.LITR.ZS | Literacy rate, adult total (% of people ages 15 and above) | CC BY 4.0 | UNESCO Institute for Statistics | basic |
+| NY.GNP.PCAP.CD | GNI per capita, Atlas method (current US$) | CC BY 4.0 | 各国公式統計, OECD, World Bank staff estimates | basic |
+| SI.POV.GINI | Gini index | CC BY 4.0 | World Bank Poverty and Inequality Platform (高所得国は主に Luxembourg Income Study) | basic |
+| SL.UEM.TOTL.ZS | Unemployment, total (% of total labor force) (modeled ILO estimate) | CC BY 4.0 | ILO Modelled Estimates (ILOEST) | basic |
+| EN.ATM.CO2E.PC | CO2 emissions (metric tons per capita) | CC BY-NC 4.0 | Climate Watch Historical GHG Emissions (1990-2020), World Resources Institute | basic |
+| AG.LND.FRST.ZS | Forest area (% of land area) | CC BY 4.0 | FAOSTAT (FAO) | basic |
+| IT.NET.USER.ZS | Individuals using the Internet (% of population) | CC BY 4.0 | ITU World Telecommunication/ICT Indicators Database | basic |
+
+API の表記は CC BY 4.0 の行が `CC BY-4.0`、EN.ATM.CO2E.PC が
+`Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)`。
+
+- wdi_indicators.parquet の 6 指標はすべて CC BY 4.0 (追加条項つき)。
+- wdi_basic_annual.parquet は 15 指標が CC BY 4.0、EN.ATM.CO2E.PC だけが CC BY-NC 4.0 (非商用)。
+  出典は WRI の Climate Watch で、現行の WDI 本体ではなく WDI Database Archives から来ている。
+  wdi_basic_annual.parquet の 102,623 行のうち 6,437 行 (約 6.3%) がこの指標。
+  このファイルを CC BY 4.0 とだけ表示して配ると、指標のメタデータと食い違う。
+- 既存ノートが報告した EN.ATM.CO2E.PC の重複と桁違いの値は、取得した上流の CSV にそのまま入っている。
+  アーカイブ CSV は 292 行で、AND, COD, IMN, XKX, PSE, ROU, TLS が 2 行ずつ。
+  ROU の 1990 年は 6.85 と 810.49、JPN は 1 行で 1990 年 1018.62。変換スクリプトの不具合ではない。
+
+### Terms of Use for Datasets と表示の書式
+
+本来の URL `https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets` は 2026-10-02 時点で
+301 により一般の Terms and Conditions (`https://www.worldbank.org/ext/en/legal/terms-conditions`) へ
+転送され、本文はそこに無い。本文は Wayback Machine の 2026-06-08 保存のコピー
+`http://web.archive.org/web/20260608124135/https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets`
+(末尾に「Last Updated: Mar 23, 2018」) で読んだ。
+
+> You agree to provide attribution to The World Bank and its data providers in the following
+> format: The World Bank: Dataset name: Data source (if known).
+
+同じ書式は `https://data.worldbank.org/summary-terms-of-use` (2026-10-02 取得) にもある。
+WDI ならたとえば「The World Bank: World Development Indicators: <指標の出典組織>」。
+再配布するときは同じ表示要件をサブライセンスに含める必要があり、利用規約の URL を示せば足りると書かれている。
+World Bank が推奨・関与していると示唆しないことも求められる。
+第三者のデータについては「Where applicable, these conditions are included in the dataset or indicator metadata」とある。
+
+### 未確認
+
+- Terms of Use for Datasets の現行の本文。読めたのは Wayback の 2018 年版だけで、改訂や統合があったかは未確認。
+- EN.ATM.CO2E.PC の上流である Climate Watch (WRI) 自身のライセンス。climatewatchdata.org の 2 つの URL を試したが 404 だった。
+- 第三者出典 (ILO, ITU, UNESCO, FAO, UN 系, OECD, Eurostat, LIS) の側の条件。
+  WDI のメタデータに制限の記載が無いことだけを確かめた。記載が無いことを制限が無いと読むのは規約の文言に依った解釈。

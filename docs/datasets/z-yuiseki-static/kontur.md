@@ -47,6 +47,7 @@
 ## ライセンス
 
 - Kontur のデータセット紹介ページ (kontur.io) には「Creative Commons Attribution International (CC BY) license」とある。版の番号 (4.0 など) と、この 2023-11-01 版に付いた条件は HDX のページが 403 で読めず未確認。
+- 2026-10-02 に HDX の API で確かめた。license_id は `cc-by`。版番号の明記は無いまま。詳しくは [../kontur/README.md](../kontur/README.md)。
 
 ## 12 ステップで使えそうな場面 (案)
 
