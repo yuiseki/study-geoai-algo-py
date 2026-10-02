@@ -159,10 +159,13 @@ DuckDB の既定の型推定では読めない。 既定の `read_csv` は `gwno
 
 ## Hugging Face
 
-<https://huggingface.co/datasets/yuiseki/ucdp-ged> に、版ごとのサブセット (`26.1`、`25.1`) で置いた。各版の zip と codebook をそのまま置き、型を列名で決めた GeoParquet を添えた。コードは <https://github.com/yuiseki/ucdp-ged>。
+<https://huggingface.co/datasets/yuiseki/ucdp-ged> に、版ごとのサブセット (`26.1` から `19.1` までの 8 版) で置いた。19.1 は旧版ページで codebook の付いた最も古い版 (18.1 と 17.1 には codebook のリンクが無い、2026-10-02 に確認)。説明できないデータを配らないため、それより前は置かない。各版の zip と codebook をそのまま置き、型を列名で決めた GeoParquet を添えた。コードは <https://github.com/yuiseki/ucdp-ged>。
 
-- 型は列名で決める。`gwnoa` と `gwnob` は文字列、`active_year` は真偽値、`date_start` と `date_end` は TIMESTAMP。規則に無い列は文字列として通し、型に合わない値があれば変換を止める。旧版を足すときに列の違いが表に出る。
+- 型は列名で決める。`gwnoa` と `gwnob` は文字列、`active_year` は codebook の定義どおり整数の 1 か 0 (19.1〜24.1 の CSV は 1/0、25.1 と 26.1 の CSV は true/false と書くので 1/0 に読み替える。2026-10-02 の 8 版化の前は 25.1 と 26.1 だけで、真偽値だった)、`date_start` と `date_end` は TIMESTAMP。規則に無い列は文字列として通し、型に合わない値があれば変換を止める。旧版を足すときに列の違いが表に出る。
 - 上げる前に DuckDB で確かめた: 行数と id の一意性、全列の型、GeoParquet 1.0.0 と全行の点、ジオメトリによる絞り込みと緯度経度による絞り込みの件数の一致、`best` と `deaths_civilians` の合計と暴力の種類ごとの件数が csv モジュールで数えた値と一致、spatial 拡張なしでも開ける、ブルームフィルタ無し。上げた後に `hf://` から読んで同じ値になった。
+- 19.1 だけ違う点: シリアを含まない (codebook「Data for Syria is not included in 19.1 version – a separate release V 652.1601.1911 was released for the period 2016-01-01 to 2019-11-30 on 2019-12-17.」、この別リリースは置いていない)。列は 42 で、`relid`、`code_status`、`conflict_dset_id`、`dyad_dset_id`、`side_a_dset_id`、`side_b_dset_id`、`where_description` が無い。日付に時刻が付かない。20.1〜26.1 は同じ 49 列。
+- 版は同じ系列を年で切ったものではない。UCDP は過去の出来事も版ごとに直す。シリアを除いた 2010 年は、19.1 で 6,008 件・死者 30,862、26.1 で 9,139 件・死者 34,898。両方の版にある出来事のうち 1,908 件は `best` が違う。
+- 19.1〜24.1 の引用は、各 codebook の表紙が求める Sundberg, Melander (2013) と、場合によって codebook 自体 (Högbladh、各版の年)。旧版ページには版ごとの引用の一覧が無い。
 - 26.1 も `best` は全行で 4 つの `deaths_*` の和に等しい。`low <= best <= high` が成り立たない行は 26.1 で 5,075。
 
 ## 学習ステップとの対応 (案)

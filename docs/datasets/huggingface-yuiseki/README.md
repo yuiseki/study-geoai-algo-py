@@ -20,7 +20,7 @@
 | meta-move-dist | 2026-10-02 | cc-by-4.0 | 10M-100M | Meta の Movement Distribution を HDX の 90 日を超えて保持。元の CSV と年ごとの Parquet (2026-06-01〜) | [../hdx-meta-movement/README.md](../hdx-meta-movement/README.md) |
 | meta-range-maps-2022-05 | 2026-10-02 | cc-by-4.0 | 10M-100M | Meta の Movement Range Maps (2020-03-01〜2022-05-22、終了済み)。元の zip と年ごとの Parquet | [../hdx-meta-movement/README.md](../hdx-meta-movement/README.md) |
 | mlit-1km-fromto-2022-01 | 2026-10-02 | cc-by-4.0 | 10M-100M | 全国の人流オープンデータの元の zip 99 本と Parquet 5 本 (メッシュ別 3,808 万行)。ブルームフィルタ無し | [../mlit-1km-fromto/README.md](../mlit-1km-fromto/README.md) |
-| ucdp-ged | 2026-10-02 | cc-by-4.0 | 100K-1M | UCDP GED を版ごとのサブセットで (26.1、25.1)。元の zip と codebook、型付きの GeoParquet | [../ucdp-ged/README.md](../ucdp-ged/README.md) |
+| ucdp-ged | 2026-10-02 | cc-by-4.0 | 100K-1M | UCDP GED を版ごとのサブセットで (19.1〜26.1 の 8 版)。元の zip と codebook、型付きの GeoParquet | [../ucdp-ged/README.md](../ucdp-ged/README.md) |
 | npa-traffic-accidents | 2026-10-02 | cc-by-4.0 | 1M-10M | 警察庁の交通事故オープンデータ 2019〜2025 年。年と票ごとのサブセット 21 個、本票に 10 進の緯度経度と点 | [../npa-traffic-accidents/README.md](../npa-traffic-accidents/README.md) |
 | worldpop-jp-2026-01 | 2026-10-02 | cc-by-4.0 | 1K-10K | WorldPop R2025A の日本、2015〜2030 年。人口 100m/1km、年齢・性別 1km、都市化度の元の GeoTIFF 1,024 本と COG、一覧の Parquet | [../stac/worldpop.md](../stac/worldpop.md) |
 | ourairports-2026-08 | 2026-10-02 | other (public domain) | 10K-100K | OurAirports の 2026-08-31 の commit の 7 つの CSV と型付きの Parquet (空港 86,002 件) | [../ourairports/README.md](../ourairports/README.md) |
