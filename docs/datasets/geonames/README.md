@@ -217,3 +217,12 @@ split。国ごとに zip が分かれていて、必要な国だけ引ける。�
 - 日本の別名は 341,783 行 (9-30 は 341,777 行)。公式/優先 3,852、短縮 1,035、俗称 1,790、歴史 1,113。
 - 京都市 (1857910) の ja の別名は `京都市` (is_preferred_name が真)、`Kyōto-shi`、`きょうとし`、`京都`、`キョウト` の 5 つで、上の節と同じ。
 - 公開 URL への最初の Range 要求は 10 秒で切れ、そのあと 3 回は 206 だった (Cloudflare がキャッシュを埋める初回だけ遅い)。DuckDB の httpfs で part-01 から日本の件数を数えるのに 0.17 秒、2 回目は 0.06 秒。
+
+## Hugging Face
+
+<https://huggingface.co/datasets/yuiseki/geonames> に、夜ごとの版を年月なしの名前で置いた。サブセットは `20261001.geoname`、`20261001.alternate_names`、`20261001.hierarchy`、`20261001.admin_code5` の 4 つ。次の夜を取ったら横に足す。コードは <https://github.com/yuiseki/geonames>。
+
+- 20261001 は、z.yuiseki.net の 2026-10-01 の置き場の raw/ を、manifest の sha256 と照合して取り込んだもの (`01_download.py --from`)。
+- Parquet は作り直した。行数は z と同じで、バイト列は並列書き込みのため違う。ブルームフィルタは無し。
+- 日本の ja の別名は、2026-10-01 の版の地名辞書と結んで数えると 174,920 行 (上の節の 174,917 行は、9-30 の版を国別の alternatenames/JP.zip で数えた値)。
+- カードの SQL (京都市の日本語の別名) は、HF から 12 秒で返った。
