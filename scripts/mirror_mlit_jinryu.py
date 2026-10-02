@@ -178,7 +178,7 @@ def extract(zips: list[Path], out: Path, keep: Callable[[str], bool] = lambda n:
 
 def write_parquet(con, query: str, path: Path) -> None:
     con.execute(
-        f"copy ({query}) to '{path}' (format parquet, compression zstd, row_group_size 100000)"
+        f"copy ({query}) to '{path}' (format parquet, compression zstd, row_group_size 100000, write_bloom_filter false)"
     )
 
 

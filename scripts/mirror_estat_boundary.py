@@ -236,7 +236,7 @@ def build(rawdir: Path, metas: dict[str, dict], datum: str, work: Path) -> dict[
     out: dict[str, dict] = {}
     name = work.name
     single = work / f"{name}.parquet"
-    write = "(format parquet, compression zstd, row_group_size 10000)"
+    write = "(format parquet, compression zstd, row_group_size 10000, write_bloom_filter false)"
     con.execute(f"copy ({query}) to '{single}' {write}")
     if single.stat().st_size <= MAX_BYTES:
         out[single.name] = {"rows": total, "bytes": single.stat().st_size}

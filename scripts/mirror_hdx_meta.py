@@ -459,7 +459,7 @@ def part_name(stem: str, year: int) -> str:
 
 def write_parquet(con, query: str, path: Path) -> None:
     con.execute(
-        f"copy ({query}) to '{path}' (format parquet, compression zstd, row_group_size 100000)"
+        f"copy ({query}) to '{path}' (format parquet, compression zstd, row_group_size 100000, write_bloom_filter false)"
     )
 
 

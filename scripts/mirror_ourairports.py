@@ -265,7 +265,7 @@ def main() -> None:
         p = work / f"{name}.parquet"
         query = select_sql(con, f, name in GEOMETRY)
         con.execute(
-            f"copy ({query} order by {ORDER.get(name, 'id')}) to '{p}' (format parquet, compression zstd)"
+            f"copy ({query} order by {ORDER.get(name, 'id')}) to '{p}' (format parquet, compression zstd, write_bloom_filter false)"
         )
         got = con.sql(f"select count(*) from '{p}'").fetchone()[0]
         if got != rows:
