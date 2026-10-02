@@ -139,7 +139,7 @@ DuckDB の既定の型推定では読めない。 既定の `read_csv` は `gwno
 `https://z.yuiseki.net/static/ucdp/` に `ged251-csv.zip` と、それを展開した `GEDEvent_v25_1.csv` がある。置き場は yuisekin-z の `/www/html/static/ucdp/`。詳しくは [z-yuiseki-static/ucdp.md](../z-yuiseki-static/ucdp.md)。
 
 - zip は正本、手元、公開 URL の 3 つで大きさ (29,307,888 バイト) と Last-Modified (2025-06-11 09:43:52 GMT) が一致する。手元の zip の sha256 は `e256f1fb20a579d8b2f910e5bae212f486d3002adaa2e4359ace740c737da05d`。
-- UCDP はチェックサムを公開していない。正本を丸ごと落としての照合はしていないので、バイト単位の一致は未確認。
+- UCDP はチェックサムを公開していない。2026-10-02 に正本を丸ごと取り直し、sha256 が手元の zip と一致した (`e256f1fb...`)。バイト単位で同じ。
 - 手元の `GEDEvent_v25_1.csv` は zip の中のメンバーと大きさ (250,393,383 バイト)、時刻、CRC-32 (`b9cb2d26`)、sha256 (`3f286de84cc0cb9152403f53e6aea2ac604d623f156e61079338596e09e8b550`) が一致した。zip を展開したものと同じ。単体の CSV は UCDP の配布には無い。
 
 ### 26.1
@@ -156,6 +156,14 @@ DuckDB の既定の型推定では読めない。 既定の `read_csv` は `gwno
 - 公開の日付はページにも codebook にも書かれていない (未確認)。codebook には「Data extracted from UCDP systems on 2026-03-30」とある。
 - 26.1 についてダウンロードのページが引用を求めるのは、Davies, Pettersson, Öberg (2026)「Organized violence 1989–2025, and violent political protests」Journal of Peace Research (https://doi.org/10.1093/jopres/xjag046) と Sundberg, Melander (2013)。codebook 26.1 の表紙は Sundberg, Melander (2013) と、場合によって codebook 自体 (Högbladh 2026) の引用を求める。DOI が解決するかは確かめていない (未確認)。
 - ライセンスは同じダウンロードのページの CC BY 4.0 (上のライセンスの節の文)。codebook 26.1 の本文にはライセンスの語が無い。
+
+## Hugging Face
+
+<https://huggingface.co/datasets/yuiseki/ucdp-ged> に、版ごとのサブセット (`26.1`、`25.1`) で置いた。各版の zip と codebook をそのまま置き、型を列名で決めた GeoParquet を添えた。コードは <https://github.com/yuiseki/ucdp-ged>。
+
+- 型は列名で決める。`gwnoa` と `gwnob` は文字列、`active_year` は真偽値、`date_start` と `date_end` は TIMESTAMP。規則に無い列は文字列として通し、型に合わない値があれば変換を止める。旧版を足すときに列の違いが表に出る。
+- 上げる前に DuckDB で確かめた: 行数と id の一意性、全列の型、GeoParquet 1.0.0 と全行の点、ジオメトリによる絞り込みと緯度経度による絞り込みの件数の一致、`best` と `deaths_civilians` の合計と暴力の種類ごとの件数が csv モジュールで数えた値と一致、spatial 拡張なしでも開ける、ブルームフィルタ無し。上げた後に `hf://` から読んで同じ値になった。
+- 26.1 も `best` は全行で 4 つの `deaths_*` の和に等しい。`low <= best <= high` が成り立たない行は 26.1 で 5,075。
 
 ## 学習ステップとの対応 (案)
 
