@@ -13,13 +13,15 @@ target size but not always their exact boundaries: a file written in parallel
 has a few short groups, and a rewrite on one thread does not reproduce them.
 The rows are in the same order, so the statistics skip the same way.
 
-    uv run python scripts/rewrite_parquet_without_bloom.py /www/html/static/ksj/*/*.parquet
+    uv run python scripts/rewrite_parquet_without_bloom.py /www/html/static/ksj/*/*.parquet \
+        --doc=/www/html/static/ksj/README.md
 """
 
 from __future__ import annotations
 
 import hashlib
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -94,10 +96,37 @@ def rewrite(path: Path) -> dict | None:
     }
 
 
+def swap_in_docs(docs: list[Path], old: dict, new: dict) -> dict[Path, int]:
+    """Replace a rewritten file's old sha256 and size with the new ones in its docs.
+
+    Manifests and READMEs record outputs in different shapes, so the values are
+    replaced as text: the sha256, the size as digits and the size with thousands
+    separators, each only where it stands alone.
+    """
+    pairs = [
+        (old["sha256"], new["sha256"]),
+        (str(old["bytes"]), str(new["bytes"])),
+        (f"{old['bytes']:,}", f"{new['bytes']:,}"),
+    ]
+    changed = {}
+    for doc in docs:
+        text = doc.read_text()
+        n = 0
+        for a, b in pairs:
+            text, k = re.subn(rf"(?<![\w,]){re.escape(a)}(?![\w,]\d)", b, text)
+            n += k
+        if n:
+            doc.write_text(text)
+            changed[doc] = n
+    return changed
+
+
 def main(argv: list[str]) -> int:
-    for arg in argv:
+    docs = [Path(a.removeprefix("--doc=")) for a in argv if a.startswith("--doc=")]
+    for arg in (a for a in argv if not a.startswith("--doc=")):
         p = Path(arg)
         before = p.stat().st_size
+        old = {"bytes": before, "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
         info = rewrite(p)
         if info is None:
             print(f"skip   {p}  (no bloom filters)")
@@ -107,6 +136,8 @@ def main(argv: list[str]) -> int:
                 f"done   {p}  {before:,} -> {info['bytes']:,} bytes, "
                 f"{info['rows']:,} rows, row groups {g[0]} -> {g[1]}"
             )
+            for doc, n in swap_in_docs(docs, old, info).items():
+                print(f"       {doc}: {n} values updated")
     return 0
 
 

@@ -83,3 +83,17 @@ def test_a_rewrite_that_changed_rows_is_not_placed(tmp_path, monkeypatch):
         m.rewrite(p)
     assert p.read_bytes() == original
     assert not list(tmp_path.glob("*.part"))
+
+
+def test_swap_in_docs_replaces_hashes_and_sizes(tmp_path):
+    doc = tmp_path / "manifest.json"
+    doc.write_text('{"a.parquet": {"bytes": 111927571, "sha256": "ab' + "0" * 62 + '"}}')
+    readme = tmp_path / "README.md"
+    readme.write_text("| a.parquet | 38,079,507 | 111,927,571 |\n| b | 1 | 111927571999 |\n")
+    old = {"bytes": 111927571, "sha256": "ab" + "0" * 62}
+    new = {"bytes": 104065028, "sha256": "cd" + "1" * 62}
+    changed = m.swap_in_docs([doc, readme], old, new)
+    assert changed == {doc: 2, readme: 1}
+    assert doc.read_text() == '{"a.parquet": {"bytes": 104065028, "sha256": "cd' + "1" * 62 + '"}}'
+    assert "| 104,065,028 |" in readme.read_text()
+    assert "111927571999" in readme.read_text()  # a longer number is not touched
