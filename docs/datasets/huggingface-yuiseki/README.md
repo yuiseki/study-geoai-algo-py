@@ -17,6 +17,8 @@
 | osm-tag-corpus | 2026-09-07 | odbl | 10K-100K | OSM タグ 9,803 種の多言語説明と世界での使用回数 | [osm-tag-corpus.md](osm-tag-corpus.md) |
 | text2geoql | 2026-08-29 | odbl | 1K-10K | TRIDENT 中間言語から Overpass QL への合成対 4,897 件 | [text2geoql.md](text2geoql.md) |
 | geonames | 2026-10-02 | cc-by-4.0 | 10M-100M | GeoNames のダンプを夜ごとの版で。サブセットは `20261001.geoname` など 4 つ。元の zip と型付きの Parquet (地名辞書は GeoParquet) | [../geonames/README.md](../geonames/README.md) |
+| meta-move-dist | 2026-10-02 | cc-by-4.0 | 10M-100M | Meta の Movement Distribution を HDX の 90 日を超えて保持。元の CSV と年ごとの Parquet (2026-06-01〜) | [../hdx-meta-movement/README.md](../hdx-meta-movement/README.md) |
+| meta-range-maps-2022-05 | 2026-10-02 | cc-by-4.0 | 10M-100M | Meta の Movement Range Maps (2020-03-01〜2022-05-22、終了済み)。元の zip と年ごとの Parquet | [../hdx-meta-movement/README.md](../hdx-meta-movement/README.md) |
 | mlit-1km-fromto-2022-01 | 2026-10-02 | cc-by-4.0 | 10M-100M | 全国の人流オープンデータの元の zip 99 本と Parquet 5 本 (メッシュ別 3,808 万行)。ブルームフィルタ無し | [../mlit-1km-fromto/README.md](../mlit-1km-fromto/README.md) |
 | npa-traffic-accidents | 2026-10-02 | cc-by-4.0 | 1M-10M | 警察庁の交通事故オープンデータ 2019〜2025 年。年と票ごとのサブセット 21 個、本票に 10 進の緯度経度と点 | [../npa-traffic-accidents/README.md](../npa-traffic-accidents/README.md) |
 | worldpop-jp-2026-01 | 2026-10-02 | cc-by-4.0 | 1K-10K | WorldPop R2025A の日本、2015〜2030 年。人口 100m/1km、年齢・性別 1km、都市化度の元の GeoTIFF 1,024 本と COG、一覧の Parquet | [../stac/worldpop.md](../stac/worldpop.md) |

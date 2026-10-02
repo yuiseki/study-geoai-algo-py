@@ -111,6 +111,15 @@ systemd-run --user --scope -p MemoryMax=8G -p MemorySwapMax=0 \
 
 - 同じ resource のまま中身が差し替わった場合は、古いファイルを `original/superseded/` に移して残す (Parquet には使わない)。
 
+## Hugging Face
+
+移動の 2 つを、データセットごとに別のリポジトリで Hugging Face に置いた。更新の頻度が違うため (Movement Distribution は続いている、Movement Range Maps は 2022-05 で終了)。Commuting Zones と Business Activity Trends は、学習の題材としての価値が低く日本との関わりも薄いので、置いていない。
+
+- <https://huggingface.co/datasets/yuiseki/meta-move-dist> (コードは <https://github.com/yuiseki/meta-move-dist>)。年月なし。HDX から消えたファイルも残し続け、取り足すたびに Parquet を作り直す。最初の 13 本は z.yuiseki.net のミラーから sha256 を照合して取り込んだ。
+- <https://huggingface.co/datasets/yuiseki/meta-range-maps-2022-05> (コードは <https://github.com/yuiseki/meta-range-maps-2022-05>)。名前の年月は、HDX のファイルが最後に変わった 2022-05-24 から。
+- どちらも、このリポジトリの `scripts/mirror_hdx_meta.py` をそのまま `scripts/hdx_meta.py` として持ち、`fetch_dataset` と `BUILDERS` を 1 つのデータセットだけに使う。テスト 37 本も同じ。
+- Parquet には元に無い `source_file` 列 (行をどの元のファイルから取ったか) がある。`polygon_level` (Movement Distribution) は整数。
+
 ## 学習ステップとの対応 (案)
 
 - 5 クラスタリング、6 PCA: 区市町村を、4 区分の割合の組や、曜日ごとの形で型に分ける。
