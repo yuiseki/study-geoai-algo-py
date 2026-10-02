@@ -18,6 +18,7 @@
 | text2geoql | 2026-08-29 | odbl | 1K-10K | TRIDENT 中間言語から Overpass QL への合成対 4,897 件 | [text2geoql.md](text2geoql.md) |
 | mlit-1km-fromto-2022-01 | 2026-10-02 | cc-by-4.0 | 10M-100M | 全国の人流オープンデータの元の zip 99 本と Parquet 5 本 (メッシュ別 3,808 万行)。ブルームフィルタ無し | [../mlit-1km-fromto/README.md](../mlit-1km-fromto/README.md) |
 | npa-traffic-accidents | 2026-10-02 | cc-by-4.0 | 1M-10M | 警察庁の交通事故オープンデータ 2019〜2025 年。年と票ごとのサブセット 21 個、本票に 10 進の緯度経度と点 | [../npa-traffic-accidents/README.md](../npa-traffic-accidents/README.md) |
+| worldpop-jp-2026-01 | 2026-10-02 | cc-by-4.0 | 1K-10K | WorldPop R2025A の日本、2015〜2030 年。人口 100m/1km、年齢・性別 1km、都市化度の元の GeoTIFF 1,024 本と COG、一覧の Parquet | [../stac/worldpop.md](../stac/worldpop.md) |
 | ourairports-2026-08 | 2026-10-02 | other (public domain) | 10K-100K | OurAirports の 2026-08-31 の commit の 7 つの CSV と型付きの Parquet (空港 86,002 件) | [../ourairports/README.md](../ourairports/README.md) |
 | estat-boundary-2020 | 2026-09-26 | cc-by-4.0 | 100K-1M | 2020 年国勢調査の小地域ポリゴン 23 万件と人口・世帯 | [estat-boundary-2020.md](estat-boundary-2020.md) |
 | jp-admin-2026-09 | 2026-09-26 | cc-by-4.0 | 1K-10K | 都道府県 47 と市区町村 1,918 のコード・読み・ポリゴン・人口 | [jp-admin-2026-09.md](jp-admin-2026-09.md) |

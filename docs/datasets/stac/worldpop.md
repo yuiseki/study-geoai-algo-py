@@ -37,3 +37,12 @@
 - 取得には 2 時間ほどかかった。FTP のサーバーは 1 つのアドレスからの同時接続に上限があり、2 ファイル x 6 接続では接続を断られて遅くなった。1 ファイル x 4 接続にすると毎秒 0.8MB 前後出た。
 
 rasterio で読むときの落とし穴: このマシンのシェルは anaconda の `GDAL_DRIVER_PATH`、`GDAL_DATA`、`PROJ_DATA` を export している。rasterio に同梱の GDAL がこれを拾うと、nodata が None になって -99999 が人口として足され、EPSG コードも引けなくなる。`study_geoai` を import すると、この 3 つを外す。
+
+## Hugging Face の凍結版
+
+<https://huggingface.co/datasets/yuiseki/worldpop-jp-2026-01> に、元の GeoTIFF 1,024 本 (3.86GB) と、同じ値の COG 1,024 本 (4.6GB)、1 ファイル 1 行の一覧 (`parquet/files.parquet`) を置いた。コードは <https://github.com/yuiseki/worldpop-jp-2026-01>。名前の年月は、ファイルの Last-Modified の最も新しいもの (都市化度の 2026-01-18)。人口と年齢・性別は 2025-07〜08。
+
+- z.yuiseki.net のミラーを作ったスクリプト (`scripts/mirror_worldpop.py`) は元のファイルを残さないので、2026-10-02 に配布元から取り直した。同時 4 本の HTTP で約 2 時間 (100m の 16 本が 1 本 15〜20 分)。1,024 本すべてが 2026-09-28 の sha256 と一致し、Last-Modified も同じだった。
+- COG は rasterio に同梱の GDAL で作り直し、全画素の値を元と比べた。z の COG とは値で一致する (都市化度の 32 本で確かめた)。
+- 100m 版の日本の総人口は 2015 年 127,358,353、2020 年 126,574,853、2025 年 123,434,903、2030 年 119,948,756。2020 年の年齢・性別 60 本の合計は 126,475,186 で、総人口 1km 版 (126,574,853) と 0.08% 違う。別の推計なので一致しない。
+- HF の COG は Range で読める。rasterio で 2020 年の 100m 版から台東区付近 (48 x 60 セル) を読むのに 7.4 秒。
