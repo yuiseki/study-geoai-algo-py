@@ -111,6 +111,15 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [金融庁 免許・許可・登録等を受けている業者一覧](fsa-licensed-firms/README.md)  `split` | 業態ごとの業者一覧。本店所在地、郵便番号、法人番号。個人の業者を含む | xlsx 76 本、約 8MB。上書き更新 | xlsx と PDF | PDL1.0 (金融庁) |
 | [国際観光ホテル整備法の登録ホテル・旅館](mlit-registered-hotels/README.md)  `split` | 登録ホテル 926、旅館 1,359 の名称と住所。旧サイトの CSV (2018 年末) は緯度経度つき | PDF 約 1MB、CSV 4 本 約 0.8MB | PDF (観光庁)、CSV (hokoukukan、cp932) | PDL1.0 |
 | [信書便事業者一覧](soumu-shinshobin/README.md)  `whole` | 特定信書便事業者 656 者の住所、役務、提供区域 | xlsx 1 本 約 140KB。年 3、4 回の更新で旧版は消える | xlsx と PDF | PDL1.0 (総務省) |
+| [住民基本台帳人口移動報告](estat-jumin-idou/README.md)  `catalog` | 転入・転出・転入超過。都道府県間の移動元と移動先、市区町村間は 2012 年から参考表 (小さい流れは「その他」) | e-Stat の DB に 471 表、約 2.1 億件。1999〜2025 年 (ファイルの長期表は 1954 年から) | e-Stat API、Excel/CSV | e-Stat 利用規約 (政府標準利用規約 2.0、CC BY 4.0 互換) |
+| [国勢調査の移動人口](estat-census-migration/README.md)  `catalog` | 5 年前の常住地別の人口。市区町村から市区町村への移動元と移動先 | 1990、2000、2010、2015、2020 年。表 ID で 529 表 | e-Stat API、Excel/CSV | e-Stat 利用規約 (CC BY 4.0 互換) |
+| [国勢調査 人口等基本集計](estat-census-basic/README.md)  `catalog` | 男女・年齢・配偶関係、世帯、住宅、外国人。原数値と不詳補完値 | 2025 年は 444 表 (2026-09-29 公表)、全 1,072 表で約 9.5 億セル | e-Stat API、Excel/CSV | e-Stat 利用規約 (CC BY 4.0 互換) |
+| [World Population Prospects](un-wpp/README.md)  `split` | 国別・年齢別の人口、出生、死亡、移動の推計と予測 | 555 地域、1950〜2101 年。現行 CSV 3.8GB、過去の版を含め 27GB | csv.gz、xlsx | CC BY 3.0 IGO |
+| [ILOSTAT](ilostat/README.md)  `split` | 雇用、賃金、労働の指標 1,213 | 約 4 億行、csv.gz で約 3GB (推定) | csv.gz、parquet ほか、SDMX | CC BY 4.0 (2023-05-03 以降のデータセット) |
+| [OECD Data Explorer](oecd/README.md)  `catalog` | 先進国の経済・社会、OECD 地域 (TL2/TL3) | データフロー 1,548、約 20 億観測 | SDMX API (1 時間 60 回) | OECD の利用条件 (CC BY ではない。出典表示を下流に引き継ぐ義務) |
+| [Eurostat](eurostat/README.md)  `split` | 欧州の統計 7,600 表、NUTS 地域まで | 約 65 億値、gzip TSV で数〜15GB (推定) | TSV、SDMX、JSON-stat | 欧州委員会の再利用ポリシー。EU 外の国のデータは商用不可 |
+| [UNHCR 難民統計](unhcr/README.md)  `catalog` | 難民、庇護申請、庇護の決定。出身国と庇護国の組み合わせ | 1951〜2025 年、約 50 万行、CSV 約 55MB | API、HDX の CSV | CC BY 4.0 (第三者の値とウェブサイト規約に注意) |
+| [EDGAR](edgar/README.md)  `split` | 温室効果ガスと大気汚染物質の国別表と 0.1 度格子 | 国別 xlsx 約 29MB、格子は年別で約 83GiB | xlsx、NetCDF | CH4・N2O・F ガスは CC BY 4.0、化石 CO2 は CC BY-NC-ND 4.0 |
 | [e-Stat](estat/README.md)  `catalog` | 日本の政府統計の窓口。統計 GIS の機械可読目録、統計データ API 3.0、統計 LOD の三経路 | 境界データ 54 件で全国およそ 10.8GiB。LOD は 20.9 億トリプル | Shapefile / KML / GML の zip、JSON API、SPARQL | e-Stat 利用規約 (政府標準利用規約2.0 準拠)。LOD だけは別扱い |
 | [e-Stat 統計 LOD](estat/lod.md)  `catalog` | 政府統計を RDF Data Cube で。メッシュは GeoSPARQL のポリゴンつき | 2,086,445,173 トリプル / データセット 87 件。2010〜2019 年で止まっている | SPARQL (ダンプ無し) | CC BY 4.0 (VoID で機械可読に宣言) |
 | [World Bank](worldbank/README.md)  `range` | 世界銀行の開発指標 (WDI ほか)。`z.yuiseki.net/static/worldbank/` の上流 | データベース 71、指標 29,544。WDI_CSV.zip 282,845,220 バイト | CSV の zip (Range 可、中身は非圧縮)、JSON API | CC BY 4.0 に紛争解決の追加条項。一部は ODbL や再配布不可 |
