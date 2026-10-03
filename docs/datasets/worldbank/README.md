@@ -261,3 +261,18 @@ World Bank が推奨・関与していると示唆しないことも求められ
 - EN.ATM.CO2E.PC の上流である Climate Watch (WRI) 自身のライセンス。climatewatchdata.org の 2 つの URL を試したが 404 だった。
 - 第三者出典 (ILO, ITU, UNESCO, FAO, UN 系, OECD, Eurostat, LIS) の側の条件。
   WDI のメタデータに制限の記載が無いことだけを確かめた。記載が無いことを制限が無いと読むのは規約の文言に依った解釈。
+
+## Hugging Face の worldbank-wdi
+
+2026-10-04 に <https://huggingface.co/datasets/yuiseki/worldbank-wdi> へ置いた。コードは
+<https://github.com/yuiseki/wdi-to-parquet>。過去の版の取り方は [wdi-archives.md](wdi-archives.md)。
+
+- 版は世界銀行の一括 zip ごと。現行の `WDI_CSV.zip` は更新のたびに上書きされるので Last-Modified の日付で、
+  データカタログが残す `WDI_CSV_YYYY_MM_DD.zip` は名前の日付で呼ぶ。2026-10-04 時点で 7 版 (2024-05-30〜2026-10-01)。
+  カタログの 2026_10_01 は現行の zip と sha256 が同じだった。
+- 指標ごとのライセンス (WDISeries.csv の License Type) は版によって変わる。SIPRI の軍事支出は 2024-05-30 と
+  2026-10-01 では SIPRI の条件、その間の版では `CC BY-4.0`。IEA のエネルギーと WDPA の保護区は 2024-05-30 だけ
+  提供元の条件で、以後は `CC BY-4.0`。出典は変わっていない。そこで、どれかの版で CC BY 以外か空の 74 指標を全版から除いた。
+- 2026-02-25 の CSV は数値を有効数字 11 桁まで (多くは 10 桁) で書いている。ほかの版は 17 桁まで。
+- 2026-07-15 と 2026-10-01 は値が同じで、指標の説明だけが違う。
+- 脚注の Year は末尾に空白の付いたもの (2026-10-01 で 27,992 行) と小文字の yr2005 (92 行) が混ざる。

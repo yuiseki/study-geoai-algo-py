@@ -16,6 +16,7 @@
 | osm-wiki | 2026-09-17 | (なし) | (なし) | OSM Wiki 8 言語 78,178 ページの平文 (2026-01-30 ダンプ) | [osm-wiki.md](osm-wiki.md) |
 | osm-tag-corpus | 2026-09-07 | odbl | 10K-100K | OSM タグ 9,803 種の多言語説明と世界での使用回数 | [osm-tag-corpus.md](osm-tag-corpus.md) |
 | text2geoql | 2026-08-29 | odbl | 1K-10K | TRIDENT 中間言語から Overpass QL への合成対 4,897 件 | [text2geoql.md](text2geoql.md) |
+| worldbank-wdi | 2026-10-04 | cc-by-4.0 (世界銀行の紛争解決条項つき) | 1M-10M | WDI の一括 zip 7 版 (2024-05-30〜2026-10-01) を版ごとのサブセットで。縦持ちの値と指標説明・脚注の Parquet、作り直した CSV。どれかの版で CC BY 以外か空と表示された 74 指標 (SIPRI、IEA、WDPA、CC BY-NC など) を全版から除外。元の zip は置かない | [../worldbank/README.md](../worldbank/README.md) |
 | geonames | 2026-10-02 | cc-by-4.0 | 10M-100M | GeoNames のダンプを夜ごとの版で。サブセットは `20261001.geoname` など 4 つ。元の zip と型付きの Parquet (地名辞書は GeoParquet) | [../geonames/README.md](../geonames/README.md) |
 | meta-move-dist | 2026-10-02 | cc-by-4.0 | 10M-100M | Meta の Movement Distribution を HDX の 90 日を超えて保持。元の CSV と年ごとの Parquet (2026-06-01〜) | [../hdx-meta-movement/README.md](../hdx-meta-movement/README.md) |
 | meta-range-maps-2022-05 | 2026-10-02 | cc-by-4.0 | 10M-100M | Meta の Movement Range Maps (2020-03-01〜2022-05-22、終了済み)。元の zip と年ごとの Parquet | [../hdx-meta-movement/README.md](../hdx-meta-movement/README.md) |
