@@ -120,6 +120,10 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [Eurostat](eurostat/README.md)  `split` | 欧州の統計 7,600 表、NUTS 地域まで | 約 65 億値、gzip TSV で数〜15GB (推定) | TSV、SDMX、JSON-stat | 欧州委員会の再利用ポリシー。EU 外の国のデータは商用不可 |
 | [UNHCR 難民統計](unhcr/README.md)  `catalog` | 難民、庇護申請、庇護の決定。出身国と庇護国の組み合わせ | 1951〜2025 年、約 50 万行、CSV 約 55MB | API、HDX の CSV | CC BY 4.0 (第三者の値とウェブサイト規約に注意) |
 | [EDGAR](edgar/README.md)  `split` | 温室効果ガスと大気汚染物質の国別表と 0.1 度格子 | 国別 xlsx 約 29MB、格子は年別で約 83GiB | xlsx、NetCDF | CH4・N2O・F ガスは CC BY 4.0、化石 CO2 は CC BY-NC-ND 4.0 |
+| [FAOSTAT](faostat/README.md)  `split` | 農業、食料、貿易、土地利用、排出など 69 ドメイン。国と年 | 約 1.8 億行、zip で 1.4GB | zip の CSV (UTF-8) | CC BY 4.0 と FAO の追加条項 (宣伝の禁止、出典の書式、仲裁)。同名で上書き |
+| [UNDP 人間開発指数](undp-hdr/README.md)  `whole` | HDI、IHDI、GDI、GII、PHDI と構成要素。国 195 と集計 11 | 1990〜2023 年の CSV 1 本 2MB | CSV (Windows-1252) | CC BY 3.0 IGO。毎年全系列を計算し直す |
+| [Penn World Table と Maddison Project](penn-maddison/README.md)  `whole` | GDP、人口、資本、生産性。Maddison は西暦 1 年から | PWT 11.0 は 185 か国 41MB、MPD 2023 は 169 か国 | xlsx、dta | PWT 8.0 以降と MPD 2018 以降は CC BY 4.0 |
+| [IMF](imf/README.md)  `catalog` | WEO、物価、為替、国際収支、財政など。データフロー 223 | 現行 104 件で 907 万系列 | SDMX API (鍵なし)、WEO の Excel | IMF の規約。再配布は可だが商用・一括の自動取得・LLM 学習は許可制 (2024-11 に改定) |
 | [国土数値情報 鉄道 (N02)](ksj-n02-railway/README.md)  `split` | 全国の鉄道区間と駅 (線)。路線名、運営会社、事業者種別、駅名、駅コード | 2005〜2025 年度 (2009、2010 年度は無し)、全国 1 本の zip。2025 年度は区間 21,933、駅 10,234 | GML、GeoJSON、Shapefile (JGD2011。2014 年度以前は JGD2000) | 2020 年度以降オープンデータ (PDL1.0)、以前は商用可 (旧約款)。2005〜2014 年度は測量法の複製承認の下 |
 | [国土数値情報 地価公示 (L01)](ksj-l01-land-price/README.md)  `split` | 標準地の公示価格と属性。2014 年版から 1983 年以来の価格の履歴を同じ行に | 1983〜2026 年 (44 年)、2026 年は 26,000 地点。全年で約 330MB (全ファイル 2,120 本で 659MB) | GML、Shapefile、GeoJSON (2018 年から) | 2019 年以降オープンデータ (PDL1.0)、以前は商用可 (旧約款)。測量法の注記なし。修正は同名で上書き |
 | [不動産情報ライブラリ](mlit-reinfolib/README.md)  `split` | 不動産の取引価格 (アンケート) と成約価格 (レインズ)。所在地は町・大字まで | 取引約 592 万件 (2005 年第 3 四半期から)、成約約 67 万件 (2021 年第 1 四半期から) | CSV (画面から)、API (キーの申請が必要) | PDL1.0。レインズ側の著作権表示との関係は未確認 |
