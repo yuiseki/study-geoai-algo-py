@@ -17,6 +17,13 @@
 | osm-tag-corpus | 2026-09-07 | odbl | 10K-100K | OSM タグ 9,803 種の多言語説明と世界での使用回数 | [osm-tag-corpus.md](osm-tag-corpus.md) |
 | text2geoql | 2026-08-29 | odbl | 1K-10K | TRIDENT 中間言語から Overpass QL への合成対 4,897 件 | [text2geoql.md](text2geoql.md) |
 | worldbank-wdi | 2026-10-04 | cc-by-4.0 (世界銀行の紛争解決条項つき) | 1M-10M | WDI の一括 zip 7 版 (2024-05-30〜2026-10-01) を版ごとのサブセットで。縦持ちの値と指標説明・脚注の Parquet、作り直した CSV。どれかの版で CC BY 以外か空と表示された 74 指標 (SIPRI、IEA、WDPA、CC BY-NC など) を全版から除外。元の zip は置かない | [../worldbank/README.md](../worldbank/README.md) |
+| pwt | 2026-10-05 | cc-by-4.0 | 1M-10M | Penn World Table 8.0〜11.0 の 7 版。版と表ごとのサブセット 41。Stata のファイルから変換 | [../penn-maddison/README.md](../penn-maddison/README.md) |
+| maddison-project | 2026-10-05 | cc-by-4.0 | 100K-1M | Maddison Project 2018、2020、2023。版をまたいで積めない | [../penn-maddison/README.md](../penn-maddison/README.md) |
+| undp-hdr | 2026-10-05 | other (CC BY 3.0 IGO) | 100K-1M | 人間開発指数 HDR 2025。横持ちと縦持ち。毎年全系列を計算し直す | [../undp-hdr/README.md](../undp-hdr/README.md) |
+| unhcr-refugee-stats | 2026-10-05 | cc-by-4.0 | 100K-1M | UNHCR 難民統計の 5 系統と国の一覧 (取得日 2026-10-04)。第三者 (IDMC、UNRWA) は除外 | [../unhcr/README.md](../unhcr/README.md) |
+| env-redlist-jp | 2026-10-05 | cc-by-4.0 | 1K-10K | 環境省レッドリスト第 5 次の分類群 8 つ | [../env-redlist/README.md](../env-redlist/README.md) |
+| gsi-global-map-jp | 2026-10-05 | cc-by-4.0 (PDL1.0) | 10K-100K | 地球地図日本のベクタ 3 版 × 15 層を GeoParquet に、ラスタは元の zip | [../gsi-global-map-japan/README.md](../gsi-global-map-japan/README.md) |
+| ekidata-jp | 2026-10-05 | other (駅データ.jp 利用規約) | 10K-100K | 駅データ.jp の無料 CSV (駅、路線、事業者、接続駅) を日付の版ごとに。駅に点 | (study の資料なし) |
 | geonames | 2026-10-02 | cc-by-4.0 | 10M-100M | GeoNames のダンプを夜ごとの版で。サブセットは `20261001.geoname` など 4 つ。元の zip と型付きの Parquet (地名辞書は GeoParquet) | [../geonames/README.md](../geonames/README.md) |
 | meta-move-dist | 2026-10-02 | cc-by-4.0 | 10M-100M | Meta の Movement Distribution を HDX の 90 日を超えて保持。元の CSV と年ごとの Parquet (2026-06-01〜) | [../hdx-meta-movement/README.md](../hdx-meta-movement/README.md) |
 | meta-range-maps-2022-05 | 2026-10-02 | cc-by-4.0 | 10M-100M | Meta の Movement Range Maps (2020-03-01〜2022-05-22、終了済み)。元の zip と年ごとの Parquet | [../hdx-meta-movement/README.md](../hdx-meta-movement/README.md) |
