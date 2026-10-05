@@ -1,4 +1,4 @@
-"""Mirror 全国の人流オープンデータ (MLIT) as Parquet under /www/html/static/mlit-1km-fromto/.
+"""Mirror 全国の人流オープンデータ (MLIT) as Parquet under /sata_hdd_24tb/www/html/static/mlit-1km-fromto/.
 
 The dataset (https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto) is 94
 zip files, one per prefecture and kind, each holding one zip per month that
@@ -48,7 +48,7 @@ DATASET = "mlit-1km-fromto"
 API = f"https://www.geospatial.jp/ckan/api/3/action/package_show?id={DATASET}"
 PAGE = f"https://www.geospatial.jp/ckan/dataset/{DATASET}"
 PUBLIC_PREFIX = f"https://z.yuiseki.net/static/{DATASET}/"
-DEST = Path("/www/html/static") / DATASET
+DEST = Path("/sata_hdd_24tb/www/html/static") / DATASET
 SCRATCH = Path(tempfile.gettempdir()) / "study-geoai-mirror-mlit-jinryu"
 UA = f"study-geoai-algo-py-mirror/1 (+{PUBLIC_PREFIX})"
 # Cloudflare in front of z.yuiseki.net does not cache files above 512 MB and

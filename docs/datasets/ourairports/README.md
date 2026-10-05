@@ -166,7 +166,7 @@ split でもない。7 ファイルは地域で割ったものではなく、空
 
 上流は毎晩同じ URL の中身を差し替え、行に更新日の列が無い。分析を再現するにはその日のファイルを自分で残すしかないので、<https://z.yuiseki.net/static/ourairports/> に日付ごとのディレクトリで置いた。取得スクリプトは [scripts/mirror_ourairports.py](../../../scripts/mirror_ourairports.py)、テストは [tests/test_mirror_ourairports.py](../../../tests/test_mirror_ourairports.py)。定期実行はしていない。取りたい日に手で流す。
 
-- 置き場は yuisekin-z の `/www/html/static/ourairports/` で、nginx がこれを `https://z.yuiseki.net/static/ourairports/` として配る。
+- 置き場は yuisekin-z の `/sata_hdd_24tb/www/html/static/ourairports/` で、nginx がこれを `https://z.yuiseki.net/static/ourairports/` として配る。
 - 取るのは GitHub の最新 commit で、ファイルは `raw.githubusercontent.com/<sha>/` から引く。GitHub Pages の URL は中身が差し替わるので使わない。落としたファイルは、その commit の tree にある git blob の SHA-1 と大きさで照合してから置く。
 - ディレクトリ名は commit の UTC の日付。最初の 1 本は 2026-10-01 (commit `b6268327`、airports は 86,154 行で、9-30 の 86,153 行から 1 行増えた)。
 - 中身は `csv/` (元の 7 ファイルをそのまま)、7 つの Parquet、`manifest.json`。airports と navaids は `geometry` 列 (点) を足した GeoParquet 1.0.0。合わせて 32MB。

@@ -13,8 +13,8 @@ target size but not always their exact boundaries: a file written in parallel
 has a few short groups, and a rewrite on one thread does not reproduce them.
 The rows are in the same order, so the statistics skip the same way.
 
-    uv run python scripts/rewrite_parquet_without_bloom.py /www/html/static/ksj/*/*.parquet \
-        --doc=/www/html/static/ksj/README.md
+    uv run python scripts/rewrite_parquet_without_bloom.py /sata_hdd_24tb/www/html/static/ksj/*/*.parquet \
+        --doc=/sata_hdd_24tb/www/html/static/ksj/README.md
 """
 
 from __future__ import annotations

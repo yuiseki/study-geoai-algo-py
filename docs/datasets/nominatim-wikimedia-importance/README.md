@@ -1,6 +1,6 @@
 # Nominatim の Wikipedia 重要度表 (wikimedia-importance.csv.gz)
 
-2026-10-02 に読んで確かめた内容。行数、言語、値の分布は z.yuiseki.net に置いた写し (`/www/html/static/wikimedia/wikimedia-importance.csv.gz`) を zcat で全体ストリーム展開し、awk で数えた値 (ディスクには何も書いていない。1 回の走査は約 19 秒)。配布元の大きさは HEAD とディレクトリ一覧、写しの同定は Wayback Machine の記録から。
+2026-10-02 に読んで確かめた内容。行数、言語、値の分布は z.yuiseki.net に置いた写し (`/sata_hdd_24tb/www/html/static/wikimedia/wikimedia-importance.csv.gz`) を zcat で全体ストリーム展開し、awk で数えた値 (ディスクには何も書いていない。1 回の走査は約 19 秒)。配布元の大きさは HEAD とディレクトリ一覧、写しの同定は Wayback Machine の記録から。
 
 - Wikipedia 39 言語版の記事名とリダイレクト名ごとに、0 から 1 の重要度 (importance) と Wikidata ID を並べた表。OpenStreetMap のジオコーダ Nominatim が、同じ名前の地名の順位付けに使う。
 - 作成のコードは GitHub の osm-search/wikipedia-wikidata (<https://github.com/osm-search/wikipedia-wikidata>)。Nominatim の開発者コミュニティのもので、README には 2019 年の Google Summer of Code で tchaddad 氏が書き直した経緯がある。配布は nominatim.org。文書のフッタは "Copyright © Nominatim developer community"。
@@ -147,7 +147,7 @@ whole。gzip 1 本で、言語や行を選ぶ索引が無い。2026-10-02 に実
 
 ## z.yuiseki.net の写し
 
-`https://z.yuiseki.net/static/wikimedia/wikimedia-importance.csv.gz` (yuisekin-z の `/www/html/static/wikimedia/`) に 1 本だけ置いてある。nominatim.org が 2024-08-07 から 2025-08 頃まで配布していた `wikimedia-importance-2024-08.csv.gz` と、バイト単位で同じもの。
+`https://z.yuiseki.net/static/wikimedia/wikimedia-importance.csv.gz` (yuisekin-z の `/sata_hdd_24tb/www/html/static/wikimedia/`) に 1 本だけ置いてある。nominatim.org が 2024-08-07 から 2025-08 頃まで配布していた `wikimedia-importance-2024-08.csv.gz` と、バイト単位で同じもの。
 
 | 項目 | 値 | 根拠 |
 |---|---|---|

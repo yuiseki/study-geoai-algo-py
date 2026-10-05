@@ -1,6 +1,6 @@
 # Geo-PKO 2.3 (Geocoded Peacekeeping Operations)
 
-2026-10-02 に読んで確かめた内容。件数と列は yuisekin-z の `/www/html/static/csv/Geo_PKO_v2_3_location_map.csv` を DuckDB 1.5.5 と Python の csv モジュールで読んで数えた値。配布元との照合、ライセンスの所在の調査は同日の来歴調査の結果。codebook は PDF を取得して本文を読んだ。
+2026-10-02 に読んで確かめた内容。件数と列は yuisekin-z の `/sata_hdd_24tb/www/html/static/csv/Geo_PKO_v2_3_location_map.csv` を DuckDB 1.5.5 と Python の csv モジュールで読んで数えた値。配布元との照合、ライセンスの所在の調査は同日の来歴調査の結果。codebook は PDF を取得して本文を読んだ。
 
 - 国連平和維持活動 (PKO) の部隊展開を、地点単位で記録したデータセット。1 行は「あるミッションの、ある配置図 (年月) における、ある展開地点」。地点名、座標、部隊の規模と種類、司令部、派遣国 (TCC) などを持つ。
 - 作成者は Deniz Cil (University of Maryland)、Hanne Fjelde、Lisa Hultman、Desirée Nilsson (Uppsala University, Department of Peace and Conflict Research)。出典は Dashboard リポジトリの about.md (<https://github.com/geopko/Geo-PKO-Shiny-Dashboard/blob/HEAD/about.md>)。
@@ -154,7 +154,7 @@ whole。1 ファイル 12,500,418 バイトの CSV を丸ごと取る。2026-10-
 
 <https://z.yuiseki.net/static/csv/Geo_PKO_v2_3_location_map.csv> に location-map の CSV が 1 つだけある。ディレクトリの説明は [z-yuiseki-static/csv.md](../z-yuiseki-static/csv.md)。
 
-- 実体は yuisekin-z の `/www/html/static/csv/Geo_PKO_v2_3_location_map.csv`。Last-Modified は `Sat, 04 Oct 2025 01:46:37 GMT`。
+- 実体は yuisekin-z の `/sata_hdd_24tb/www/html/static/csv/Geo_PKO_v2_3_location_map.csv`。Last-Modified は `Sat, 04 Oct 2025 01:46:37 GMT`。
 - 12,500,418 バイト、SHA-256 `1db2da8e691a57db7f8aac671ad6ce6de93741e5a8813add36be35d700b39ff9`、MD5 `924659ee85a3f06f551482df8392eaab`。
 - UU の配布版をメモリ上で取得して比べ、バイト単位で一致した (差分 0 バイト、SHA-256 も一致)。最初の 1 回だけ計測側のパイプラインで別のハッシュが出たが、その後の 3 回はすべて上の値に一致した。
 - ファイル名は配布の `Geo_PKO_v.2.3_...` から `Geo_PKO_v2_3_...` に変わっている。中身は同じなので、取得後に改名したものと見られる。

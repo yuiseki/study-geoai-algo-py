@@ -1,4 +1,4 @@
-"""Mirror WorldPop rasters as Cloud Optimized GeoTIFFs under /www/html/static/worldpop/.
+"""Mirror WorldPop rasters as Cloud Optimized GeoTIFFs under /sata_hdd_24tb/www/html/static/worldpop/.
 
 data.worldpop.org advertises Accept-Ranges but ignores Range and always sends
 the whole file with 200, slowly, so GDAL's /vsicurl/ cannot open it. This
@@ -68,7 +68,7 @@ from study_geoai import gdal
 STAC_SEARCH = "https://api.stac.worldpop.org/search"
 SOURCE_PREFIX = "https://data.worldpop.org/"
 PUBLIC_PREFIX = "https://z.yuiseki.net/static/worldpop/"
-DEST = Path("/www/html/static/worldpop")
+DEST = Path("/sata_hdd_24tb/www/html/static/worldpop")
 SCRATCH = Path(tempfile.gettempdir()) / "study-geoai-mirror-worldpop"
 # Cloudflare in front of z.yuiseki.net does not cache files above 512 MB and
 # then answers the first Range request with the whole body.

@@ -1,6 +1,6 @@
 # UCDP GED (Georeferenced Event Dataset) 25.1
 
-2026-10-02 に読んで確かめた内容。大きさと Last-Modified は HEAD と `curl -r 0-1023` の応答、件数と列は yuisekin-z にある複製 `/www/html/static/ucdp/GEDEvent_v25_1.csv` を DuckDB 1.5.5 (`read_csv(..., sample_size = -1)`) で数えた値、列の意味は codebook 25.1 (`https://ucdp.uu.se/downloads/ged/ged251.pdf`、52 ページ) から。分布の一部は [z-yuiseki-static/ucdp.md](../z-yuiseki-static/ucdp.md) (2026-09-28 に数えたもの) から引いた。
+2026-10-02 に読んで確かめた内容。大きさと Last-Modified は HEAD と `curl -r 0-1023` の応答、件数と列は yuisekin-z にある複製 `/sata_hdd_24tb/www/html/static/ucdp/GEDEvent_v25_1.csv` を DuckDB 1.5.5 (`read_csv(..., sample_size = -1)`) で数えた値、列の意味は codebook 25.1 (`https://ucdp.uu.se/downloads/ged/ged251.pdf`、52 ページ) から。分布の一部は [z-yuiseki-static/ucdp.md](../z-yuiseki-static/ucdp.md) (2026-09-28 に数えたもの) から引いた。
 
 - 作成はスウェーデンのウプサラ大学 平和・紛争研究学部の Uppsala Conflict Data Program (UCDP)。codebook の表紙に「The current version of the dataset is 25.1」「Data extracted from UCDP systems on 2025-03-19」「This version compiled and updated by Stina Högbladh (2025)」とある。
 - 組織的暴力の出来事 1 件を 1 行とし、場所 (村や町の単位まで)、日付 (日の単位まで)、死者数の推定 (best、high、low) を持つ。codebook の出来事の定義は「An incident where armed force was used by an organized actor against another organized actor, or against civilians, resulting in at least 1 direct death at a specific location and a specific date」。
@@ -136,7 +136,7 @@ DuckDB の既定の型推定では読めない。 既定の `read_csv` は `gwno
 
 ## z.yuiseki.net の複製
 
-`https://z.yuiseki.net/static/ucdp/` に `ged251-csv.zip` と、それを展開した `GEDEvent_v25_1.csv` がある。置き場は yuisekin-z の `/www/html/static/ucdp/`。詳しくは [z-yuiseki-static/ucdp.md](../z-yuiseki-static/ucdp.md)。
+`https://z.yuiseki.net/static/ucdp/` に `ged251-csv.zip` と、それを展開した `GEDEvent_v25_1.csv` がある。置き場は yuisekin-z の `/sata_hdd_24tb/www/html/static/ucdp/`。詳しくは [z-yuiseki-static/ucdp.md](../z-yuiseki-static/ucdp.md)。
 
 - zip は正本、手元、公開 URL の 3 つで大きさ (29,307,888 バイト) と Last-Modified (2025-06-11 09:43:52 GMT) が一致する。手元の zip の sha256 は `e256f1fb20a579d8b2f910e5bae212f486d3002adaa2e4359ace740c737da05d`。
 - UCDP はチェックサムを公開していない。2026-10-02 に正本を丸ごと取り直し、sha256 が手元の zip と一致した (`e256f1fb...`)。バイト単位で同じ。

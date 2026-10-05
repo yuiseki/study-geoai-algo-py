@@ -1,4 +1,4 @@
-"""Mirror four CC BY datasets of AI for Good at Meta on HDX under /www/html/static/hdx-meta/.
+"""Mirror four CC BY datasets of AI for Good at Meta on HDX under /sata_hdd_24tb/www/html/static/hdx-meta/.
 
 HDX (https://data.humdata.org/) answers plain fetches of its pages with 403,
 but the CKAN API works with a User-Agent, and every resource URL redirects to
@@ -40,7 +40,7 @@ from typing import IO
 API = "https://data.humdata.org/api/3/action/package_show?id={}"
 PAGE = "https://data.humdata.org/dataset/{}"
 PUBLIC_PREFIX = "https://z.yuiseki.net/static/hdx-meta/"
-DEST = Path("/www/html/static/hdx-meta")
+DEST = Path("/sata_hdd_24tb/www/html/static/hdx-meta")
 SCRATCH = Path("/tmp/study-geoai-mirror-hdx-meta")
 UA = f"study-geoai-algo-py-mirror/1 (+{PUBLIC_PREFIX})"
 # Cloudflare in front of z.yuiseki.net does not cache files above 512 MB and

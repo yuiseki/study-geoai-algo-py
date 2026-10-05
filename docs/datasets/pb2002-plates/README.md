@@ -1,6 +1,6 @@
 # PB2002 プレート境界 (fraxen/tectonicplates の GeoJSON)
 
-2026-10-02 に読んで確かめた内容。中身の数字は yuisekin-z の `/www/html/static/geojson/tectonicplates_GeoJSON_PB2002_boundaries.json` を Python の json で読んで数えた値。配布元との一致は sha256sum と git blob SHA-1 (GitHub の contents API)、取り出し方は `curl -r 0-1023` の応答から。ライセンスの原文は各 URL を同じ日に読んだもの。
+2026-10-02 に読んで確かめた内容。中身の数字は yuisekin-z の `/sata_hdd_24tb/www/html/static/geojson/tectonicplates_GeoJSON_PB2002_boundaries.json` を Python の json で読んで数えた値。配布元との一致は sha256sum と git blob SHA-1 (GitHub の contents API)、取り出し方は `curl -r 0-1023` の応答から。ライセンスの原文は各 URL を同じ日に読んだもの。
 
 - Peter Bird (UCLA) の全球のプレート境界モデル PB2002 (52 プレート) のうち、境界線 (boundaries) を GeoJSON にしたもの。1 地物が境界の 1 区間で、両側のプレートの略号と、沈み込み帯かどうかが付く。
 - 系譜は 3 段。
@@ -122,7 +122,7 @@ orogen の注意書きが落ちる。 Bird のページは、Persia-Tibet-Burma 
 
 ## z.yuiseki.net のコピー
 
-- yuisekin-z の `/www/html/static/geojson/tectonicplates_GeoJSON_PB2002_boundaries.json` を、nginx が <https://z.yuiseki.net/static/geojson/tectonicplates_GeoJSON_PB2002_boundaries.json> として配っている。置いてあるのは boundaries の 1 ファイルだけ。ディレクトリ全体のことは [z-yuiseki-static/geojson.md](../z-yuiseki-static/geojson.md) にある。
+- yuisekin-z の `/sata_hdd_24tb/www/html/static/geojson/tectonicplates_GeoJSON_PB2002_boundaries.json` を、nginx が <https://z.yuiseki.net/static/geojson/tectonicplates_GeoJSON_PB2002_boundaries.json> として配っている。置いてあるのは boundaries の 1 ファイルだけ。ディレクトリ全体のことは [z-yuiseki-static/geojson.md](../z-yuiseki-static/geojson.md) にある。
 - 大きさは 226,378 バイト、Last-Modified は `Sat, 04 Oct 2025 01:51:49 GMT` (ファイルの mtime は 2025-10-04 10:51:49 +0900)。
 - 中身は fraxen/tectonicplates の `GeoJSON/PB2002_boundaries.json` をそのまま名前だけ変えたもの。根拠は次の 3 つ (調査報告による。手元の SHA-256 はこの文書のために計算し直して同じ値だった)。
   - git blob SHA-1 が両方 43acb5894299e203ae3a4a57ef5afc2b5c329221 (手元は `git hash-object`、配布元は GitHub の contents API)。

@@ -185,7 +185,7 @@ split。国ごとに zip が分かれていて、必要な国だけ引ける。�
 
 上流は毎日同じ URL の中身を差し替え、過去の版は有料の購読でしか残らない。CC BY 4.0 なので、その日のダンプを元のまま残し、Parquet を添えて <https://z.yuiseki.net/static/geonames/> に日付ごとのディレクトリで置いた。取得スクリプトは [scripts/mirror_geonames.py](../../../scripts/mirror_geonames.py)、テストは [tests/test_mirror_geonames.py](../../../tests/test_mirror_geonames.py)。定期実行はしていない。取りたい日に手で流す。
 
-- 置き場は yuisekin-z の `/www/html/static/geonames/` で、nginx がこれを `https://z.yuiseki.net/static/geonames/` として配る。
+- 置き場は yuisekin-z の `/sata_hdd_24tb/www/html/static/geonames/` で、nginx がこれを `https://z.yuiseki.net/static/geonames/` として配る。
 - ディレクトリ名は allCountries.zip の Last-Modified の UTC の日付。最初の 1 本は 2026-10-01 (Last-Modified は `Thu, 01 Oct 2026 02:08:51 GMT`)。
 - 置いたのは allCountries.zip、alternateNamesV2.zip、hierarchy.zip、adminCode5.zip と小さい表 6 つ、readme.txt。国別の zip と cities は allCountries の部分集合なので置いていない。旧版の alternateNames.zip も置いていない。
 - Parquet は `geoname/part-00〜03.parquet` (地名辞書、GeoParquet 1.0.0、`geometry` は点)、`alternate_names.parquet`、`hierarchy.parquet`、`admin_code5.parquet`。合わせて 1.3GB (raw を含む)。

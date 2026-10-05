@@ -1,6 +1,6 @@
 # TeleGeography Submarine Cable Map (cable-geo.json)
 
-2026-10-02 に読んで確かめた内容。ローカルの写し (`/www/html/static/geojson/cable-geo.json`) は丸ごと Python の json で読んで数えた。現在の配布元の大きさと Last-Modified は HEAD と `curl -r 0-1023` の応答、現行版の地物数は 2026-10-02 04:40 UTC に配布元から取った本文をメモリ上で数えた値。ライセンスの文言は TeleGeography の各ページ、submarinecablemap.com の JS バンドル、Wayback Machine の取得分から。
+2026-10-02 に読んで確かめた内容。ローカルの写し (`/sata_hdd_24tb/www/html/static/geojson/cable-geo.json`) は丸ごと Python の json で読んで数えた。現在の配布元の大きさと Last-Modified は HEAD と `curl -r 0-1023` の応答、現行版の地物数は 2026-10-02 04:40 UTC に配布元から取った本文をメモリ上で数えた値。ライセンスの文言は TeleGeography の各ページ、submarinecablemap.com の JS バンドル、Wayback Machine の取得分から。
 
 - 海底通信ケーブルの経路線の GeoJSON。TeleGeography (法人名 PriMetrica, Inc. dba TeleGeography、米国の通信調査会社) が無料で公開している地図 Submarine Cable Map (<https://www.submarinecablemap.com>) の表示用データ。
 - 経路は測量した実経路ではなく、TeleGeography が手で描いたもの。FAQ (<https://www2.telegeography.com/submarine-cable-faqs-frequently-asked-questions>) に「TeleGeography draws the cable routes and plots the landing points with Adobe Illustrator . Using Avenza's MAPublisher plug-in, which works with Illustrator, two sets of data are exported as GeoJSON files: the cable routes and landing points.」とある。
@@ -125,7 +125,7 @@ Submarine Cable FAQ (<https://www2.telegeography.com/submarine-cable-faqs-freque
 
 ## z.yuiseki.net
 
-- `https://z.yuiseki.net/static/geojson/cable-geo.json` に 1 本だけある。実体は yuisekin-z の `/www/html/static/geojson/cable-geo.json` で、708,963 バイト、mtime は 2025-09-20 14:08 (JST)。`curl -r 0-1023` は 206 を返した。
+- `https://z.yuiseki.net/static/geojson/cable-geo.json` に 1 本だけある。実体は yuisekin-z の `/sata_hdd_24tb/www/html/static/geojson/cable-geo.json` で、708,963 バイト、mtime は 2025-09-20 14:08 (JST)。`curl -r 0-1023` は 206 を返した。
 - 中身は TeleGeography の API が 2025 年 7 月中旬から 8 月末まで配っていた版と同じ。根拠は、ローカルの SHA-1 (base32 で `EBR3JJE6PWU6HXUSIBHYVRGHWHYLEFMX`) が、Wayback Machine の CDX で `www.submarinecablemap.com/api/v3/cable/cable-geo.json` の digest と一致するのが 2025-07-17 から 2025-08-28 の取得分だけで、直前 (2025-07-10) と直後 (2025-08-31) は別の digest だったこと。
 - mtime の 2025-09-20 は写した日と考えられるが、取得した日そのものは未確認。取得したときに利用条件へ同意した記録は無い。
 - 同じディレクトリの他のファイルは [z-yuiseki-static/geojson.md](../z-yuiseki-static/geojson.md)。

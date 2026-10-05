@@ -120,7 +120,7 @@ ComCat のイベント API は、期間 (`starttime`、`endtime`)、矩形の範
 
 置いてあるのは 2025-09-22 の版の 1 本だけ。詳しくは [geojson](../z-yuiseki-static/geojson.md)。
 
-- `https://z.yuiseki.net/static/geojson/usgs_m45_month.geojson`。実体は yuisekin-z の `/www/html/static/geojson/usgs_m45_month.geojson`。
+- `https://z.yuiseki.net/static/geojson/usgs_m45_month.geojson`。実体は yuisekin-z の `/sata_hdd_24tb/www/html/static/geojson/usgs_m45_month.geojson`。
 - 2026-10-02 の HEAD は 200、`Content-Length` 425,000、`Last-Modified` は `Sat, 04 Oct 2025 01:46:47 GMT`。これはサーバに置いた日で、生成日 (2025-09-22) とは別。
 - ローカルの sha256 は上の値と同じで、公開 URL から取ったものも同じハッシュだった (来歴調査で確認)。
 - フィードを定期的に取って溜める仕組みは無い。置かれているのはこの 1 時点だけ。

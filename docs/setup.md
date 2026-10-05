@@ -80,7 +80,7 @@
 
 - GDAL のコマンド (ogr2ogr など) は rasterio に入っていないので、別に入れた GDAL を使う ([gdal](../src/study_geoai/gdal.py))。場所は環境変数 `STUDY_GEOAI_GDAL_PREFIX` (bin/ を含むディレクトリ) で指定し、無ければ PATH の ogr2ogr から探す。使うのは OpenCelliD の読み込み (003-D、003-E) と WorldPop のミラーだけ。
 
-[scripts/](../scripts/) のスクリプトは z.yuiseki.net/static/ のミラーを作り直すためのもので、書き込み先はそのサーバーの `/www/html/static/`。実験を動かすだけなら要らない (実験は公開されたミラーを読む)。
+[scripts/](../scripts/) のスクリプトは z.yuiseki.net/static/ のミラーを作り直すためのもので、書き込み先はそのサーバーの `/sata_hdd_24tb/www/html/static/`。実験を動かすだけなら要らない (実験は公開されたミラーを読む)。
 
 ## highspy は ortools の中の HiGHS に合わせて固定する
 

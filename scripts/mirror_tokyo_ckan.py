@@ -1,4 +1,4 @@
-"""Mirror facility CSVs of the 23 wards of Tokyo under /www/html/static/tokyo-ckan-files/.
+"""Mirror facility CSVs of the 23 wards of Tokyo under /sata_hdd_24tb/www/html/static/tokyo-ckan-files/.
 
 The files are listed in the Tokyo Open Data Catalog (CKAN), indexed as a static
 STAC at https://stac.yuiseki.net/tokyo-ckan/, but they live on each ward's own
@@ -35,7 +35,7 @@ from study_geoai.db import connect
 
 ITEMS = "https://stac.yuiseki.net/tokyo-ckan/items.parquet"
 ASSETS = "https://stac.yuiseki.net/tokyo-ckan/assets.parquet"
-DEST = Path("/www/html/static/tokyo-ckan-files")
+DEST = Path("/sata_hdd_24tb/www/html/static/tokyo-ckan-files")
 PUBLIC = "https://z.yuiseki.net/static/tokyo-ckan-files"
 UA = "study-geoai-algo-py-mirror/1 (+https://z.yuiseki.net/static/tokyo-ckan-files/)"
 MAX_BYTES = 50 * 1024 * 1024

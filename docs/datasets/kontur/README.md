@@ -1,6 +1,6 @@
 # Kontur Population (2023-11-01 版)
 
-2026-10-02 に読んで確かめた内容。中身は yuisekin-z の `/www/html/static/kontur/kontur_population_20231101.gpkg` を sqlite3 で読み取り専用 (`?mode=ro`) で開いて数えた値。来歴とライセンスは HDX の CKAN API (`package_show`)、取得元 S3 への HEAD と Range 要求、kontur.io と HDX のライセンス説明ページから。取り出し方は `curl -r 0-1023` で実測した。
+2026-10-02 に読んで確かめた内容。中身は yuisekin-z の `/sata_hdd_24tb/www/html/static/kontur/kontur_population_20231101.gpkg` を sqlite3 で読み取り専用 (`?mode=ro`) で開いて数えた値。来歴とライセンスは HDX の CKAN API (`package_show`)、取得元 S3 への HEAD と Range 要求、kontur.io と HDX のライセンス説明ページから。取り出し方は `curl -r 0-1023` で実測した。
 
 - Kontur (`https://www.kontur.io/`) が作った全球の人口分布。H3 の六角形 (解像度 8、約 400m) ごとに人が何人いるかをベクタで持つ。
 - 配布は HDX (Humanitarian Data Exchange) のデータセット `kontur-population-dataset` (id `38f46aa9-00dd-4ac9-98c9-5ecaea384c9f`)。タイトルは「Kontur Population: Global Population Density for 400m H3 Hexagons」。実体は Kontur の S3 に置かれた `kontur_population_20231101.gpkg.gz`。
@@ -109,7 +109,7 @@ Range が通っても部分読みにはならない。
 
 ## z.yuiseki.net
 
-`https://z.yuiseki.net/static/kontur/` に、配布元の .gz と、それを展開した .gpkg と、取得ログの 3 つがある。置き場は yuisekin-z の `/www/html/static/kontur/`。詳しくは [z-yuiseki-static/kontur.md](../z-yuiseki-static/kontur.md)。
+`https://z.yuiseki.net/static/kontur/` に、配布元の .gz と、それを展開した .gpkg と、取得ログの 3 つがある。置き場は yuisekin-z の `/sata_hdd_24tb/www/html/static/kontur/`。詳しくは [z-yuiseki-static/kontur.md](../z-yuiseki-static/kontur.md)。
 
 | ファイル | バイト数 | Last-Modified (GMT) |
 |---|---:|---|

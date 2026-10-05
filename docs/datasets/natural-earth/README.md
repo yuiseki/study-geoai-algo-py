@@ -117,7 +117,7 @@ Range 自体は 206 を返すが、zip の目録は末尾にある。4,930,460 �
 | README.md | 1,979 | 4,692 | |
 | CHANGELOG | 35,037 | 149,106 | |
 
-z.yuiseki.net に置いてあるコピー (`/www/html/static/gpkg/natural_earth_vector.gpkg`、`https://z.yuiseki.net/static/gpkg/`、Last-Modified 2025-10-04 01:52:18 GMT) は、ファイル全体の CRC-32 が 0x47115ba4、大きさが 885,293,056 バイトで、どちらも zip の記録と一致した。`gpkg_contents.last_change` も全レイヤーが 2022-05-13T22:59 から 23:00 (UTC) で、GitHub の v5.1.2 リリース (2022-05-13T23:24:34Z) の直前。配布物を展開して無改変で置いたものと判断している。
+z.yuiseki.net に置いてあるコピー (`/sata_hdd_24tb/www/html/static/gpkg/natural_earth_vector.gpkg`、`https://z.yuiseki.net/static/gpkg/`、Last-Modified 2025-10-04 01:52:18 GMT) は、ファイル全体の CRC-32 が 0x47115ba4、大きさが 885,293,056 バイトで、どちらも zip の記録と一致した。`gpkg_contents.last_change` も全レイヤーが 2022-05-13T22:59 から 23:00 (UTC) で、GitHub の v5.1.2 リリース (2022-05-13T23:24:34Z) の直前。配布物を展開して無改変で置いたものと判断している。
 
 - CRC-32 は暗号学的ハッシュではない。sha256 での照合は zip 本体を落とす必要があるので行っていない (未確認)。
 - z.yuiseki.net に置いたときの取得手順と取得元 URL の記録は見つけていない (未確認)。

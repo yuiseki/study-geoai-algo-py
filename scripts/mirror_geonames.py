@@ -1,4 +1,4 @@
-"""Mirror a dated snapshot of the GeoNames dump under /www/html/static/geonames/YYYY-MM-DD/.
+"""Mirror a dated snapshot of the GeoNames dump under /sata_hdd_24tb/www/html/static/geonames/YYYY-MM-DD/.
 
 GeoNames (https://download.geonames.org/export/dump/) rebuilds its dump every
 night at the same URLs, with no version number or checksum; past versions are
@@ -46,7 +46,7 @@ import duckdb
 BASE = "https://download.geonames.org/export/dump/"
 PAGE = "https://www.geonames.org/"
 PUBLIC_PREFIX = "https://z.yuiseki.net/static/geonames/"
-DEST = Path("/www/html/static/geonames")
+DEST = Path("/sata_hdd_24tb/www/html/static/geonames")
 SCRATCH = Path(tempfile.gettempdir()) / "study-geoai-mirror-geonames"
 UA = f"study-geoai-algo-py-mirror/1 (+{PUBLIC_PREFIX})"
 # Cloudflare in front of z.yuiseki.net does not cache files above 512 MB and

@@ -1,4 +1,4 @@
-"""Mirror the e-Stat boundary data as GeoParquet under /www/html/static/estat-boundary/.
+"""Mirror the e-Stat boundary data as GeoParquet under /sata_hdd_24tb/www/html/static/estat-boundary/.
 
 e-Stat's statistical GIS (https://www.e-stat.go.jp/gis/statmap-search?type=2)
 serves 54 boundary datasets (docs/datasets/estat/boundary-catalog.tsv) as one
@@ -51,7 +51,7 @@ CATALOG = ROOT / "docs" / "datasets" / "estat" / "boundary-catalog.tsv"
 SEARCH = "https://www.e-stat.go.jp/gis/statmap-search?type=2"
 DATA = "https://www.e-stat.go.jp/gis/statmap-search/data"
 PUBLIC_PREFIX = "https://z.yuiseki.net/static/estat-boundary/"
-DEST = Path("/www/html/static/estat-boundary")
+DEST = Path("/sata_hdd_24tb/www/html/static/estat-boundary")
 SCRATCH = Path(tempfile.gettempdir()) / "study-geoai-mirror-estat-boundary"
 UA = f"study-geoai-algo-py-mirror/1 (+{PUBLIC_PREFIX})"
 # Cloudflare in front of z.yuiseki.net does not cache files above 512 MB and

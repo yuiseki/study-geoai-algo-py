@@ -1,4 +1,4 @@
-"""Mirror a dated snapshot of OurAirports under /www/html/static/ourairports/YYYY-MM-DD/.
+"""Mirror a dated snapshot of OurAirports under /sata_hdd_24tb/www/html/static/ourairports/YYYY-MM-DD/.
 
 OurAirports (https://ourairports.com/data/) rebuilds its 7 CSVs every night in
 the GitHub repository davidmegginson/ourairports-data, at the same URLs. The
@@ -39,7 +39,7 @@ import duckdb
 REPO = "davidmegginson/ourairports-data"
 PAGE = "https://ourairports.com/data/"
 PUBLIC_PREFIX = "https://z.yuiseki.net/static/ourairports/"
-DEST = Path("/www/html/static/ourairports")
+DEST = Path("/sata_hdd_24tb/www/html/static/ourairports")
 SCRATCH = Path(tempfile.gettempdir()) / "study-geoai-mirror-ourairports"
 UA = f"study-geoai-algo-py-mirror/1 (+{PUBLIC_PREFIX})"
 FILES = [
