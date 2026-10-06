@@ -207,7 +207,7 @@ places.parquet では lat と lon の列が合わせて 184 MB あり、ファ�
    - 期待効果：places の国単位の取得は 1〜数 RG になる。lat/lon が空間的に近い順に並ぶので、2 列の 184 MB はかなり縮む見込みである（どこまで縮むかは実測が要る）。names の qid 引きは 1 RG になる。
 4. jp-admin-2026-09（municipalities 149 MB、prefectures 80 MB）
    - 現状：どちらも 1 RG で、geometry 列が 1 つの列チャンクに入っている。市区町村 1 つのポリゴンを Hub から取るにも 149 MB を読む。`geo` メタデータもない。
-   - 案：lg_code 順のまま、RG を都道府県ごと程度（数十行、数 MB）に切る。`geo` メタデータ（JGD2011 なら EPSG:6668 の PROJJSON）と bbox 列を加える。
+   - 案：lg_code 順のまま、RG を都道府県ごと程度（数十行、数 MB）に切る。`geo` メタデータと bbox 列を加える。CRS は元の境界 Shapefile の .prj が 47 本とも JGD2000 で、EPSG:4612 だった (2026-10-06 に確かめた。当初この欄に書いた EPSG:6668 は誤り)。
    - 期待効果：市区町村 1 つ、または都道府県 1 つの取得が全体の約 1/47 の読み取りで済む。GIS ツールがジオメトリを自動認識する。
 5. worldbank-wdi `data.parquet`（7 版 × 約 50 MB）
    - 現状：indicator_code で整列しているので指標 1 つなら 2/88 RG だが、国 1 つや年 1 つでは 88/88 RG を読む。
