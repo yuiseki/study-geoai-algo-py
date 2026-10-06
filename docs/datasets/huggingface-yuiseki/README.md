@@ -21,6 +21,7 @@
 | maddison-project | 2026-10-05 | cc-by-4.0 | 100K-1M | Maddison Project 2018、2020、2023。版をまたいで積めない | [../penn-maddison/README.md](../penn-maddison/README.md) |
 | undp-hdr | 2026-10-05 | other (CC BY 3.0 IGO) | 100K-1M | 人間開発指数 HDR 2025。横持ちと縦持ち。毎年全系列を計算し直す | [../undp-hdr/README.md](../undp-hdr/README.md) |
 | unhcr-refugee-stats | 2026-10-05 | cc-by-4.0 | 100K-1M | UNHCR 難民統計の 5 系統と国の一覧 (取得日 2026-10-04)。第三者 (IDMC、UNRWA) は除外 | [../unhcr/README.md](../unhcr/README.md) |
+| un-statistical-yearbook | 2026-10-06 | other (UNdata の規約と元の機関の規約) | 100K-1M | 国連統計年鑑の CSV (SYB68 32 表、SYB61 1 表)。行ごとの出典の機関の規約で再配布できる行だけ (22 表 105,902 行)。WHO、ITU、IMF、IUCN、UNODC、UN Tourism、WIPO、IPU、UNEP-WCMC は除外、UIS は CC BY-SA 4.0 | [../undata/README.md](../undata/README.md) |
 | env-redlist-jp | 2026-10-05 | cc-by-4.0 | 1K-10K | 環境省レッドリスト第 5 次の分類群 8 つ | [../env-redlist/README.md](../env-redlist/README.md) |
 | gsi-global-map-jp | 2026-10-05 | cc-by-4.0 (PDL1.0) | 10K-100K | 地球地図日本のベクタ 3 版 × 15 層を GeoParquet に、ラスタは元の zip | [../gsi-global-map-japan/README.md](../gsi-global-map-japan/README.md) |
 | ekidata-jp | 2026-10-05 | other (駅データ.jp 利用規約) | 10K-100K | 駅データ.jp の無料 CSV (駅、路線、事業者、接続駅) を日付の版ごとに。駅に点 | (study の資料なし) |
