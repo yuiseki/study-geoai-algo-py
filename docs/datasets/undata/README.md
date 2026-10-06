@@ -250,7 +250,14 @@ API のページ (2026-10-06 に読んだ) の説明:
 | ITU | 314 | 「ITU grants you permission to download, copy and use content for personal, educational, or non-commercial purposes ... You may not modify, reproduce, distribute, sell, transmit, create derivative works or use the content for any commercial purpose without obtaining prior written permission from ITU.」 | <https://www.itu.int/en/about/Pages/terms-of-use.aspx> |
 | WHO | 154、315 (WHO/UNICEF JMP)、325、246 のうち妊産婦死亡の 657 行 | データセットの利用許諾は「for public health purposes」に限られ、「Any other alteration or modification of the Datasets ... may be made only with the prior written authorization of WHO」 | <https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions> |
 | IMF | 125、130 | 2024-11 の改定で、データの商用の再利用と、相当量の再掲に許可が要る ([../imf/](../imf/)) | <https://www.imf.org/en/about/copyright-and-terms> |
-| 規約を確かめていない機関 | UIS (245、285、309、319、323)、UNWTO (176)、WIPO (264)、IPU (317)、UNODC (328)、IUCN (313)、UNEP-WCMC/IUCN/BirdLife (145 のうち 1,014 行) | 確かめるまでは公開しない。確認は [yearbook-source-terms.md](yearbook-source-terms.md) | |
+| UN Tourism (旧 UNWTO) | 176 | 「personal, non-commercial use, without any right to resell or redistribute ... or create derivative works」 | <https://www.untourism.int/copyright> |
+| WIPO | 264 | 統計データの条件が「not to republish or commercially re-sell WIPO's statistical datasets」。全体の規約の CC BY 4.0 より、サービス固有の条件が優先する | <https://www.wipo.int/en/web/ip-statistics/about> |
+| IPU | 317 | Parline は CC BY-NC-SA 4.0 (非商用) | <https://www.ipu.org/terms-use> |
+| UNODC | 328 | データポータルが国連の一般規約 (個人・非商用、再配布不可) を指し、データ固有のライセンスが無い | <https://www.un.org/en/about-us/copyright> |
+| IUCN | 313 | 商用利用と再掲載・再配布を、派生物も含めて事前の書面許可制にしている | <https://www.iucnredlist.org/terms/terms-of-use> |
+| UNEP-WCMC、IUCN、BirdLife | 145 のうち保護区と KBA の 1,014 行 | WDPA も KBA も派生物の商用利用を禁じ、KBA は派生物の再配布にも書面許可を求める | <https://www.protectedplanet.net/en/legal>、<https://www.keybiodiversityareas.org/termsofservice> |
+
+UIS (245、285、309、319、323) は公開する。データ閲覧サイトの規約と API の説明が CC BY-SA 4.0 を明示している (<https://databrowser.uis.unesco.org/terms-and-conditions>)。CC BY ではないので、これらの表には継承の条件が掛かる。7 機関の規約の原文は [yearbook-source-terms.md](yearbook-source-terms.md)。
 
 仕組み: 収集リポジトリの scripts/03_export_parquet.py の SOURCES が Source の文字列を機関に対応づけ、公開するかと理由を決める。どれにも当たらない Source は公開しない (新しい版で知らない機関が現れても、黙って公開されない)。公開する行が無い表は Parquet を作らず、行を一部でも除いた表は元の CSV も上げない。sources.parquet に出典ごとの機関、公開の可否、理由が入る。
 
