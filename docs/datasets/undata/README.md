@@ -266,3 +266,5 @@ UN Comtrade (123、330) は公開する。上の「データベースごとの�
 > You may re-disseminate a limited amount of UN Comtrade data for commercial purposes without obtaining an additional distribution license. A "limited amount" is defined as a database containing fewer than 100,000 records in total. This threshold applies to the total number of records stored in your database or product, not to individual queries, API calls, or downloads.
 
 年鑑の 123 と 330 は合わせて 8,536 行で、この範囲に収まる。FAQ は地理や部門の集計 (「Producing geographic, sectoral, or other aggregations」) も「transformed」の例に挙げている。上限は製品全体の件数に掛かるので、書き出しは公開する Comtrade の行が全版の合計で 100,000 に達したら止まる。
+
+SDMX の 5 本 (undata-sdmx) も同じ考え方で扱う。NA_MAIN は行ごとに作成機関 (`COMPILING_ORG`) を持つので、その機関の規約で読む。Eurostat (EU、EFTA、正式な加盟候補国の行)、OECD、国連機関の行は公開する。IMF の行 (58 地域、58,040 行) は IMF の規約が商用の再利用と相当量の再掲に許可を求めるので除き、Eurostat の Kosovo の行 (3,881 行) は Eurostat の copyright notice が EU、EFTA、正式な加盟候補国以外の国のデータを商用の再利用から除いており、Kosovo は潜在的な候補にとどまるので除く。エネルギーの 2 本と SEEA の 2 本には作成機関の記載が無く、UNSD のデータとして公開する。決定と理由は収集リポジトリの compilers.parquet に、行の範囲ごとに残る。
