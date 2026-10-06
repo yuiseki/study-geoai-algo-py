@@ -255,4 +255,4 @@ API のページ (2026-10-06 に読んだ) の説明:
 
 仕組み: 収集リポジトリの scripts/03_export_parquet.py の SOURCES が Source の文字列を機関に対応づけ、公開するかと理由を決める。どれにも当たらない Source は公開しない (新しい版で知らない機関が現れても、黙って公開されない)。公開する行が無い表は Parquet を作らず、行を一部でも除いた表は元の CSV も上げない。sources.parquet に出典ごとの機関、公開の可否、理由が入る。
 
-UN Comtrade の注: 上の survey の表で引いた「internal use only and may not be re-disseminated in any form without UNSD's permission」は古い方針の文面で、今の FAQ (同じ URL、2026-10-06 に読んだ) は、合計 100,000 件未満のデータベースなら商用でも配布の許諾無しに再配布できるとし、地理や部門の集計は「transformed」に当たる例に挙げている。年鑑の 123 と 330 は合わせて 8,536 行なので、今の FAQ では公開できる可能性がある。扱いは決めておらず、決まるまでは除いている。
+UN Comtrade の注: 上の「データベースごとの条件と重複」の表で引いた「internal use only and may not be re-disseminated in any form without UNSD's permission」は古い方針の文面で、今の FAQ (同じ URL、2026-10-06 に読んだ) は、合計 100,000 件未満のデータベースなら商用でも配布の許諾無しに再配布できるとし、地理や部門の集計は「transformed」に当たる例に挙げている。年鑑の 123 と 330 は合わせて 8,536 行なので、今の FAQ では公開できる可能性がある。扱いは決めておらず、決まるまでは除いている。
