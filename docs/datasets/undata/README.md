@@ -236,3 +236,23 @@ API のページ (2026-10-06 に読んだ) の説明:
 4. 取らない。更新が続いている 9 件のうち 5 件 (WDI、UNHCR、HDR、WPP、FAOSTAT) はすでに元の機関から集めている。残りの 17 件は 2016 年以前で止まった写し。UNSD 自身のデータは UNSD の個別のサイトから取れる可能性があり (未確認)、そちらを先に調べる手もある。
 
 どの案でも、UNdata の規約は商用について明文で書いていないことと、ルートの data.un.org がすでに Data Commons に置き換わり API が `legacy` の下に移されていることは、続くかどうかの不確かさとして残る。
+
+## 判断 (2026-10-06)
+
+上の案 1 と案 2 を両方採った。収集リポジトリは un-statistical-yearbook (統計年鑑の CSV) と undata-sdmx (SDMX の UNSD のデータフロー) の 2 つ。
+
+統計年鑑は、行ごとの Source 列が示す元の機関の規約を優先し、その規約が再配布を認める行だけを公開する。UNdata の規約は「出典を示せば再配布してよい」と書くが、サイト全体への一文で、表や機関ごとの表示ではなく、元の機関の権利にも触れていない。世界銀行 WDI では配布元が指標ごとに付けたライセンスの表示に従ったが (EDGAR の CO2 指標を残した判断)、UNdata にはそれに当たる個別の表示が無いので、元の機関の規約で読む。
+
+除く行と理由 (2026-10-06 に各機関の規約を読んだ):
+
+| 機関 | 表 | 理由 | 規約 |
+|---|---|---|---|
+| ITU | 314 | 「ITU grants you permission to download, copy and use content for personal, educational, or non-commercial purposes ... You may not modify, reproduce, distribute, sell, transmit, create derivative works or use the content for any commercial purpose without obtaining prior written permission from ITU.」 | <https://www.itu.int/en/about/Pages/terms-of-use.aspx> |
+| WHO | 154、315 (WHO/UNICEF JMP)、325、246 のうち妊産婦死亡の 657 行 | データセットの利用許諾は「for public health purposes」に限られ、「Any other alteration or modification of the Datasets ... may be made only with the prior written authorization of WHO」 | <https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions> |
+| IMF | 125、130 | 2024-11 の改定で、データの商用の再利用と、相当量の再掲に許可が要る ([../imf/](../imf/)) | <https://www.imf.org/en/about/copyright-and-terms> |
+| UN Comtrade | 123、330 | 再配布に条件がある。下の注を参照 | <https://uncomtrade.org/docs/faqs-on-use-and-re-dissemination/> |
+| 規約を確かめていない機関 | UIS (245、285、309、319、323)、UNWTO (176)、WIPO (264)、IPU (317)、UNODC (328)、IUCN (313)、UNEP-WCMC/IUCN/BirdLife (145 のうち 1,014 行) | 確かめるまでは公開しない。確認は [yearbook-source-terms.md](yearbook-source-terms.md) | |
+
+仕組み: 収集リポジトリの scripts/03_export_parquet.py の SOURCES が Source の文字列を機関に対応づけ、公開するかと理由を決める。どれにも当たらない Source は公開しない (新しい版で知らない機関が現れても、黙って公開されない)。公開する行が無い表は Parquet を作らず、行を一部でも除いた表は元の CSV も上げない。sources.parquet に出典ごとの機関、公開の可否、理由が入る。
+
+UN Comtrade の注: 上の survey の表で引いた「internal use only and may not be re-disseminated in any form without UNSD's permission」は古い方針の文面で、今の FAQ (同じ URL、2026-10-06 に読んだ) は、合計 100,000 件未満のデータベースなら商用でも配布の許諾無しに再配布できるとし、地理や部門の集計は「transformed」に当たる例に挙げている。年鑑の 123 と 330 は合わせて 8,536 行なので、今の FAQ では公開できる可能性がある。扱いは決めておらず、決まるまでは除いている。
