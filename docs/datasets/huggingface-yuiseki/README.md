@@ -28,6 +28,7 @@
 | natural-earth | 2026-10-06 | パブリックドメイン | 100K-1M | Natural Earth v5.1.2 の全ベクタ 215 レイヤー (10m、50m、110m)、357,763 地物。レイヤーごとの GeoParquet と元の zip。ラスタは未収録 | [../natural-earth/README.md](../natural-earth/README.md) |
 | mlit-toshi-keikaku-jp | 2026-10-06 | cc-by-4.0 (PDL1.0) | 100K-1M | 国交省都市局の都市計画決定 GIS データ令和 7 年度版。47 都道府県の shp、GeoJSON、CityGML と 26 レイヤーの GeoParquet (424,335 地物)。国土数値情報 A55 の上流。旧 A29 の市町村条件が 22 市町村で未確認 | [../mlit-toshi-keikaku/README.md](../mlit-toshi-keikaku/README.md) |
 | gsj-reports | 2026-10-07 | cc-by-4.0 | 10K-100K | GSJ の地質調査所月報 (1950〜2001) と地質調査研究報告 (2001〜2026) の本文テキスト。PDF 4,166 本の文字層を pdftotext で抽出した 1 ページ 1 行の JSONL 2 本 (49,065 ページ、2.6 億文字)。PDF は含まない | (study の資料なし) |
+| nilim-disaster-reports | 2026-10-07 | cc-by-4.0 (PDL1.0) | <1K | 国総研の災害現地調査報告のうち、国総研が単独で出し他の権利表記が無い 26 報告 (国総研資料と建築災害速報、883 ページ) の本文テキスト JSONL。共同刊行・共著・判断不能の 118 報告は除外し、理由を EXCLUDE.txt と RIGHTS_REVIEW.tsv に記録。PDF は含まない | (study の資料なし) |
 | env-redlist-jp | 2026-10-05 | cc-by-4.0 | 1K-10K | 環境省レッドリスト第 5 次の分類群 8 つ | [../env-redlist/README.md](../env-redlist/README.md) |
 | gsi-global-map-jp | 2026-10-05 | cc-by-4.0 (PDL1.0) | 10K-100K | 地球地図日本のベクタ 3 版 × 15 層を GeoParquet に、ラスタは元の zip | [../gsi-global-map-japan/README.md](../gsi-global-map-japan/README.md) |
 | ekidata-jp | 2026-10-05 | other (駅データ.jp 利用規約) | 10K-100K | 駅データ.jp の無料 CSV (駅、路線、事業者、接続駅) を日付の版ごとに。駅に点 | (study の資料なし) |
