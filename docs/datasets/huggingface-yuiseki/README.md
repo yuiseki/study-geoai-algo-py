@@ -24,6 +24,7 @@
 | un-statistical-yearbook | 2026-10-06 | other (UNdata の規約と元の機関の規約) | 100K-1M | 国連統計年鑑の CSV (SYB68 32 表、SYB61 1 表)。行ごとの出典の機関の規約で再配布できる行だけ (22 表 105,902 行)。WHO、ITU、IMF、IUCN、UNODC、UN Tourism、WIPO、IPU、UNEP-WCMC は除外、UIS は CC BY-SA 4.0 | [../undata/README.md](../undata/README.md) |
 | undata-sdmx | 2026-10-06 | other (UNdata の規約と作成機関の規約) | 1M-10M | UNdata SDMX API の UNSD の 5 本 (エネルギー統計、エネルギーバランス、国民経済計算の主要集計、SEEA の大気排出とエネルギー)。539 万件。NA_MAIN の IMF 作成行と Eurostat の Kosovo 行は除外。上書き型なので最新の回だけを置く | [../undata/README.md](../undata/README.md) |
 | opencellid | 2026-10-06 | cc-by-sa-4.0 | 1M-10M | OpenCelliD の全世界の基地局 (2026-10-06 版、550 万件)。直近 18 か月に観測されたセルだけが入るので日付の版を積む形。mcc、net、area 順の GeoParquet | [../opencellid/README.md](../opencellid/README.md) |
+| gsi-evacuation-sites-jp | 2026-10-06 | cc-by-4.0 (PDL1.0) | 100K-1M | 国土地理院の指定緊急避難場所 115,872 件と指定避難所 83,391 件 (2026-10-05 版)。毎朝作り直される上書き型で最新に追随。ご利用上の注意 1〜4 を原文で引用 | [../gsi-evacuation-sites/README.md](../gsi-evacuation-sites/README.md) |
 | env-redlist-jp | 2026-10-05 | cc-by-4.0 | 1K-10K | 環境省レッドリスト第 5 次の分類群 8 つ | [../env-redlist/README.md](../env-redlist/README.md) |
 | gsi-global-map-jp | 2026-10-05 | cc-by-4.0 (PDL1.0) | 10K-100K | 地球地図日本のベクタ 3 版 × 15 層を GeoParquet に、ラスタは元の zip | [../gsi-global-map-japan/README.md](../gsi-global-map-japan/README.md) |
 | ekidata-jp | 2026-10-05 | other (駅データ.jp 利用規約) | 10K-100K | 駅データ.jp の無料 CSV (駅、路線、事業者、接続駅) を日付の版ごとに。駅に点 | (study の資料なし) |
