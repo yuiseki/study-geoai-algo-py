@@ -73,6 +73,7 @@ fao-ferspas、mlit-nlftp、tokyo-ckan は yuiseki が作った非公式ミラー
 | [OSM Wiki](osm-wiki/README.md)  `catalog` | OSM のタグの説明。`yuiseki/osm-wiki` の上流 | 記事 86,510、Key: 6,720、Tag: 8,538 | MediaWiki API、全履歴ダンプ 6.89GB | CC BY-SA 2.0。地図データのライセンスとは別 |
 | [taginfo](taginfo/README.md)  `catalog` | OSM のタグの実使用回数。`yuiseki/osm-tag-corpus` の上流 | キー 115,209。DB の bz2 で 2.62GB | JSON API、SQLite ほか | ODbL。ただし wiki 由来の説明文の扱いは未確認 |
 | [OurAirports](ourairports/README.md)  `whole` | 全世界の空港と滑走路。IATA/ICAO コードつき | 86,153 行、19 列。7 ファイルで 24.7MB | CSV。z.yuiseki.net に日付ごとのスナップショット (元の CSV と GeoParquet) あり | public domain と明記。ただし LICENSE は The Unlicense で software としか書かない |
+| [OpenFlights](openflights/README.md)  `whole` | 全世界の空港と航空路線。OurAirports と名前が似ているが別物で、こちらが古い | 空港 1 万超 (2017年1月)、路線 67,663 便 (2014年6月)。全部で 30MB 未満 | .dat (タブでなくカンマ区切り) | データは ODbL (`data/LICENSE`)。リポジトリ全体の AGPL-3.0 は website のコード |
 | [Wikipedia](wikipedia/README.md)  `range` | 座標つき記事。`yuiseki/wikipedia-geotagged` の上流 | ja 1,520,723 記事 / en 7,245,970 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
 | [Wikivoyage](wikivoyage/README.md)  `range` | 旅行先の記事。`yuiseki/wikivoyage-geotagged` の上流 | en 34,710 記事 / ja 1,808 記事 | XML ダンプ、SQL ダンプ、API | CC BY-SA 4.0。share-alike |
 | [国連文書 (ODS)](un-docs-source/README.md)  `split` | 総会と安保理の公式文書。`yuiseki/un-docs` の上流 | 未確認 (派生側で 39,363 件) | PDF (API 経由)、一部はスキャン | 許諾の文言が無い。1987 年の内部方針とサイト規約が矛盾する |
