@@ -250,9 +250,12 @@ API のページ (2026-10-06 に読んだ) の説明:
 | ITU | 314 | 「ITU grants you permission to download, copy and use content for personal, educational, or non-commercial purposes ... You may not modify, reproduce, distribute, sell, transmit, create derivative works or use the content for any commercial purpose without obtaining prior written permission from ITU.」 | <https://www.itu.int/en/about/Pages/terms-of-use.aspx> |
 | WHO | 154、315 (WHO/UNICEF JMP)、325、246 のうち妊産婦死亡の 657 行 | データセットの利用許諾は「for public health purposes」に限られ、「Any other alteration or modification of the Datasets ... may be made only with the prior written authorization of WHO」 | <https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions> |
 | IMF | 125、130 | 2024-11 の改定で、データの商用の再利用と、相当量の再掲に許可が要る ([../imf/](../imf/)) | <https://www.imf.org/en/about/copyright-and-terms> |
-| UN Comtrade | 123、330 | 再配布に条件がある。下の注を参照 | <https://uncomtrade.org/docs/faqs-on-use-and-re-dissemination/> |
 | 規約を確かめていない機関 | UIS (245、285、309、319、323)、UNWTO (176)、WIPO (264)、IPU (317)、UNODC (328)、IUCN (313)、UNEP-WCMC/IUCN/BirdLife (145 のうち 1,014 行) | 確かめるまでは公開しない。確認は [yearbook-source-terms.md](yearbook-source-terms.md) | |
 
 仕組み: 収集リポジトリの scripts/03_export_parquet.py の SOURCES が Source の文字列を機関に対応づけ、公開するかと理由を決める。どれにも当たらない Source は公開しない (新しい版で知らない機関が現れても、黙って公開されない)。公開する行が無い表は Parquet を作らず、行を一部でも除いた表は元の CSV も上げない。sources.parquet に出典ごとの機関、公開の可否、理由が入る。
 
-UN Comtrade の注: 上の「データベースごとの条件と重複」の表で引いた「internal use only and may not be re-disseminated in any form without UNSD's permission」は古い方針の文面で、今の FAQ (同じ URL、2026-10-06 に読んだ) は、合計 100,000 件未満のデータベースなら商用でも配布の許諾無しに再配布できるとし、地理や部門の集計は「transformed」に当たる例に挙げている。年鑑の 123 と 330 は合わせて 8,536 行なので、今の FAQ では公開できる可能性がある。扱いは決めておらず、決まるまでは除いている。
+UN Comtrade (123、330) は公開する。上の「データベースごとの条件と重複」の表で引いた「internal use only and may not be re-disseminated in any form without UNSD's permission」は古い方針の文面で、今の FAQ (<https://uncomtrade.org/docs/faqs-on-use-and-re-dissemination/>、2026-10-06 に読んだ) は次のとおり書く。
+
+> You may re-disseminate a limited amount of UN Comtrade data for commercial purposes without obtaining an additional distribution license. A "limited amount" is defined as a database containing fewer than 100,000 records in total. This threshold applies to the total number of records stored in your database or product, not to individual queries, API calls, or downloads.
+
+年鑑の 123 と 330 は合わせて 8,536 行で、この範囲に収まる。FAQ は地理や部門の集計 (「Producing geographic, sectoral, or other aggregations」) も「transformed」の例に挙げている。上限は製品全体の件数に掛かるので、書き出しは公開する Comtrade の行が全版の合計で 100,000 に達したら止まる。
